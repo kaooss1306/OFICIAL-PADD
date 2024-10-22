@@ -13,7 +13,7 @@ $nombre_usuario = $_SESSION["user"]["Nombres"] ?? "Usuario";
 $avatar_usuario = $_SESSION["user"]["Avatar"] ?? "Usuario";
 $iduser = $_SESSION["user"]["id_usuario"] ?? "Usuario";
 
-$ruta = "https://coral-app-6fvkz.ondigitalocean.app/";
+$ruta = "http://localhost:3000/";
 
 
 ?>
