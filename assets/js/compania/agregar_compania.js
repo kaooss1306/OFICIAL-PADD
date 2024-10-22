@@ -9,6 +9,7 @@ async function guardarCompania(event) {
     formData.forEach((value, key) => {
         jsonData[key] = value;
     });
+    
     const date = new Date();
     const fechaCreacion = date.toISOString().split('T')[0]; // Extracts the date part in YYYY-MM-DD format
     
@@ -20,12 +21,10 @@ async function guardarCompania(event) {
         "Id_Agencia": parseInt(jsonData.Id_Agencia, 10),
         "id_Producto": parseInt(jsonData.id_Producto, 10),
         "Presupuesto": parseFloat(jsonData.Presupuesto),
-
-        "id_Temas": parseInt(jsonData.id_Temas, 10),
-        "Id_Planes_Publicidad": jsonData.Planes_Publicidad !== null ? parseInt(jsonData.Planes_Publicidad, 10) : null,
-        "estado":true,
-        "fechaCreacion":fechaCreacion,
-
+        // "id_Temas": parseInt(jsonData.id_Temas, 10),
+        "Id_Planes_Publicidad": jsonData.Planes_Publicidad ? parseInt(jsonData.Planes_Publicidad, 10) : null,
+        "estado": true,
+        "fechaCreacion": fechaCreacion
     };
 
     // URL y headers para la solicitud POST
@@ -37,23 +36,6 @@ async function guardarCompania(event) {
         "Prefer": "return=minimal"
     };
 
-
-    // Realizar la solicitud POST usando fetch
-    fetch(url, {
-        method: 'POST',
-        headers: headers,
-        body: JSON.stringify(transformedData)
-    })
-    .then(async response => {
-        if (response.ok) {
-   
-            const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarCampania'));
-            modal.hide();
-            await mostrarExito('Campaña agregada correctamente');
-
-            showLoading()
-            window.location.reload();
-
     try {
         // Realizar la solicitud POST usando fetch
         const response = await fetch(url, {
@@ -64,20 +46,16 @@ async function guardarCompania(event) {
 
         if (response.ok) {
             // Cerrar el modal
-            $('#modalAgregarCampania').modal('hide');
-    
+            const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarCampania'));
+            modal.hide();
+
             // Mostrar el mensaje de éxito usando SweetAlert con await
-            await Swal.fire({
-                title: '¡Éxito!',
-                text: 'Campaña agregada correctamente',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
+            await mostrarExito('Campaña agregada correctamente');
 
             showLoading();  // Muestra el efecto de carga
 
             // Recargar la página
-            location.reload();
+            window.location.reload();
 
         } else {
             // Manejar el error de respuesta
@@ -101,16 +79,15 @@ async function guardarCompania(event) {
     }
 }
 
-
 async function mostrarExito(mensaje) {
     return new Promise((resolve) => {
-        // Asumiendo que esta función muestra un mensaje y luego resuelve la promesa
+        // Mostrar el mensaje de éxito y resolver la promesa cuando el SweetAlert se cierre
         Swal.fire({
-                  title: 'Éxito!',
-                text: mensaje,
-                icon: 'success',
-                showConfirmButton: false,
-                timer: 1500
+            title: '¡Éxito!',
+            text: mensaje,
+            icon: 'success',
+            showConfirmButton: false,
+            timer: 1500
         }).then(() => {
             resolve(); // Resuelve la promesa cuando se cierra el Swal
         });
@@ -130,10 +107,7 @@ function showLoading() {
         document.body.appendChild(loadingElement);
     }
     loadingElement.style.display = 'block';
-
 }
-// Asigna el evento de envío al formulario de actualizar proveedor
+
+// Asigna el evento de envío al formulario
 document.getElementById('formularioAgregarCampania').addEventListener('submit', guardarCompania);
-
-}
-

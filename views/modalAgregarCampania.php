@@ -81,7 +81,7 @@
      
             <!-- Id_Planes_Publicidad -->
             <div class="col-md-6 mb-3">
-              <label class="form-label" for="Id_Planes_Publicidad">ID Planes Publicidad</label>
+              <label class="form-label" for="Id_Planes_Publicidad">Planes Publicidad</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-bullseye"></i></span>
                 <select class="form-control" id="Planes_Publicidad" name="Planes_Publicidad" placeholder="Planes Publicidad" required>>
