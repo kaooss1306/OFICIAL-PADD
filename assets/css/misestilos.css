@@ -328,7 +328,7 @@ li.items-list-compo i {
 .btn.btn-success.micono,
 .btn.btn-danger.eliminar-producto.micono,
 .btn.btn-danger.micono.eliminar-comision {
-    height: 28px !important;
+    height: 29px !important;
     padding-top: 0px !important;
     padding-bottom: 0px !important;
 }
@@ -399,7 +399,7 @@ body {
     padding-bottom: 3px !important;
 }
 .btn.btn-success.micono {
-    margin-top: -2px;
+    margin-top: 0px;
 }
 .theditar {
     margin-top: 10px;
