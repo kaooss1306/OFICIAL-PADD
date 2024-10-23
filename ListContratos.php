@@ -62,7 +62,7 @@ include "componentes/sidebar.php";
                                 <table class="table table-striped" id="tableExportadora">
                                     <thead>
                                         <tr>
-                                            <th>ID Comtrato</th>
+                                            <th>ID Contrato</th>
                                             <th>Nombre Cliente</th>
                                             <th>Cantidad de Contratos</th>
                                             <th>Estado</th>
