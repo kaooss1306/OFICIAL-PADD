@@ -11,7 +11,7 @@ include "componentes/sidebar.php";
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb">
             <li class="breadcrumb-item"><a href="<?php echo $ruta; ?>dashboard.php">Home</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Lista de Clientes y Contratos</li>
+            <li class="breadcrumb-item active" aria-current="page">Lista de Contratos</li>
         </ol>
     </nav><br>
     <section class="section">
