@@ -103,7 +103,7 @@ include "componentes/sidebar.php";
                                                     </div>
                                                 </td>
                                                 <td>
-                                                    <a class="btn btn-primary micono" href="views/viewCliente.php?id=<?php echo $cliente[
+                                                    <a class="btn btn-primary micono" href="views/viewCliente.php?id_cliente=<?php echo $cliente[
                                                         "id"
                                                     ]; ?>" data-toggle="tooltip" title="Ver Contratos">
                                                         <i class="fas fa-file-contract"></i>
