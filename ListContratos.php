@@ -106,18 +106,9 @@ include "componentes/sidebar.php";
                                                     <a class="btn btn-primary micono" href="views/viewCliente.php?id=<?php echo $cliente[
                                                         "id"
                                                     ]; ?>" data-toggle="tooltip" title="Ver Cliente">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a>
-                                                    <button type="button" class="btn btn-success micono" data-bs-toggle="modal" data-bs-target="#modalEditCliente" data-cliente-id="<?php echo $cliente[
-                                                        "id"
-                                                    ]; ?>">
-                                                        <i class="fas fa-pencil-alt"></i>
-                                                    </button>
-                                                    <button type="button" class="btn btn-info micono" data-bs-toggle="modal" data-bs-target="#modalVerContratos" data-cliente-id="<?php echo $cliente[
-                                                        "id"
-                                                    ]; ?>">
                                                         <i class="fas fa-file-contract"></i>
-                                                    </button>
+                                                    </a>
+
                                                 </td>
                                             </tr>
                                         <?php endforeach; ?>
