@@ -21,7 +21,7 @@ include "componentes/sidebar.php";
                     <div class="card">
                         <div class="card-header milinea">
                             <div class="titulox">
-                                <h4>Listado de Clientes y Contratos</h4>
+                                <h4>Listado de Contratos</h4>
                             </div>
                             <div class="agregar">
                                 <a href="#" class="btn btn-primary open-modal" data-bs-toggle="modal" data-bs-target="#modalAddContrato">
