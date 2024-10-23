@@ -127,6 +127,5 @@ include "componentes/sidebar.php";
 
 <?php include "componentes/settings.php"; ?>
 <?php include "querys/modulos/modalAddContrato.php"; ?>
-<?php include "querys/modulos/modalEditCliente.php"; ?>
-<?php include "querys/modulos/modalVerContratos.php"; ?>
+
 <?php include "componentes/footer.php"; ?>
