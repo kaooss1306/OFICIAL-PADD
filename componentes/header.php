@@ -13,7 +13,7 @@ $nombre_usuario = $_SESSION["user"]["Nombres"] ?? "Usuario";
 $avatar_usuario = $_SESSION["user"]["Avatar"] ?? "Usuario";
 $iduser = $_SESSION["user"]["id_usuario"] ?? "Usuario";
 
-$ruta = "http://localhost:3000/";
+$ruta = "https://supreme-space-waddle-j967ggw7gr72j647-3000.app.github.dev/";
 
 
 ?>
