@@ -12,9 +12,11 @@ if (!isset($_SESSION["user"]) || empty($_SESSION["user"])) {
 $nombre_usuario = $_SESSION["user"]["Nombres"] ?? "Usuario";
 $avatar_usuario = $_SESSION["user"]["Avatar"] ?? "Usuario";
 $iduser = $_SESSION["user"]["id_usuario"] ?? "Usuario";
+$idPerfil = $_SESSION["user"]["id_perfil"] ?? "Usuario";
 
-$ruta = "http://localhost:3000/";
+$ruta = "https://glowing-space-spork-wwxg7rq77rvc5jw9-3000.app.github.dev/";
 
+include 'funciones.php';
 
 ?>
 
@@ -37,7 +39,7 @@ async function obtenerUsuario() {
         });
 
     let url_imagen_p = usuarios.length > 0 ? usuarios[0].Avatar : null;
-    const avatar_defecto = "https://coral-app-6fvkz.ondigitalocean.app/assets/img/avatar.png";  // Ruta al avatar por defecto
+    const avatar_defecto = $ruta + "assets/img/default-avatar.png";  // Ruta al avatar por defecto
 
     // Asignar el avatar o el avatar por defecto si no está disponible
     const avatar_completo = url_imagen_p ? url_imagen_p : avatar_defecto;
@@ -113,7 +115,7 @@ obtenerUsuario().then(avatar => {
    Bienvenid@ - <?php echo htmlspecialchars($nombre_usuario); ?>
           <li class="dropdown"><a href="#" data-bs-toggle="dropdown"
               class="nav-link dropdown-toggle nav-link-lg nav-link-user">
-              <img id="avatarImagen" src="default-avatar.png" alt="Avatar" /></a>
+              <img id="avatarImagen" src="<?php echo $ruta; ?>assets/img/default-avatar.png" alt="Avatar" /></a>
             <div class="dropdown-menu dropdown-menu-right pullDown">
 
               <a href="<?php echo $ruta; ?>perfil.php" class="dropdown-item has-icon"> <i class="fa-solid fa-user-tag"></i> Mi Perfíl
