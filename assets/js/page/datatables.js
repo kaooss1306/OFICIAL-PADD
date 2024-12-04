@@ -56,6 +56,12 @@ $('#tableBuscar').DataTable({
     url: '//cdn.datatables.net/plug-ins/2.1.3/i18n/es-MX.json',
   }
 });
+$('#tableExportadora-simplificada').DataTable({
+  language: {
+    url: '//cdn.datatables.net/plug-ins/2.1.3/i18n/es-MX.json',
+  }
+
+});
 
 $('#tableExportadora').DataTable({
   dom: 'Bfrtip',
@@ -79,7 +85,9 @@ $('#tableExportadora').DataTable({
       visible: true,
       searchable: true,
       printable: false,
-      ordering: false
+      ordering: true
     }
   ]
 });
+
+
