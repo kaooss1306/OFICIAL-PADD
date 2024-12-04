@@ -68,7 +68,7 @@ require_once 'componentes/sidebar.php';
                                                         onclick="cargarDatosFormulario(<?php echo $orden['id_ordenes_de_comprar']; ?>);">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>Main Content -->
-                                                    <a class="btn btn-success micono" href="querys/modulos/editarOrden.php?id_plan=<?php echo $orden['id_plan']; ?>&id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>">
+                                                    <a class="btn btn-success micono" href="querys/modulos/editarOrden.php?id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>">
     <i class="fas fa-pencil-alt"></i>
 </a>
                                                 </td>

@@ -7,59 +7,60 @@ if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     exit();
 }
 $user_name = $_SESSION['user_name'];
+$nombre_usuario = $_SESSION["user"]["Nombres"] ?? "Usuario";
 
+// Capturar correo de usuario
+$correoUsuario = $_SESSION['user_email'] ?? 'Correo No Disponible';
 include '../qplanes.php';
 
 
 if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    // Verificar primero la existencia de id_plan
-    if (!isset($_GET['id_plan'])) {
-        echo "ID del plan no proporcionado.";
-        exit;
-    }
-
-    // Validar y convertir id_plan
-    $id_planes_publicidad = (int) $_GET['id_plan'];
-
     // Verificar la existencia de id_orden
     if (!isset($_GET['id_orden'])) {
         echo "ID de la orden no proporcionado.";
         exit;
     }
-
+    
     // Validar y convertir id_orden
     $id_ordenP = (int) $_GET['id_orden'];
-
+    
     // Verificar que id_ordenP no sea cero después de la conversión
     if ($id_ordenP === 0) {
         echo "ID de orden no válido.";
         exit;
     }
-
-    // Obtener todos los planes desde Supabase
-    // Verificar que $planes es un array y tiene datos
-    if (!is_array($planes) || empty($planes)) {
-        echo "No se obtuvieron datos de los planes.";
+    
+    // Buscar en $ordenespuMap para obtener el ID del plan
+    $planEncontrado = null;
+    foreach ($ordenespuMap as $orden) {
+        if ($orden['id_ordenespu'] === $id_ordenP) {
+            $planEncontrado = $orden['idplanorden'];
+            break;
+        }
+    }
+    
+    // Verificar que $planEncontrado no sea null
+    if ($planEncontrado === null) {
+        echo "No se encontró un plan para la orden " . $id_ordenP;
         exit;
     }
-
-    // Buscar el plan que coincida con el ID
+    
+    // Buscar el plan completo en $planes
     $plan = null;
     foreach ($planes as $item) {
-        if ((int) $item['id_planes_publicidad'] === $id_planes_publicidad) {
+        if ((int) $item['id_planes_publicidad'] === (int) $planEncontrado) {
             $plan = $item;
             break;
         }
     }
-
+    
     // Verifica si se encontró el plan
     if ($plan === null) {
         echo "No se encontró el plan publicitario.";
         exit;
     }
-
-    // Ahora puedes usar $id_ordenP con confianza
-    // Realizar las operaciones necesarias con el ID de la orden
+    
+       
 } else {
     echo "Método de solicitud no válido.";
 }
@@ -157,7 +158,8 @@ include '../../componentes/header.php';
 include '../../componentes/sidebar.php';
 ?>
 <style>
-
+.nameusu{color: #6878f2; font-weight: 700; font-size: 20px;}
+.correusu{font-size:16px; color:black;}
 /* Para navegadores Webkit (Chrome, Safari, etc.) */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
@@ -651,7 +653,14 @@ border:1px solid #ff0000;
                                      </div>
                                      </div> 
                                      <div class="totalestotales"></div>
-                                                          
+                                     <div style="margin-top:30px; display: flex; justify-content: flex-end; text-align: center; width: 100%;">
+    <div>
+        <input class="nombreuser" hidden value="<?php echo $nombre_usuario ?>">
+        <input class="correouser" hidden value="<?php echo $correoUsuario ?>">
+        <span class="nameusu"><?php echo $nombre_usuario ?></span><br>
+        <span class="correusu"><?php echo $correoUsuario ?></span>
+    </div>
+</div>                 
                                                             
 
 
@@ -2228,6 +2237,16 @@ document.addEventListener('DOMContentLoaded', function() {
     await enviarDatos();
 });
 
+// Función para recopilar datos
+function recopilarUsuario() {
+    const nombreusers = document.querySelector('.nombreuser')?.value || null;
+    const correousers = document.querySelector('.correouser')?.value || null;
+
+    return {
+        nombreusuario: nombreusers,
+        correousuario: correousers
+    };
+}
 
 // Función para recopilar datos
 function recopilarDatos() {
@@ -2314,9 +2333,9 @@ function recopilarDatos() {
 async function enviarDatos() {
     try {
         const datos = recopilarDatos();  // Asegúrate de que recopilarDatos() devuelva los datos correctos para la tabla "json"
-
+        const usuariodato = recopilarUsuario();
         // Usa el id_planes_publicidad ya existente
-        const id_planes_publicidad = <?php echo json_encode($id_planes_publicidad); ?>;
+        const id_planes_publicidad = <?php echo json_encode($planEncontrado); ?>;
         const id_ordenes_de_comprar = <?php echo json_encode($id_ordenP); ?>;
         
         
@@ -2327,6 +2346,7 @@ async function enviarDatos() {
         const datosPlan = {
             id_planes_publicidad: id_planes_publicidad,
             NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
+            usuarioregistro: usuariodato,
                 id_cliente: document.getElementById('selected-client-id').value,
                 id_producto: document.getElementById('selected-product-id').value,
                 id_contrato: document.getElementById('selected-contrato-id').value,
@@ -2365,9 +2385,10 @@ async function enviarDatos() {
 
         // Preparar los datos para la actualización de OrdenesDePublicidad (primera parte)
         const datosOrdenpublicidad = {
-            estado: 0,
+            estado: '0',
             id_ordenes_de_comprar: id_ordenes_de_comprar,
-            estadoorden: 'Anulada'
+            estadoorden: 'Anulada',
+            usuarioregistro: usuariodato
         };
 
         // Segunda solicitud: Actualizar OrdenesDePublicidad (primera parte)
@@ -2398,6 +2419,7 @@ async function enviarDatos() {
                 id_plan: id_planes_publicidad,
                 detalle: document.getElementById('descripcion').value ?? null,
                 datosRecopiladosb: datos,
+                usuarioregistro: usuariodato,
                 tipo_item: document.getElementById('selected-tipo').value ?? null,
                 Megatime: document.getElementById('selected-temas-codigo').value ?? null,
                 id_agencia: document.getElementById('selected-campania-agencia').value ?? null,
