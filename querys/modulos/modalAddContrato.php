@@ -176,21 +176,21 @@
               </div>
             </div>
                         <!-- Checkbox que controla la visibilidad del código -->
-<div style="margin-bottom:10px;">
-  <input class="form-check-input" type="checkbox" id="mostrarDescuento" />
-  <label style="margin-left:5px;" class="form-label" for="mostrarDescuento">Incluir descuento</label>
-</div>
+                  <div style="margin-bottom:10px;">
+                    <input class="form-check-input" type="checkbox" id="mostrarDescuento" />
+                    <label style="margin-left:5px;" class="form-label" for="mostrarDescuento">Incluir descuento</label>
+                  </div>
 
-<!-- Código que se muestra u oculta según el checkbox -->
-<div id="descuento-container" style="display: none;">
-  <div class="col-md-3 mb-3">
-    <label for="estado" class="form-label">Descuento</label>
-    <div class="input-group">
-      <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-      <input type="number" class="form-control" id="Descuento1" name="Descuento1" value="0" required>
-    </div>
-  </div>
-</div>
+                  <!-- Código que se muestra u oculta según el checkbox -->
+                  <div id="descuento-container" style="display: none;">
+                    <div class="col-md-3 mb-3">
+                      <label for="estado" class="form-label">Descuento</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                        <input type="number" class="form-control" id="Descuento1" name="Descuento1" value="0" required>
+                      </div>
+                    </div>
+                  </div>
           </div>
           <div class="row">
           <div class="col-md-12 mb-3">

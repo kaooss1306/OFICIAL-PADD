@@ -11,6 +11,49 @@ include '../../componentes/sidebar.php';
 // Obtener el ID de la orden de la URL
 $idOrdenPlan = isset($_GET['id_orden']) ? $_GET['id_orden'] : null;
 
+$ordenpublicidad = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad');
+$clasificaciones = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Clasificacion?select=*');   
+$temas = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Temas?select=*');
+$temasMap = [];
+foreach ($temas as $tema) {
+    if ($tema['estado'] === true) {
+    $temasMap[] = [
+        'id' => $tema['id_tema'],
+        'nombreTema' => $tema['NombreTema'],
+        'CodigoMegatime' => $tema['CodigoMegatime'],
+        'id_medio' => $tema['id_medio'],
+        'Duracion' => $tema['Duracion']
+    ];
+}
+}
+$meses = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Meses?select=*');
+$anios = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Anios?select=*');
+$programas = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Programas?select=*');
+$programasMap = [];
+foreach ($programas as $programa) {
+    $programasMap[] = [
+        'id' => $programa['id'],
+        'descripcion' => $programa['descripcion'],
+        'soporteId' => $programa['soporte_id'],
+        'codmegatime' => $programa['cod_prog_megatime'],
+        'horaini' => $programa['hora_inicio'],
+        'descripcion' => $programa['descripcion'],
+        'horafn' => $programa['hora_fin']
+    ];
+}
+$aniosMap = [];
+foreach ($anios as $anio) {
+    $aniosMap[$anio['id']] = [
+        'id' => $anio['id'],
+        'years' => $anio['years']
+    ];
+}
+$mesesMap = [];
+foreach ($meses as $mes) {
+    $mesesMap[$mes['Id']] = $mes;
+}
+
+
 $url = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?id_ordenes_de_comprar=eq.$idOrdenPlan&select=*";
 $planPublicidad = makeRequest($url);
 $datosPublicidad = $planPublicidad[0] ?? [];
@@ -23,8 +66,27 @@ $datosProductos = $productoPublicidad[0] ?? [];
 
 $url4 = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Contratos?IdCliente=eq.$idCliente&select=*";
 $contrato = makeRequest($url4);
+$formaspago = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/FormaDePago?id=eq.1&select=*";
 $datosContrato = $contrato[0] ?? [];
+$idFormaDePago = $datosContrato['id_FormadePago'] ?? null;
 
+// Variable para almacenar el nombre de la Forma de Pago
+$nombreFormaDePago = '';
+
+// Verificar si hay un ID de Forma de Pago
+if ($idFormaDePago !== null) {
+    // Construir la URL para consultar la Forma de Pago específica
+    $formaspago = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/FormaDePago?id=eq." . $idFormaDePago . "&select=*";
+    
+    // Realizar la solicitud (asumiendo que tienes una función makeRequest)
+    $resultadoFormaPago = makeRequest($formaspago);
+    
+    // Verificar si se encontró la Forma de Pago
+    if (!empty($resultadoFormaPago)) {
+        // Obtener el nombre de la primera (y generalmente única) entrada
+        $nombreFormaDePago = $resultadoFormaPago[0]['NombreFormadePago'] ?? '';
+    }
+}
 
 $idCampania = $datosProductos['id_campania'] ?? null;
 $url3 = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Campania?id_campania=eq.$idCampania&select=*";
@@ -53,22 +115,158 @@ if (is_array($nombreProducto)) {
     $nombreProducto = $nombreProducto['NombreDelProducto'] ?? $nombreProducto['nombre'] ?? "Nombre no disponible";
 }
 
+$idOrdenPlan = isset($_GET['id_orden']) ? $_GET['id_orden'] : null;
+$ordenespuMap = [];
+foreach ($ordenpublicidad as $ordenpu){
+    $ordenespuMap[] = [
+        'id_ordenespu' => $ordenpu['id_ordenes_de_comprar'],
+        'datosrecopilados' => $ordenpu['datosRecopiladosb'],
+        'tipo_item' => $ordenpu['tipo_item'],
+        'remplaza' => $ordenpu['remplaza']
+
+    ];
+}
+// Obtener el tipo_item para el idOrdenPlan específico
+$tipo_item = null;
+foreach ($ordenespuMap as $orden) {
+    if ($orden['id_ordenespu'] == $idOrdenPlan) {
+        $tipo_item = $orden['tipo_item'];
+        break;
+    }
+}
+// Obtener el remplaza para el idOrdenPlan específico
+$remplaza = null;
+foreach ($ordenespuMap as $orden) {     
+    if ($orden['id_ordenespu'] == $idOrdenPlan) {         
+        $remplaza = $orden['remplaza'];         
+        break;     
+    } 
+}
+
 $nombresMeses = [
   1 => 'Enero', 2 => 'Febrero', 3 => 'Marzo', 4 => 'Abril',
   5 => 'Mayo', 6 => 'Junio', 7 => 'Julio', 8 => 'Agosto',
   9 => 'Septiembre', 10 => 'Octubre', 11 => 'Noviembre', 12 => 'Diciembre'
 ];
 
+// Encontrar la orden específica
+$ordenActual = null;
+foreach ($ordenespuMap as $orden) {
+    if ($orden['id_ordenespu'] == $idOrdenPlan) {
+        $ordenActual = $orden;
+        break;
+    }
+}
 
+// Función para obtener mes y año del primer grupo
+function obtenerPrimerMesYAnio($datosRecopilados) {
+    if (!$datosRecopilados) return ['mes' => null, 'anio' => null];
+    
+    // Decodificar JSON si es necesario
+    $datos = is_string($datosRecopilados) ? json_decode($datosRecopilados, true) : $datosRecopilados;
+    
+    // Verificar si hay un campo 'datos' en el nuevo formato
+    if (isset($datos['datos'])) {
+        $datos = $datos['datos'];
+    }
+    
+    // Verificar si hay datos y si el primer elemento tiene calendario
+    if (!empty($datos) && isset($datos[0]['calendario']) && !empty($datos[0]['calendario'])) {
+        $primerFecha = $datos[0]['calendario'][0];
+        return [
+            'mes' => $primerFecha['mes'] ?? null,
+            'anio' => $primerFecha['anio'] ?? null
+        ];
+    }
+    
+    return ['mes' => null, 'anio' => null];
+}
 
+// Obtener mes y año
+$fechas = obtenerPrimerMesYAnio($ordenActual['datosrecopilados']);
 
+// Obtener el nombre del mes
+$nombreMes = isset($fechas['mes']) && isset($nombresMeses[$fechas['mes']]) 
+    ? $nombresMeses[$fechas['mes']] 
+    : '';
+
+// Obtener el año de la tabla Anios
+$anioId = $fechas['anio'] ?? null;
+$nombreAnio = isset($anioId) && isset($aniosMap[$anioId]) 
+    ? $aniosMap[$anioId]['years'] 
+    : '';
 ?>
+<style>
+    table.table.table-bordered {
+    border: black !important;
+}
+.table.table-bordered td, .table.table-bordered th {
+    border-color: black;
+}
+    .table:not(.table-sm) thead th {background-color:white; }
+    .spn1-1{color:#0000ff; font-weight:bold;}
+    .spn1-2{ color:black; font-weight:bold;}
+    .titulot2{font-weight:700;   padding-left: 15%;}
+    .fanil{padding-left: 30%;}
+    .primeracolumnatds{font-size: 12px;
+        font-weight: 500;}
+.calendario-header {
+    padding: 2px !important;
+    font-size: 0.85em;
+    min-width: 30px;
+
+}
+.table-responsive {
+        width: 100%;
+        overflow-x: auto;
+    }
+    .table-fixed {
+        table-layout: fixed;
+        width: 100%;
+    }
+    .table-fixed th, .table-fixed td {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .table-fixed td {
+        word-wrap: break-word;
+    }
+    #tabdelcal td{font-size:10px !important;}
+    #tabdelcal th{font-size:10px !important;}
+th.text-center.calendario-header {
+    border:1px solid black;
+}
+.dia-semana {
+    font-size: 0.8em;
+    color: #666;
+    border-bottom: 1px solid #eee;
+}
+.dia-numero {
+    font-size: 0.8em;
+    color: #333;
+    font-weight: bold;
+}
+ 
+.calendario-celda {
+    font-size:10px;
+    padding: 2px !important;
+    font-weight: normal;
+}
+.normal{font-size:28px;}
+.anulacion{font-size: 28px; color:#ff0000;}
+.table th {
+    vertical-align: bottom;
+}
+.trfound{border:1px solid black;}
+.trfound th{border:1px solid black;}
+</style>
 <div class="main-content">
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item"><a href="<?php echo $ruta; ?>dashboard">Home</a></li>
-        <li class="breadcrumb-item"><a href="<?php echo $ruta; ?>ListOrdenes.php">Ver Ordenes de Publicidad</a></li>
+        <li class="breadcrumb-item"><a href="<?php echo $ruta; ?>ListOrdenes.php">Ver Ordenes de Publicidad</a> </li>
         <li class="breadcrumb-item active" aria-current="page">Orden de Publicidad - <?php echo $clientesMap[$datosPublicidad['id_cliente'] ?? '']['nombreCliente'];?></li>
     </ol>
 </nav>
@@ -93,76 +291,59 @@ $nombresMeses = [
     <td class="azul" width="33%">RUT <?php $rutOrden = $clientesMap[$datosPublicidad['id_cliente'] ?? '']['RUT'];
                                         echo $rutOrden;
     ?></td>
-    <td class="titulot" width="33%"><div align="center">ORDEN DE PUBLICIDAD </div></td>
-    <td class="titulot2" width="34%">INTERNET - <?php 
-$idCalendar = $datosPublicidad['id_calendar'] ?? '';
-$mesNumero = $calendarMap[$idCalendar][0]['mes'] ?? 'No disponible';
-$mesNombre = is_numeric($mesNumero) ? ($nombresMeses[(int)$mesNumero] ?? 'No disponible') : 'No disponible';
-echo htmlspecialchars($mesNombre);
-?> <?php 
-    $idCalendar = $datosPublicidad['id_calendar'] ?? '';
-    $matrizCalendario = $calendarMap[$idCalendar][0]['anio'] ?? 'No disponible';
-    echo htmlspecialchars($matrizCalendario);
-    ?> </td>
+    <td class="titulot" width="33%"><div align="center"><span class="normal">ORDEN DE PUBLICIDAD - <?php echo htmlspecialchars($idOrdenPlan); ?></span> <br>  <span class="anulacion"><?php if (!empty($remplaza)) {echo "ANULA Y REMPLAZA ORDEN -" . $remplaza;} ?></span></div></td>
+    <td class="titulot2" width="34%">INTERNET - <?php echo htmlspecialchars($nombreMes); ?> /<?php echo htmlspecialchars($nombreAnio); ?> </td>
   </tr>
   <tr>
     <td>&nbsp;</td>
     <td class="titulot3"></td>
     <td>&nbsp;</td>
   </tr>
-  <tr>
+  <tr class="trencabezado">
 
-    <td><strong>CLIENTE:</strong> <?php echo $clientesMap[$datosPublicidad['id_cliente'] ?? '']['nombreCliente'];?><br>
-    <strong>RUT:</strong> <?php echo $clientesMap[$datosPublicidad['id_cliente'] ?? '']['RUT'];?><br>
-    <strong>DIRECCIÓN:</strong> <?php echo $clientesMap[$datosPublicidad['id_cliente'] ?? '']['direccionEmpresa'];?><br>
-    <strong>COMUNA:</strong> <?php echo $nombreComuna; ?><br>
-    <strong>PRODUCTO:</strong> <?php echo htmlspecialchars($nombreProducto); ?><br>
-    <strong>AÑO:</strong> <?php 
-    $idCalendar = $datosPublicidad['id_calendar'] ?? '';
-    $matrizCalendario = $calendarMap[$idCalendar][0]['anio'] ?? 'No disponible';
-    echo htmlspecialchars($matrizCalendario);
-    ?><br>
-    <strong>MES:</strong> <?php 
-$idCalendar = $datosPublicidad['id_calendar'] ?? '';
-$mesNumero = $calendarMap[$idCalendar][0]['mes'] ?? 'No disponible';
-$mesNombre = is_numeric($mesNumero) ? ($nombresMeses[(int)$mesNumero] ?? 'No disponible') : 'No disponible';
-echo htmlspecialchars($mesNombre);
-?><br>
-    <strong>N° CONTRATO:</strong> <?php echo $datosContrato['num_contrato'] ?? 'No disponible'; ?><br>
-    <strong>FORMA DE PAGO:</strong> CONTADO<br>
-    <strong>TIPO ITEM:</strong> PRUEBA</td>
+    <td class="primeracolumnatds">
+    <span class="titulosordentab"><strong>CLIENTE:</strong> <?php echo $clientesMap[$datosPublicidad['id_cliente'] ?? '']['nombreCliente'];?></span><br>
+    <span class="titulosordentab"><strong>RUT:</strong> <?php echo $clientesMap[$datosPublicidad['id_cliente'] ?? '']['RUT'];?></span><br>
+    <span class="titulosordentab"><strong>DIRECCIÓN:</strong> <?php echo $clientesMap[$datosPublicidad['id_cliente'] ?? '']['direccionEmpresa'];?></span><br>
+    <span class="titulosordentab"><strong>COMUNA:</strong> <?php echo $nombreComuna; ?></span><br>
+    <span class="titulosordentab"><strong>PRODUCTO:</strong> <?php echo htmlspecialchars($nombreProducto); ?></span><br>
+    <span class="titulosordentab"><strong>AÑO:</strong> <?php echo htmlspecialchars($nombreAnio); ?></span><br>
+    <span class="titulosordentab"><strong>MES:</strong> <?php echo htmlspecialchars($nombreMes); ?></span><br>
+    <span class="titulosordentab"><strong>N° CONTRATO:</strong> <?php echo $datosContrato['num_contrato'] ?? 'No disponible'; ?></span><br>
+    <span class="titulosordentab"><strong class="titulosordentabpago">FORMA DE PAGO:</strong> <?php echo $nombreFormaDePago ?? 'No disponible'; ?></span><br>
+    <span class="titulosorden2"><strong class="titulosorden3">TIPO ITEM:</strong> <?php echo htmlspecialchars($tipo_item); ?></span></td>
 
 
-    <td style="text-align:center;"><strong>CAMPAÑA:</strong> <?php echo $datosCampania['NombreCampania'] ?? 'Nombre no disponible'; ?><br>
+    <td  style="text-align:center;"><span class="titulosordentab"><strong>CAMPAÑA:</strong> <?php echo $datosCampania['NombreCampania'] ?? 'Nombre no disponible'; ?></span><br>
     
-    <strong>PLAN DE MEDIOS:</strong> <?php echo $datosProductos['NombrePlan'] ?? 'Nombre no disponible'; ?><br>
+    <span class="titulosordentab"><strong>PLAN DE MEDIOS:</strong> <?php echo $datosProductos['NombrePlan'] ?? 'Nombre no disponible'; ?></span><br>
     <?php if (!empty($datosContrato['Descuento1']) && $datosContrato['Descuento1'] > 0) : ?>
   <div class="thebordex">
-    <strong>DESCUENTO:</strong> <?php echo '$' . number_format($datosContrato['Descuento1'], 0, ',', '.'); ?><br>
+  <span class="titulosordentab"><strong>DESCUENTO:</strong> <?php echo '$' . number_format($datosContrato['Descuento1'], 0, ',', '.'); ?><span><br>
   </div>
 <?php endif; ?>
 </td>
 
 
-    <td valign="top">
-    <strong>PROVEEDOR:</strong> <?php 
+    <td class="primeracolumnatds fanil" valign="top">
+    <span class="titulosordentab"><strong>PROVEEDOR:</strong> <?php 
     $idProveedor = $datosPublicidad['id_proveedor'] ?? $datosContrato['id_proveedor'] ?? null;
     echo $idProveedor ? ($proveedoresMap[$idProveedor]['nombreProveedor'] ?? 'Proveedor no encontrado') : 'ID de proveedor no disponible';
-?><br>
-    <strong>RUT:</strong> <?php 
+?></span><br>
+    <span class="titulosordentab"><strong>RUT:</strong> <?php 
     $rutProveedor = $datosPublicidad['id_proveedor'] ?? $datosContrato['id_proveedor'] ?? null;
     echo $rutProveedor ? ($proveedoresMap[$rutProveedor]['rutProveedor'] ?? 'Proveedor no encontrado') : 'ID de proveedor no disponible';
-?><br>
-    <strong>SOPORTE:</strong> <?php 
+?></span><br>
+    <span class="titulosorden2"><strong class="titulosorden3">SOPORTE:</strong> <?php 
         $idSoporte = $datosPublicidad['id_soporte'] ?? $datosContrato['id_soporte'] ?? null;
         echo $idSoporte ? ($soportesMap[$idSoporte]['nombreIdentficiador'] ?? 'Soporte no encontrado') : 'ID de soporte no disponible';
-    ?><br>
-    <strong>DIRECCIÓN:</strong> <?php 
+    ?></span><br>
+    <span class="titulosordentab"><strong>DIRECCIÓN:</strong> <?php 
     echo $idProveedor ? ($proveedoresMap[$idProveedor]['direccionFacturacion'] ?? 'Dirección no disponible') : 'ID de proveedor no disponible';
-?>
+?></span>
     <br>
     
-    <strong>COMUNA:</strong> <?php 
+    <span class="titulosordentab"><strong>COMUNA:</strong> <?php 
     if ($idProveedor && isset($proveedoresMap[$idProveedor])) {
         $idComuna = $proveedoresMap[$idProveedor]['id_comuna'] ?? null;
         if ($idComuna && isset($comunasMap[$idComuna])) {
@@ -173,162 +354,250 @@ echo htmlspecialchars($mesNombre);
     } else {
         echo 'Información del proveedor no disponible';
     }
-?>
-    <br><br><br>
-    <div class="conborde">AGENCIA DE MEDIOS<br />
-    <strong>AGENCIA CREATIVA:</strong> AGENCIA DE PRUEBAS  </div>
+?></span>
+    <br>
+    
+    <span class="titulosordentab"><strong>AGENCIA CREATIVA:</strong> AGENCIA DE PRUEBAS</span>  
 </td>
   </tr>
 </table>
-<table width="100%" border="0">
-  <tr>
-    <td width="26%"><div class="formatotabla bordered-table">
-      <table width="100%" border="1">
-        <tr>
-          <td ><div class="frtp10" align="center">FORMATO</div></td>
-          <td><div align="center">DETALLE</div></td>
-        </tr>
-        <tr>
-          <td><div class="frtpm10" align="center">TEMA: CARRUSEL </div></td>
-          <td><div align="center">- </div></td>
-        </tr>
-      </table>
-    </div></td>
-    <td width="43%"><div class="formatotabla bordered-table">
 <?php
-// Asumimos que ya tienes $calendarMap y $idCalendar definidos
-
-// Obtener la matriz del calendario para el ID específico
-$matrizCalendario = $calendarMap[$idCalendar] ?? [];
-
-// Procesar la matriz para tener un array indexado por día
-$cantidadesPorDia = [];
-foreach ($matrizCalendario as $entrada) {
-    $cantidadesPorDia[$entrada['dia']] = $entrada['cantidad'];
+function procesarDatosPublicidad($idOrdenPlan, $ordenespuMap, $temasMap, $programasMap) {
+    $datosPorTema = [];
+    
+    // Encontrar la orden específica
+    $ordenActual = null;
+    foreach ($ordenespuMap as $orden) {
+        if ($orden['id_ordenespu'] == $idOrdenPlan) {
+            $ordenActual = $orden;
+            break;
+        }
+    }
+    
+    if (!$ordenActual) return [];
+    
+    // Decodificar el JSON si es necesario
+    $datosRecopilados = is_string($ordenActual['datosrecopilados']) 
+        ? json_decode($ordenActual['datosrecopilados'], true) 
+        : $ordenActual['datosrecopilados'];
+    
+    // Verificar la estructura del nuevo formato
+    if (isset($datosRecopilados['datos']) && is_array($datosRecopilados['datos'])) {
+        $datosRecopilados = $datosRecopilados['datos'];
+    } elseif (!is_array($datosRecopilados)) {
+        error_log("Error: datosrecopilados no es un array válido");
+        return [];
+    }
+    
+    // Agrupar por tema_id
+    foreach ($datosRecopilados as $dato) {
+        $temaId = $dato['tema_id'];
+        
+        // Encontrar el tema en temasMap
+        $temaNombre = '';
+        $temaduracion = '';
+        foreach ($temasMap as $tema) {
+            if ($tema['id'] == $temaId) {
+                $temaNombre = $tema['nombreTema'];
+                $temaduracion = $tema['Duracion'];
+                break;
+            }
+        }
+        
+        // Encontrar el programa
+        $programaInfo = null;
+        foreach ($programasMap as $programa) {
+            if ($programa['id'] == $dato['programa_id']) {
+                $programaInfo = $programa;
+                break;
+            }
+        }
+        
+        // Calcular total de días
+        $totalDias = 0;
+        foreach ($dato['calendario'] as $cal) {
+            $totalDias += $cal['cantidad'];
+        }
+        
+        if (!isset($datosPorTema[$temaId])) {
+            $datosPorTema[$temaId] = [
+                'nombre' => $temaNombre,
+                'duracion' => $temaduracion,
+                'programas' => []
+            ];
+        }
+        
+        $datosPorTema[$temaId]['programas'][] = [
+            'hora' => $programaInfo['horaini'] . ' - ' . $programaInfo['horafn'],
+            'codMegatime' => $programaInfo['codmegatime'],
+            'nombrep' => $programaInfo['descripcion'],
+            'calendario' => $dato['calendario'],
+            'totalDias' => $totalDias,
+            'tarifaBruta' => $dato['valor_bruto'],
+            'descuento' => $dato['descuento'],
+            'tarifaNegociada' => $dato['valor_bruto'],
+            'clasi' => $dato['clasificacion'],
+            'totalNeto' => $dato['valor_neto']
+        ];
+    }
+    
+    return $datosPorTema;
+}
+// Nueva función para calcular los totales
+function calcularTotales($datosProcesados) {
+    $totalNeto = 0;
+    
+    foreach ($datosProcesados as $tema) {
+        foreach ($tema['programas'] as $programa) {
+            $totalNeto += $programa['totalNeto'];
+        }
+    }
+    
+    $iva = $totalNeto * 0.19; // Calcula el IVA del 19%
+    $totalOrden = $totalNeto + $iva; // Total final con IVA
+    
+    return [
+        'totalNeto' => $totalNeto,
+        'iva' => $iva,
+        'totalOrden' => $totalOrden
+    ];
 }
 
-// Determinar el mes y año (usando el primer elemento de la matriz)
-$mes = $matrizCalendario[0]['mes'] ?? date('n');
-$anio = $matrizCalendario[0]['anio'] ?? date('Y');
-
-// Nombres abreviados de los días en español
-$nombresDias = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
-
-// Obtener el número de días en el mes y el día de la semana en que comienza
-$numDias = date('t', mktime(0, 0, 0, $mes, 1, $anio));
-$primerDia = date('w', mktime(0, 0, 0, $mes, 1, $anio));
-
-// Generar la tabla HTML
-$html = '<table border="1" cellpadding="5" cellspacing="0" style="border-collapse: collapse;">';
-
-// Fila de números de días
-$html .= '<tr class="numordenpdf">';
-for ($i = 1; $i <= $numDias; $i++) {
-    $html .= "<th>$i</th>";
+// Función para generar el encabezado del calendario con días de la semana
+function generarEncabezadoCalendario($mes, $anio) {
+    $diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
+    $html = '';
+    
+    // Generar encabezados del calendario
+    for ($dia = 1; $dia <= 31; $dia++) {
+        $fecha = mktime(0, 0, 0, $mes, $dia, $anio);
+        $diaSemana = $diasSemana[date('w', $fecha)];
+        
+        $html .= "
+            <th class='text-center calendario-header'>
+                <div class='dia-semana'>{$diaSemana}</div>
+                <div class='dia-numero'>{$dia}</div>
+            </th>";
+    }
+    
+    return $html;
 }
-$html .= '</tr>';
 
-// Fila de nombres de días
-$html .= '<tr class="numordenpdf2">';
-for ($i = 0; $i < $numDias; $i++) {
-    $diaSemana = ($primerDia + $i) % 7;
-    $html .= "<td>{$nombresDias[$diaSemana]}</td>";
+// Función simplificada para generar las celdas del calendario
+function generarCeldasCalendario($calendario) {
+    $celdasHtml = '';
+    $diasDelMes = 31;
+    
+    // Crear un array asociativo para acceso rápido
+    $calendarioMap = [];
+    foreach ($calendario as $cal) {
+        $key = "{$cal['dia']}-{$cal['mes']}-{$cal['anio']}";
+        $calendarioMap[$key] = $cal['cantidad'];
+    }
+    
+    // Generar celdas solo con las cantidades
+    for ($dia = 1; $dia <= $diasDelMes; $dia++) {
+        $key = "$dia-{$calendario[0]['mes']}-{$calendario[0]['anio']}";
+        $cantidad = isset($calendarioMap[$key]) ? $calendarioMap[$key] : '';
+        $celdasHtml .= "<td class='text-center calendario-celda'>{$cantidad}</td>";
+    }
+    
+    return $celdasHtml;
 }
-$html .= '</tr>';
 
-// Fila de cantidades
-$html .= '<tr class="numordenpdf3">';
-for ($dia = 1; $dia <= $numDias; $dia++) {
-    $cantidad = $cantidadesPorDia[$dia] ?? '';
-    $html .= "<td>$cantidad</td>";
-}
-$html .= '</tr>';
+// Obtener el ID de la orden
+$idOrdenPlan = isset($_GET['id_orden']) ? $_GET['id_orden'] : null;
 
-$html .= '</table>';
-
-// Imprimir la tabla
-echo $html;
+// Procesar los datos
+$datosProcesados = procesarDatosPublicidad($idOrdenPlan, $ordenespuMap, $temasMap, $programasMap);
+// Calcular totales
+$totales = calcularTotales($datosProcesados);
 ?>
-    </div></td>
-    <td width="30%">
-        <table width="100%" class="bordered-table">
-      <tr>
-        <td style="padding:9px;">Avisos </td>
-        <td>Bruto</td>
-        <?php if (!empty($datosContrato['Descuento1']) && $datosContrato['Descuento1'] > 0) : ?>
-    <td>Descto</td>
-  <?php endif; ?>
-        <td>Recargo</td>
-        <td>Tarifa</td>
-        <td>NETO </td>
-      </tr>
-      <tr>
-        <td style="padding:8px;">1</td>
-        <td ><?php echo '$' . number_format($datosContrato['ValorBruto'], 0, ',', '.'); ?></td>
-        <?php if (!empty($datosContrato['Descuento1']) && $datosContrato['Descuento1'] > 0) : ?>
-    <td><?php echo '$' . number_format($datosContrato['Descuento1'], 0, ',', '.'); ?></td>
-  <?php endif; ?>
-        <td>0</td>
-        <td><?php echo '$' . number_format($datosContrato['ValorBruto'], 0, ',', '.'); ?></td>
-        <td><?php echo '$' . number_format($datosContrato['ValorNeto'], 0, ',', '.'); ?></td>
-      </tr>
-      
-    </table></td>
-  </tr>
-  <tr style="border:0px solid; ">
-    <td colspan="2"><strong>Observaciones</strong>
-     <div class="observa"><?php echo $datosContrato['Observaciones'] ?></div>
-    </td>
-    <td><table style="margin-top:30px;" width="100%" border="0">
-      <tr>
-        <td width="14%">&nbsp;</td>
-        <td width="43%"><strong>TOTAL NETO</strong> </td>
-        <td width="43%"><?php echo '$' . number_format($datosContrato['ValorNeto'], 0, ',', '.'); ?></td>
-        </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td><strong>IVA 19%</strong> </td>
-        <td>$<?php
-         $valorTotal = $datosContrato['ValorNeto'];
-         $valorNeto = $valorTotal / 1.19;
-         // Cálculo del IVA
-         $iva = $valorTotal - $valorNeto;
-         $ivaFormateado = number_format($iva, 0, ',', '.');
-         echo $ivaFormateado;
-        ?></td>
-        </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td><strong>TOTAL ORDEN</strong> </td>
-        <td>$<?php
-       $iva = (float)str_replace(['$', '.'], '', $ivaFormateado);
-       $valorTotal2 = $valorTotal + $iva;
-       
-       // Formatear el valor total con separadores de miles
-       $valorTotalFormateado = number_format($valorTotal2, 0, ',', '.');
-       
-       // Mostrar el valor formateado
-       echo $valorTotalFormateado;
-?>
 
-        </td>
+<!-- Tabla HTML -->
+<div class="table-responsive">
+<table id="tabdelcal" class=" table table-bordered">
+    <thead>
+        <tr class="trfound">
+            
+            <th style="width:120px;" rowspan="3">Programas</th>
+            <th rowspan="1">Hora</th>
+            <th rowspan="1">Cod. Megatime</th>
+            <th rowspan="1">Seg/ Clas</th>
+            <?php
+            // Obtener mes y año del primer registro para el encabezado
+            $primerRegistro = $datosProcesados[array_key_first($datosProcesados)]['programas'][0]['calendario'][0];
+            echo generarEncabezadoCalendario($primerRegistro['mes'], $primerRegistro['anio']);
+            ?>
+            <th rowspan="2">Total días</th>
+            <th rowspan="2">Tarifa Bruta</th>
+            <th rowspan="2">Dto</th>
+            <th rowspan="2">Tarifa Negociada</th>
+            <th rowspan="2">TOTAL NETO</th>
         </tr>
-        <tr>
-            <td></td>
-        </tr>
-      <tr>
-
-        <td>&nbsp;</td>
-        <td colspan="2">
-        <br>    
-        <div class="thename">Miguel Llanos</div>
-        <div class="themailx"> miguel@prueba.cl</div>
-</td>
-
-        </tr>
-    </table></td>
-  </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($datosProcesados as $temaId => $tema): ?>
+            <?php foreach ($tema['programas'] as $index => $programa): ?>
+                <tr>
+              
+                    
+                    <td>
+                        <?php if ($index === 0): ?>
+                            <span class="spn1-1"><strong class="spn1-2">TEMA:</strong> <?php echo $tema['nombre']; ?></span><br>
+                        <?php endif; ?>
+                        <?php echo $programa['nombrep']; ?>
+                    </td>
+                    
+                    <td><?php echo $programa['hora']; ?></td>
+                    <td><?php echo $programa['codMegatime']; ?></td>
+                    <td>
+                        <span style="font-weight:bold; " class="titulosordentabpago"><?php echo $tema['duracion']; ?></span><br>
+                        <span style="font-weight:bold; color:#0055ff"><?php
+                        $clasificacionesMap2 = [];
+                        foreach ($clasificaciones as $clasi) {
+                            $clasificacionesMap2[$clasi['id']] = $clasi['NombreClasificacion'];
+                        }
+                        echo isset($clasificacionesMap2[$programa['clasi']])
+                            ? $clasificacionesMap2[$programa['clasi']]
+                            : $programa['clasi'];
+                        ?></span>
+                    </td>
+                    
+                    <?php echo generarCeldasCalendario($programa['calendario']); ?>
+                    
+                    <td class="text-center"><?php echo $programa['totalDias']; ?></td>
+                    <td class="text-end">$<?php echo number_format($programa['tarifaBruta'], 0, ',', '.'); ?></td>
+                    <td class="text-center"><?php echo $programa['descuento']; ?>%</td>
+                    <td class="text-end">$<?php echo number_format($programa['tarifaNegociada'], 0, ',', '.'); ?></td>
+                    <td class="text-end">$<?php echo number_format($programa['totalNeto'], 0, ',', '.'); ?></td>
+                </tr>
+            <?php endforeach; ?>
+        <?php endforeach; ?>
+    </tbody>
 </table>
+</div>
+
+<!-- Nueva tabla de totales -->
+<div class="table-responsive mt-4">
+    <table class="table table-bordered" style="width: auto; margin-left: auto;">
+        <tbody>
+            <tr>
+                <td class="fw-bold">TOTAL NETO:</td>
+                <td class="text-end">$<?php echo number_format($totales['totalNeto'], 0, ',', '.'); ?></td>
+            </tr>
+            <tr>
+                <td class="fw-bold">IVA 19%:</td>
+                <td class="text-end">$<?php echo number_format($totales['iva'], 0, ',', '.'); ?></td>
+            </tr>
+            <tr class="table-active">
+                <td class="fw-bold">TOTAL ORDEN($):</td>
+                <td class="text-end fw-bold">$<?php echo number_format($totales['totalOrden'], 0, ',', '.'); ?></td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
 </div>
 
                         </div>

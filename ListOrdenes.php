@@ -31,7 +31,7 @@ require_once 'componentes/sidebar.php';
                                             <th>Cod Megatime</th>
                                             <th>Tema</th>
                                             <th>Soporte</th>
-                                            <th>Clasificación</th>
+                      
                                             <th>Estado</th>
                                             <th>Acciones</th>
                                         </tr>
@@ -48,7 +48,7 @@ require_once 'componentes/sidebar.php';
                                             <td><?php echo htmlspecialchars($orden['Megatime']); ?></td>
                                             <td><?php echo htmlspecialchars($temasMap[$orden['id_tema']]['NombreTema'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($soportesMap[$orden['id_soporte']]['nombreIdentficiador'] ?? ''); ?></td>
-                                            <td><?php echo htmlspecialchars($clasificacionesMap[$orden['id_clasificacion']]['NombreClasificacion'] ?? ''); ?></td>
+                  
                                             <td>
                                             <div class="alineado">
                                             <label class="custom-switch sino" data-toggle="tooltip" 
@@ -68,6 +68,9 @@ require_once 'componentes/sidebar.php';
                                                         onclick="cargarDatosFormulario(<?php echo $orden['id_ordenes_de_comprar']; ?>);">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>Main Content -->
+                                                    <a class="btn btn-success micono" href="querys/modulos/editarOrden.php?id_plan=<?php echo $orden['id_plan']; ?>&id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>">
+    <i class="fas fa-pencil-alt"></i>
+</a>
                                                 </td>
                                           
                                         </tr>
