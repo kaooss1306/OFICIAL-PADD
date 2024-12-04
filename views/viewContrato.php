@@ -155,7 +155,7 @@ include '../componentes/sidebar.php';
                 <div class="card">
                   <div class="padding-20">
                     <ul class="nav nav-tabs" id="myTab2" role="tablist">
-                      <li class="nav-item">
+                      <li class="nav-item"> 
                         <a class="nav-link active" id="home-tab2" data-bs-toggle="tab" href="#medio" role="tab"
                           aria-selected="true">Información del Contrato</a>
                       </li>
@@ -218,26 +218,26 @@ include '../componentes/sidebar.php';
                             <p class="text-muted"><?php echo $formaPago; ?></p>
                           </div>
                           <div class="col-md-3 col-12 b-r">
-                            <strong>Fecha Inicio</strong>
-                            <br>
-                            <p class="text-muted"><?php
-    // Convertir la cadena de fecha y hora a un objeto DateTime
-    $fecha = new DateTime($contrato['FechaInicio']);
-    
-    // Formatear la fecha como deseas (en este caso, solo la fecha)
-    echo $fecha->format('d-m-Y'); // Esto mostrará la fecha en formato AAAA-MM-DD
-    ?></p>
-                          </div>
-                          <div class="col-md-3 col-12 b-r">
-                            <strong>Fecha de Término</strong>
-                            <br>
-                            <p class="text-muted"><?php
-    // Convertir la cadena de fecha y hora a un objeto DateTime
-    $fecha = new DateTime($contrato['FechaTermino']);
-    
-    // Formatear la fecha como deseas (en este caso, solo la fecha)
-    echo $fecha->format('d-m-Y'); // Esto mostrará la fecha en formato AAAA-MM-DD
-    ?></p>
+                                                        <strong>Fecha Inicio</strong>
+                                                        <br>
+                                                        <p class="text-muted"><?php
+                                // Convertir la cadena de fecha y hora a un objeto DateTime
+                                $fecha = new DateTime($contrato['FechaInicio']);
+                                
+                                // Formatear la fecha como deseas (en este caso, solo la fecha)
+                                echo $fecha->format('d-m-Y'); // Esto mostrará la fecha en formato AAAA-MM-DD
+                                ?></p>
+                                                      </div>
+                                                      <div class="col-md-3 col-12 b-r">
+                                                        <strong>Fecha de Término</strong>
+                                                        <br>
+                                                        <p class="text-muted"><?php
+                                // Convertir la cadena de fecha y hora a un objeto DateTime
+                                $fecha = new DateTime($contrato['FechaTermino']);
+                                
+                                // Formatear la fecha como deseas (en este caso, solo la fecha)
+                                echo $fecha->format('d-m-Y'); // Esto mostrará la fecha en formato AAAA-MM-DD
+                                ?></p>
                           </div>
                         </div>
                         <div class="col-md-12 col-12 b-r">

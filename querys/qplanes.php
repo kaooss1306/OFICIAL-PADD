@@ -22,8 +22,11 @@ function makeRequest($url) {
 }
 
 // Obtener datos
+
+$clasificaciones = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Clasificacion?select=*');          
 $provedorsoportes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/proveedor_soporte?select=*');
 $planes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?select=*');
+$programas = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Programas?select=*');
 $anios = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Anios?select=*');
 $anios2 = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Anios?select=*');
 $meses = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Meses?select=*');
@@ -42,6 +45,27 @@ $calendarMap2 = [];
 $ordenes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenDeCompra?select=*');
 $ordenes2 = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenDeCompra?select=*');
 $ordenepublicidad = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?select=*');
+
+$clasificacionesMap = [];
+foreach ($clasificaciones as $clasi){
+    $clasificacionesMap[] = [
+        'id' => $clasi['id'],
+        'NombreClasificacion' => $clasi['NombreClasificacion']
+    ];
+}
+
+
+
+$ordenespuMap = [];
+foreach ($ordenpublicidad as $ordenpu){
+    $ordenespuMap[] = [
+        'id_ordenespu' => $ordenpu['id_ordenes_de_comprar'],
+        'datosrecopilados' => $ordenpu['datosRecopiladosb'],
+        'idplanorden' => $ordenpu['id_plan'],
+        'tipo_item' => $ordenpu['tipo_item']
+    ];
+}
+
 $ordenMap = [];
 foreach ($ordenes as $orden) {
     $ordenMap[] = [
@@ -69,7 +93,8 @@ foreach ($temas as $tema) {
         'id' => $tema['id_tema'],
         'nombreTema' => $tema['NombreTema'],
         'CodigoMegatime' => $tema['CodigoMegatime'],
-        'id_medio' => $tema['id_medio']
+        'id_medio' => $tema['id_medio'],
+        'Duracion' => $tema['Duracion']
     ];
 }
 }
@@ -88,9 +113,24 @@ foreach ($soportes as $soporte) {
 }
 }
 
+$programasMap = [];
+foreach ($programas as $programa) {
+    $programasMap[] = [
+        'id' => $programa['id'],
+        'descripcion' => $programa['descripcion'],
+        'soporteId' => $programa['soporte_id'],
+        'codmegatime' => $programa['cod_prog_megatime'],
+        'horaini' => $programa['hora_inicio'],
+        'horafn' => $programa['hora_fin']
+    ];
+}
+
 $aniosMap = [];
 foreach ($anios as $anio) {
-    $aniosMap[$anio['id']] = $anio;
+    $aniosMap[$anio['id']] = [
+        'id' => $anio['id'],
+        'years' => $anio['years']
+    ];
 }
 $mesesMap = [];
 foreach ($meses as $mes) {
@@ -104,10 +144,12 @@ foreach ($contratos as $contrato) {
         'id' => $contrato['id'],
         'nombreContrato' => $contrato['NombreContrato'],
         'idCliente' => $contrato['IdCliente'],
-        'idProveedor' => $contrato['IdProveedor'], // Se asegura que el IdProveedor esté aquí
-        'num_contrato' => $contrato['num_contrato']
+        'idProveedor' => $contrato['IdProveedor'], 
+        'num_contrato' => $contrato['num_contrato'],
+        'id_Anio' => $contrato['id_Anio'], 
+        'id_Mes' => $contrato['id_Mes']    
     ];
-}   
+}  
 $clientesMap = [];
 foreach ($clientes as $cliente) {  
     if ($cliente['estado'] === true) {

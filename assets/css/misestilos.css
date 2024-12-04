@@ -281,6 +281,7 @@ body.loading:after {
     font-size: 20px;
     z-index: 10000;
 }
+.trencabezado{border:1px solid black;}
 .card-header.milinea {
     border-bottom: transparent !important;
 }
@@ -299,6 +300,30 @@ body.loading:after {
     text-align: center;
     font-size: 24px;
 }
+.primeracolumnatds {
+  padding:10px;
+  display: grid;
+  grid-template-columns: 170px auto;
+  gap: 5px;
+}
+
+.titulosordentab, .titulosorden2 {
+  display: contents;
+}
+
+.titulosordentab strong, .titulosorden2 strong {
+  /* Mantiene los títulos alineados a la izquierda */
+  text-align: left;
+}
+
+.titulosordentab span:last-child, .titulosorden2 span:last-child {
+  /* Alinea solo las descripciones */
+  text-align: right;
+}
+.titulosordentab{text-transform: uppercase;}
+.titulosorden2{ text-transform: uppercase; color:#0000ff;}
+.titulosorden3{ text-transform: uppercase; color:black;}
+.titulosordentabpago{color:#ff3838;}
 .banner-img i {
     color: #fff;
     font-size: 25px;
@@ -319,23 +344,26 @@ li.items-list-compo i {
     font-size: 15px;
 }
 
-.sinfont {
-    font-weight: 500;
+.sau{text-align: end; padding-right: 10px;}
+.fountun{display: grid; grid-template-columns: auto auto;}
+.sinfont{
+  font-weight: 500;
+
 }
 .btn-narango {
     background: #ef4d36 !important;
 }
-.btn.btn-success.micono,
-.btn.btn-danger.eliminar-producto.micono,
-.btn.btn-danger.micono.eliminar-comision {
-    height: 29px !important;
-    padding-top: 0px !important;
-    padding-bottom: 0px !important;
+
+.btn.btn-success.micono, .btn.btn-danger.eliminar-producto.micono, .btn.btn-danger.micono.eliminar-comision {
+
+  padding-top: 7px !important;
+  padding-bottom: 7px !important;
 }
 .btn.btn-danger.micono.delete-client {
-    height: 28px;
-    padding-top: 0px !important;
-    padding-bottom: 0px !important;
+ 
+  padding-top: 0px !important;
+  padding-bottom: 0px !important;
+
 }
 #tipocliente,
 #region,
@@ -367,9 +395,10 @@ li.items-list-compo i {
     font-size: 20px;
 }
 .btn.btn-primary.micono {
-    height: 29px;
-    padding-top: 7px !important;
-    margin-bottom: 0px !important;
+
+  
+  margin-bottom: 0px !important;
+
 }
 .svg-inline--fa.fa-eye.btn.btn-primary.miconoz,
 .svg-inline--fa.fa-pencil.btn.btn-success.miconoz {
@@ -417,9 +446,17 @@ body {
 .fc-today-button.fc-button.fc-state-default.fc-corner-left.fc-corner-right.fc-state-disabled {
     display: none !important;
 }
+.titulosordentab{color: black;}
 .titulot {
+
+  font-weight: 600 !important;
     font-size: 39px;
+    color: black;
+
 }
+.azul{  font-weight: 600 !important;
+  
+  color: black;}
 .titulot3 {
     text-align: center;
     color: red;

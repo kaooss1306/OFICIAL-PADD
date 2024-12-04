@@ -14,7 +14,9 @@ $avatar_usuario = $_SESSION["user"]["Avatar"] ?? "Usuario";
 $iduser = $_SESSION["user"]["id_usuario"] ?? "Usuario";
 $idPerfil = $_SESSION["user"]["id_perfil"] ?? "Usuario";
 
+
 $ruta = "https://glowing-space-spork-wwxg7rq77rvc5jw9-3000.app.github.dev/";
+
 
 include 'funciones.php';
 

@@ -11,12 +11,32 @@ $user_name = $_SESSION['user_name'];
 include '../qplanes.php';
 
 
-if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id_planes_publicidad'])) {
-    // Obtener el ID del plan de la URL y convertirlo a entero
-    $id_planes_publicidad = (int) $_GET['id_planes_publicidad'];
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    // Verificar primero la existencia de id_plan
+    if (!isset($_GET['id_plan'])) {
+        echo "ID del plan no proporcionado.";
+        exit;
+    }
+
+    // Validar y convertir id_plan
+    $id_planes_publicidad = (int) $_GET['id_plan'];
+
+    // Verificar la existencia de id_orden
+    if (!isset($_GET['id_orden'])) {
+        echo "ID de la orden no proporcionado.";
+        exit;
+    }
+
+    // Validar y convertir id_orden
+    $id_ordenP = (int) $_GET['id_orden'];
+
+    // Verificar que id_ordenP no sea cero después de la conversión
+    if ($id_ordenP === 0) {
+        echo "ID de orden no válido.";
+        exit;
+    }
 
     // Obtener todos los planes desde Supabase
-  
     // Verificar que $planes es un array y tiene datos
     if (!is_array($planes) || empty($planes)) {
         echo "No se obtuvieron datos de los planes.";
@@ -26,7 +46,7 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id_planes_publicidad']))
     // Buscar el plan que coincida con el ID
     $plan = null;
     foreach ($planes as $item) {
-        if ((int) $item['id_planes_publicidad'] === (int) $id_planes_publicidad) {
+        if ((int) $item['id_planes_publicidad'] === $id_planes_publicidad) {
             $plan = $item;
             break;
         }
@@ -38,10 +58,12 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id_planes_publicidad']))
         exit;
     }
 
-   
+    // Ahora puedes usar $id_ordenP con confianza
+    // Realizar las operaciones necesarias con el ID de la orden
 } else {
-    echo "ID del plan no proporcionado.";
+    echo "Método de solicitud no válido.";
 }
+ 
 // Verifica si la respuesta contiene datos
 if (is_array($ordenepublicidad) && !empty($ordenepublicidad)) {
     $id_ordenes_de_comprar = $ordenepublicidad[0]['id_ordenes_de_comprar'];
@@ -296,7 +318,7 @@ border:1px solid #ff0000;
     padding: 50px;">
     <form id="formularioPlan">
                     <!-- Campos del formulario -->
-                    <div><div class="fountun"><div><h3 class="titulo-registro mb-3">Editar Plan</h3> </div><div class="sau titulot2"><span id="selected-month-span"></span><span id="selected-year-span"></span></div></div>
+                    <div><div class="fountun"><div><h3 class="titulo-registro mb-3">Editar Orden</h3> </div><div class="sau titulot2"><span id="selected-month-span"></span><span id="selected-year-span"></span></div></div>
                         
                         <div class="row">
                             <div class="col">
@@ -2153,8 +2175,58 @@ document.addEventListener('DOMContentLoaded', function () {
 </script>
 
 <script>
+function validateForm() {
+    var form = document.getElementById('formularioPlan');
+    var valid = true;
 
+    // Validar campos requeridos
+    var requiredFields = form.querySelectorAll('[required]');
+    requiredFields.forEach(function(field) {
+        if (!field.value.trim()) {
+            valid = false;
+            field.classList.add('is-invalid');
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+
+    // Habilitar o deshabilitar el botón de envío
+    var submitButton = document.getElementById('submitButton');
+    submitButton.disabled = !valid;
+
+    return valid; // Asegúrate de devolver el valor booleano
+}
+
+// Escuchar eventos de entrada y cambio para validar el formulario
+document.getElementById('formularioPlan').addEventListener('input', validateForm);
+document.getElementById('formularioPlan').addEventListener('change', validateForm);
+
+// Validar el formulario cuando se intente enviar
+document.getElementById('formularioPlan').addEventListener('submit', function(event) {
+    if (!validateForm()) {
+        event.preventDefault();  // Evita el envío si el formulario no es válido
+    }
+});
 document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formularioPlan');
+    const submitButton = document.getElementById('submitButton');
+
+    // Prevenir el envío tradicional del formulario
+    form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    if (!validateForm()) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor, completa todos los campos requeridos.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
+    await enviarDatos();
+});
 
 
 // Función para recopilar datos
@@ -2162,145 +2234,196 @@ function recopilarDatos() {
     const grupos = document.querySelectorAll('.programas-temas-group');
     const datosRecopilados = [];
     
+    // Obtener los valores del contrato
+    const mesId = parseInt(document.getElementById('selected-mes').value);
+    const anioId = parseInt(document.getElementById('selected-anio').value);
+    
+    // Variables para calcular totales
+    let valorBrutoTotal = 0;
+    let valorNetoTotal = 0;
+    let descuentoTotal = 0;
+    let valorTotalTotal = 0;
+    
     grupos.forEach(grupo => {
+        const segund = grupo.querySelector('.selected-segundos')?.value || null;
+        const idclasi = grupo.querySelector('.selected-clasi')?.value || null;
         const programaId = grupo.querySelector('.selected-programa-id')?.value || null;
         const temaId = grupo.querySelector('.selected-temas-id')?.value || null;
-        
-        const mesSelector = grupo.querySelector('.mesSelector');
-        const anioSelector = grupo.querySelector('.anioSelector');
+        const valorN = parseFloat(grupo.querySelector('.selected-valorneto')?.value || 0);
+        const valorB = parseFloat(grupo.querySelector('.selected-valorbruto')?.value || 0);
+        const valorT = parseFloat(grupo.querySelector('.selected-valortotal')?.value || 0);
+        const descuentoV = parseFloat(grupo.querySelector('.selected-descuentov')?.value || 0);
         const diasContainer = grupo.querySelector('.diasContainer');
         
-        if (!mesSelector || !anioSelector) {
-            console.warn("Faltan selectores de mes/año en un grupo.");
-            return;
-        }
-        
-        const mesId = parseInt(mesSelector.value);
-        const anioId = parseInt(anioSelector.value);
-        
         if (isNaN(mesId) || isNaN(anioId)) {
-            console.warn("Mes o año no seleccionados en un grupo.");
+            console.warn("Mes o año no disponibles en el contrato.");
             return;
         }
         
         const calendario = [];
-        
-        // Seleccionar todos los inputs del contenedor de días
         const inputs = diasContainer.querySelectorAll('.dia-input');
         
         inputs.forEach(input => {
             if (input.value && input.value.trim() !== '') {
                 calendario.push({
-                    mes: parseInt(input.dataset.mes),
-                    anio: parseInt(input.dataset.anio),
+                    mes: mesId,
+                    anio: anioId,
                     dia: parseInt(input.dataset.dia),
                     cantidad: parseInt(input.value)
                 });
             }
         });
         
+        // Acumular los totales
+        valorBrutoTotal += valorB;
+        valorNetoTotal += valorN;
+        descuentoTotal += descuentoV;
+        valorTotalTotal += valorT;
+        
         datosRecopilados.push({
             programa_id: programaId,
             tema_id: temaId,
-            calendario: calendario
+            clasificacion: idclasi,
+            segundos:segund,
+            calendario: calendario,
+            valor_neto: valorN,
+            valor_bruto: valorB,
+            valor_total: valorT,
+            descuento: descuentoV
         });
     });
     
-    console.log('Datos recopilados:', datosRecopilados);
-    return datosRecopilados;
+    // Crear objeto con los totales
+    const totales = {
+        valor_bruto_total: valorBrutoTotal,
+        valor_neto_total: valorNetoTotal,
+        descuento_total: descuentoTotal,
+        valor_total_total: valorTotalTotal
+    };
+    
+    // Retornar un objeto que contiene los datos y los totales
+    return {
+        datos: datosRecopilados,
+        totales: totales
+    };
 }
 
 
-const id_planes_publicidad = <?php echo json_encode($id_planes_publicidad); ?>;
-console.log(id_planes_publicidad,"asdad" );
-console.log(id_calendar,"asdad2" );
-function enviarDatos() {
-    const datos = recopilarDatos();  // Asegúrate de que recopilarDatos() devuelva los datos correctos para la tabla "json"
 
-    // Usa el id_planes_publicidad ya existente
-    const id_planes_publicidad = document.getElementById('selected-plan-id').value;
-    const id_ordenes_de_comprar = document.getElementById('ordenpublicidad-id').value; // Obtén el valor del campo oculto
-    console.log(id_ordenes_de_comprar,"ORDENES");
-    
 
-        // Preparar los datos para la segunda actualización
+async function enviarDatos() {
+    try {
+        const datos = recopilarDatos();  // Asegúrate de que recopilarDatos() devuelva los datos correctos para la tabla "json"
+
+        // Usa el id_planes_publicidad ya existente
+        const id_planes_publicidad = <?php echo json_encode($id_planes_publicidad); ?>;
+        const id_ordenes_de_comprar = <?php echo json_encode($id_ordenP); ?>;
+        
+        
+        console.log(id_ordenes_de_comprar, "ORDENES");
+        console.log(id_planes_publicidad, "Planes");
+        
+        // Preparar los datos para la actualización de PlanesPublicidad
         const datosPlan = {
+            id_planes_publicidad: id_planes_publicidad,
             NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
-            id_cliente: document.getElementById('selected-client-id').value,
-            id_producto: document.getElementById('selected-product-id').value,
-            id_contrato: document.getElementById('selected-contrato-id').value,
-            id_soporte: document.getElementById('selected-soporte-id').value,
-            detalle: document.getElementById('descripcion').value,
-            id_campania: document.getElementById('selected-campania-id').value,
-            id_temas: document.getElementById('selected-temas-id').value,
-            fr_factura: document.getElementById('forma-facturacion').value,
-            id_calendar: id_calendar, // Usa el id_calendar existente
-            id_planes_publicidad: id_planes_publicidad
+                id_cliente: document.getElementById('selected-client-id').value,
+                id_producto: document.getElementById('selected-product-id').value,
+                id_contrato: document.getElementById('selected-contrato-id').value,
+                id_soporte: document.getElementById('selected-soporte-id').value,
+                detalle: document.getElementById('descripcion').value,
+                id_campania: document.getElementById('selected-campania-id').value,
+                id_temas: document.getElementById('selected-temas-id').value,
+                tipo_item: document.getElementById('selected-tipo').value,                
+                fr_factura: document.getElementById('forma-facturacion').value,
+                estado: '1',
+                datosRecopilados: datos
         };
-        console.log(datosPlan,"datosplan");
-        // Actualización del registro en la tabla "PlanesPublicidad"
-        fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?id_planes_publicidad=eq.${id_planes_publicidad}`, {
+        
+        console.log(datosPlan, "datosplan");
+
+        // Configuración de headers para Supabase
+        const headers = {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc'
+        };
+
+        // Primera solicitud: Actualizar PlanesPublicidad
+        const responsePlan = await fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?id_planes_publicidad=eq.${id_planes_publicidad}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-            },
+            headers: headers,
             body: JSON.stringify(datosPlan)
         });
-    }.then(response => {
-        console.log('Respuesta completa de la actualización del plan:', response);
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-            });
-        }
-        return response.text();
-    })
-    .then(data => {
-        console.log('Actualización del plan exitosa:', data);
 
-        // Preparar los datos para la tercera actualización
+        if (!responsePlan.ok) {
+            const errorText = await responsePlan.text();
+            throw new Error(`HTTP error! status: ${responsePlan.status}, message: ${errorText}`);
+        }
+
+        console.log('Actualización del plan exitosa');
+
+        // Preparar los datos para la actualización de OrdenesDePublicidad (primera parte)
         const datosOrdenpublicidad = {
-            // Agrega los campos necesarios aquí
-            // Ejemplo:
-            id_cliente: document.getElementById('selected-client-id').value,
-            num_contrato: document.getElementById('selected-contrato-id').value,
-            id_proveedor: document.getElementById('selected-proveedor-id').value,
-            id_soporte: document.getElementById('selected-soporte-id').value,
-            id_tema: document.getElementById('selected-temas-id').value,
-            id_plan: id_planes_publicidad,
-            id_calendar: id_calendar,
+            estado: 0,
             id_ordenes_de_comprar: id_ordenes_de_comprar,
-            Megatime: document.getElementById('selected-temas-codigo').value,
-            id_agencia: document.getElementById('selected-campania-agencia').value,
-            id_clasificacion: document.getElementById('selected-id-clasificacion').value === "" ? null : document.getElementById('selected-id-clasificacion').value,
-            numero_orden: document.getElementById('selected-orden-id').value
+            estadoorden: 'Anulada'
         };
 
-        // Actualización del registro en la tabla "OrdenesDePublicidad"
-        return fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?id_ordenes_de_comprar=eq.${id_ordenes_de_comprar}`, {
+        // Segunda solicitud: Actualizar OrdenesDePublicidad (primera parte)
+        const responseOrdenPub1 = await fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?id_ordenes_de_comprar=eq.${id_ordenes_de_comprar}`, {
             method: 'PUT',
             headers: {
-                'Content-Type': 'application/json',
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+                ...headers,
                 'Prefer': 'return=representation'
             },
             body: JSON.stringify(datosOrdenpublicidad)
         });
-    })
-    .then(response => {
-        console.log('Respuesta completa de la actualización de OrdenesDePublicidad:', response);
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-            });
+
+        if (!responseOrdenPub1.ok) {
+            const errorText = await responseOrdenPub1.text();
+            throw new Error(`HTTP error! status: ${responseOrdenPub1.status}, message: ${errorText}`);
         }
-        return response.text();
-    })
-    .then(data => {
-        console.log('Actualización de OrdenesDePublicidad exitosa:', data);
+
+        console.log('Actualización de OrdenesDePublicidad exitosa');
+
+        // Preparar los datos para la nueva orden de publicidad
+        const datosOrdenpublicidad2 = {
+
+            id_cliente: document.getElementById('selected-client-id').value ?? null,
+                num_contrato: document.getElementById('selected-contrato-id').value ?? null,
+                id_proveedor: document.getElementById('selected-proveedor-id').value ?? null,
+                id_soporte: document.getElementById('selected-soporte-id').value ?? null,
+                id_tema: document.getElementById('selected-temas-id').value ?? null,
+                id_plan: id_planes_publicidad,
+                detalle: document.getElementById('descripcion').value ?? null,
+                datosRecopiladosb: datos,
+                tipo_item: document.getElementById('selected-tipo').value ?? null,
+                Megatime: document.getElementById('selected-temas-codigo').value ?? null,
+                id_agencia: document.getElementById('selected-campania-agencia').value ?? null,
+                id_clasificacion: document.getElementById('selected-id-clasificacion').value || null,
+                numero_orden: document.getElementById('selected-orden-id').value ?? null,
+                estado: '1',
+                remplaza: id_ordenes_de_comprar
+        };
+
+        // Tercera solicitud: Crear nueva orden de publicidad
+        const responseNuevaOrden = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad', {
+            method: 'POST',
+            headers: {
+                ...headers,
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(datosOrdenpublicidad2)
+        });
+
+        if (!responseNuevaOrden.ok) {
+            const errorText = await responseNuevaOrden.text();
+            throw new Error(`HTTP error! status: ${responseNuevaOrden.status}, message: ${errorText}`);
+        }
+
+        console.log('Creación de nueva OrdenesDePublicidad exitosa');
+
         Swal.fire({
             title: '¡Éxito!',
             text: 'Los datos se han actualizado correctamente.',
@@ -2308,11 +2431,10 @@ function enviarDatos() {
             confirmButtonText: 'OK'
         }).then((result) => {
             if (result.isConfirmed) {
-                window.location.href = '/ListPlanes.php';
+                window.location.href = '/ListOrdenes.php';
             }
         });
-    })
-    .catch(error => {
+    } catch (error) {
         console.error('Error al actualizar los datos:', error);
         Swal.fire({
             title: 'Error',
@@ -2320,7 +2442,8 @@ function enviarDatos() {
             icon: 'error',
             confirmButtonText: 'OK'
         });
-    });
+    }
+}
 });
 
 </script>

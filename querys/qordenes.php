@@ -23,6 +23,13 @@ function makeRequest($url) {
 
 
 
+    $clasificacionesMap = [];
+foreach ($clasificaciones as $clasi){
+    $clasificacionesMap[] = [
+        'id' => $clasi['id'],
+        'NombreClasificacion' => $clasi['NombreClasificacion']
+    ];
+}
 // Obtener datos
 $ordenes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDeCompra?select=*');
 
@@ -36,7 +43,7 @@ $contratos = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Contr
 
 $proveedores = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Proveedores?select=*');
 
-$clasificaciones= makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Clasificacion?select=*');
+
 
 $ordenesPublicidad = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?select=*');
 
@@ -64,10 +71,6 @@ foreach ($proveedores as $proveedor) {
     $proveedoresMap[$proveedor['id_proveedor']] = $proveedor;
 }
 
-$clasificacionesMap = [];
-foreach ($clasificaciones as $clasificacion) {
-        $clasificacionesMap[$clasificacion['id']] = $clasificacion;
-}
 $ordenesPublicidadMap = [];
 foreach ($ordenesPublicidad as $ordenPublicidad) {
         $ordenesPublicidadMap[$ordenPublicidad['id_ordenes_de_comprar']] = $ordenPublicidad;

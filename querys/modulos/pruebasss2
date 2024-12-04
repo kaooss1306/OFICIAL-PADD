@@ -1,0 +1,198 @@
+// Primero agregamos el código PHP al inicio del archivo para procesar los datos JSON
+<?php
+// Convertir la cadena JSON a un array de PHP
+$datosRecopilados = json_decode($plan['datosRecopilados'], true);
+// Pasar los datos al JavaScript
+echo "<script>const datosRecopilados = " . json_encode($datosRecopilados) . ";</script>";
+?>
+
+// Función para cargar los datos recopilados en el formulario
+function cargarDatosRecopilados() {
+    if (!datosRecopilados || !Array.isArray(datosRecopilados)) return;
+
+    const container = document.getElementById('programasTemasContainer');
+    // Eliminar el grupo inicial si existe
+    const grupoInicial = container.querySelector('.programas-temas-group');
+    if (grupoInicial) {
+        container.removeChild(grupoInicial);
+    }
+
+    // Crear un grupo por cada conjunto de datos
+    datosRecopilados.forEach((dato, index) => {
+        const newGroup = crearGrupoProgramasTemas();
+        container.appendChild(newGroup);
+
+        // Cargar programa
+        const programaInput = newGroup.querySelector('.search-programa');
+        const programaIdInput = newGroup.querySelector('.selected-programa-id');
+        // Aquí deberías hacer una llamada AJAX para obtener el nombre del programa
+        cargarProgramaPorId(dato.programa_id, programaInput, programaIdInput);
+
+        // Cargar tema
+        const temaInput = newGroup.querySelector('.search-temas');
+        const temaIdInput = newGroup.querySelector('.selected-temas-id');
+        // Aquí deberías hacer una llamada AJAX para obtener el nombre del tema
+        cargarTemaPorId(dato.tema_id, temaInput, temaIdInput);
+
+        // Cargar datos del calendario
+        if (dato.calendario && Array.isArray(dato.calendario)) {
+            cargarDatosCalendario(newGroup, dato.calendario);
+        }
+
+        // Mostrar/ocultar botón de eliminar según corresponda
+        const removeButton = newGroup.querySelector('.remove-group-btn');
+        if (removeButton) {
+            removeButton.style.display = index === 0 ? 'none' : 'inline-block';
+        }
+    });
+}
+
+// Función para crear un nuevo grupo de programas y temas
+function crearGrupoProgramasTemas() {
+    const template = `
+        <div class="programas-temas-group">
+            <div class="row">                    
+                <div class="col">
+                    <!-- Código del programa aquí -->
+                </div>
+                <div class="col">   
+                    <!-- Código del tema aquí -->
+                </div>
+            </div>
+            <button type="button" class="add-group-btn" onclick="addProgramasTemasGroup()">+</button>
+            <button type="button" class="remove-group-btn" onclick="removeProgramasTemasGroup(this)">-</button>
+            <div class="calendario">
+                <!-- Código del calendario aquí -->
+            </div>
+        </div>
+    `;
+
+    const div = document.createElement('div');
+    div.innerHTML = template.trim();
+    return div.firstChild;
+}
+
+// Función para cargar los datos del calendario
+function cargarDatosCalendario(group, calendarioData) {
+    calendarioData.forEach(dato => {
+        const mesSelector = group.querySelector('.mesSelector');
+        const anioSelector = group.querySelector('.anioSelector');
+
+        // Establecer mes y año
+        mesSelector.value = dato.mes;
+        anioSelector.value = dato.anio;
+
+        // Trigger para actualizar el calendario
+        const event = new Event('change');
+        mesSelector.dispatchEvent(event);
+
+        // Esperar a que el calendario se actualice
+        setTimeout(() => {
+            // Encontrar el input correspondiente al día y establecer la cantidad
+            const diaInput = group.querySelector(`.dia-input[data-dia="${dato.dia}"][data-mes="${dato.mes}"][data-anio="${dato.anio}"]`);
+            if (diaInput) {
+                diaInput.value = dato.cantidad;
+            }
+        }, 100);
+    });
+}
+
+// Funciones auxiliares para cargar programas y temas por ID
+async function cargarProgramaPorId(id, inputElement, idInput) {
+    try {
+        const response = await fetch(`/api/programa/${id}`);
+        const data = await response.json();
+        inputElement.value = data.nombre;
+        idInput.value = id;
+    } catch (error) {
+        console.error('Error al cargar programa:', error);
+    }
+}
+
+async function cargarTemaPorId(id, inputElement, idInput) {
+    try {
+        const response = await fetch(`/api/tema/${id}`);
+        const data = await response.json();
+        inputElement.value = data.nombre;
+        idInput.value = id;
+    } catch (error) {
+        console.error('Error al cargar tema:', error);
+    }
+}
+
+// Inicializar la carga de datos cuando el documento esté listo
+document.addEventListener('DOMContentLoaded', cargarDatosRecopilados);
+
+
+
+Array
+(
+    [id_planes_publicidad] => 55
+    [NombrePlan] => Prueba registro
+    [id_producto] => 36
+    [id_campania] => 13
+    [id_contrato] => 12
+    [id_temas] => 10
+    [id_soporte] => 1
+    [fr_factura] => afecta
+    [detalle] => 23
+    [id_calendar] => 
+    [id_cliente] => 23
+    [estado] => 1
+    [datosRecopilados] => Array
+        (
+            [0] => Array
+                (
+                    [tema_id] => 10
+                    [calendario] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [dia] => 12
+                                    [mes] => 1
+                                    [anio] => 19
+                                    [cantidad] => 33
+                                )
+
+                            [1] => Array
+                                (
+                                    [dia] => 14
+                                    [mes] => 1
+                                    [anio] => 19
+                                    [cantidad] => 1
+                                )
+
+                            [2] => Array
+                                (
+                                    [dia] => 15
+                                    [mes] => 1
+                                    [anio] => 19
+                                    [cantidad] => 45
+                                )
+
+                        )
+
+                    [programa_id] => 1
+                )
+
+            [1] => Array
+                (
+                    [tema_id] => 3
+                    [calendario] => Array
+                        (
+                            [0] => Array
+                                (
+                                    [dia] => 1
+                                    [mes] => 1
+                                    [anio] => 15
+                                    [cantidad] => 22
+                                )
+
+                        )
+
+                    [programa_id] => 2
+                )
+
+        )
+
+)
