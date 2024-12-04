@@ -15,7 +15,8 @@
             <li class="dropdown active">
               <a href="<?php echo $ruta; ?>dashboard.php" class="nav-link"><i data-feather="monitor"></i><span>Panel de Inicio</span></a>
             </li>
-            <li class="dropdown">
+            <?php if ($mostrarMenuComercial): ?>
+            <li class="dropdown comercial">
               <a href="#" class="menu-toggle nav-link has-dropdown fondo"><i
                   data-feather="briefcase"></i><span>Área Comercial</span></a>
               <ul class="dropdown-menu">
@@ -27,6 +28,7 @@
                 <li><a class="nav-link" href="<?php echo $ruta; ?>ListSoportes.php">Soportes</a></li>
               </ul>
             </li>
+            <?php endif; ?>
             <li class="dropdown">
               <a href="#" class="menu-toggle nav-link has-dropdown fondo"><i data-feather="pie-chart"></i><span>Planificación de Medios</span></a>
               <ul class="dropdown-menu">
@@ -44,12 +46,14 @@
                 <li><a class="nav-link" href="<?php echo $ruta; ?>ListAvisos.php">Mensajes</a></li>
               </ul>
             </li>
-            <li class="dropdown">
+            <?php if ($mostrarMenuUsuarios): ?>
+            <li class="dropdown users">
               <a href="#" class="menu-toggle nav-link has-dropdown fondo"><i data-feather="user-check"></i><span>Usuarios</span></a>
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="ListUsuarios.php">Listado de Usuarios</a></li>
               </ul>
             </li>
+            <?php endif; ?>
             <li class="dropdown">
               <a href="#" class="menu-toggle nav-link has-dropdown fondo"><i
                   data-feather="image"></i><span>Mi Perfíl</span></a>
