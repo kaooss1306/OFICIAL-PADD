@@ -11,22 +11,155 @@ $nombre_usuario = $_SESSION["user"]["Nombres"] ?? "Usuario";
 
 // Capturar correo de usuario
 $correoUsuario = $_SESSION['user_email'] ?? 'Correo No Disponible';
-include 'componentes/header.php';
 include '../qplanes.php';
-include 'componentes/sidebar.php';
+
+
+if ($_SERVER["REQUEST_METHOD"] == "GET") {
+    // Verificar la existencia de id_orden
+    if (!isset($_GET['id_orden'])) {
+        echo "ID de la orden no proporcionado.";
+        exit;
+    }
+    
+    // Validar y convertir id_orden
+    $id_ordenP = (int) $_GET['id_orden'];
+    
+    // Verificar que id_ordenP no sea cero después de la conversión
+    if ($id_ordenP === 0) {
+        echo "ID de orden no válido.";
+        exit;
+    }
+    
+    // Buscar en $ordenespuMap para obtener el ID del plan
+    $planEncontrado = null;
+    foreach ($ordenespuMap as $orden) {
+        if ($orden['id_ordenespu'] === $id_ordenP) {
+            $planEncontrado = $orden['idplanorden'];
+            break;
+        }
+    }
+    
+    // Verificar que $planEncontrado no sea null
+    if ($planEncontrado === null) {
+        echo "No se encontró un plan para la orden " . $id_ordenP;
+        exit;
+    }
+    
+    // Buscar el plan completo en $planes
+    $plan = null;
+    foreach ($planes as $item) {
+        if ((int) $item['id_planes_publicidad'] === (int) $planEncontrado) {
+            $plan = $item;
+            break;
+        }
+    }
+    
+    // Verifica si se encontró el plan
+    if ($plan === null) {
+        echo "No se encontró el plan publicitario.";
+        exit;
+    }
+    
+       
+} else {
+    echo "Método de solicitud no válido.";
+}
+ 
+// Verifica si la respuesta contiene datos
+if (is_array($ordenepublicidad) && !empty($ordenepublicidad)) {
+    $id_ordenes_de_comprar = $ordenepublicidad[0]['id_ordenes_de_comprar'];
+    $id_ordenes_de_comprar2 = $ordenepublicidad[0]['id_agencia'];
+    $id_ordenes_de_comprar3 = $ordenepublicidad[0]['num_contrato'];
+    $id_ordenes_de_comprar4 = $ordenepublicidad[0]['id_proveedor'];
+    $id_ordenes_de_comprar5 = $ordenepublicidad[0]['Megatime'];
+    $id_ordenes_de_comprar6 = $ordenepublicidad[0]['id_clasificacion'];
+    $id_ordenes_de_comprar7 = $ordenepublicidad[0]['numero_orden'];
+
+    
+
+ 
+    $nombreOrdenx = isset($ordenMap[$id_ordenes_de_comprar7]) ? $ordenMap[$id_ordenes_de_comprar7]['NombreOrden'] : 'Nombre no disponible';
+
+} else {
+    $id_ordenes_de_comprar = null; // O algún valor por defecto si no se encuentra el dato
+    $id_ordenes_de_comprar2 = null;
+    $id_ordenes_de_comprar3 = null;
+    $id_ordenes_de_comprar4 = null;
+}
 
 // Verificar si $mesesMap y $aniosMap están disponibles
 if (!isset($mesesMap) || !isset($aniosMap)) {
     die("Error: No se pudieron obtener los datos de meses y años.");
 }
+$id_producto = $plan['id_producto'];
+$nombreProducto = isset($productosMap2[$id_producto]) ? $productosMap2[$id_producto] : "Nombre no disponible";
+$id_cliente = $plan['id_cliente'];
 
+// Obtener el nombre del cliente basado en el ID
+$nombreCliente = isset($clientesMap2[$id_cliente]) ? $clientesMap2[$id_cliente] : "Nombre no disponible";
+$id_contrato = $plan['id_contrato'];
+
+$contratoSeleccionado = null;
+foreach ($contratosMap as $contrato) {
+    if ($contrato['id'] == $id_contrato) {
+        $contratoSeleccionado = $contrato;
+        break;
+    }
+}
+
+// Si se encontró el contrato, puedes extraer sus variables
+if ($contratoSeleccionado) {
+    $nombreContrato = $contratoSeleccionado['nombreContrato'];
+    $idProveedor = $contratoSeleccionado['idProveedor'];
+    $numContrato = $contratoSeleccionado['num_contrato'];
+    $idCliente = $contratoSeleccionado['idCliente'];
+    $idAnio = $contratoSeleccionado['id_Anio'];
+    $idMes = $contratoSeleccionado['id_Mes'];
+}
+
+
+
+
+$id_soporte = $plan['id_soporte'];
+
+// Obtener el nombre del soporte basado en el ID
+$nombreSoporte = isset($soportesMap2[$id_soporte]) ? $soportesMap2[$id_soporte] : "Nombre no disponible";
+$id_campania = $plan['id_campania'];
+
+// Obtener el nombre de la campaña basado en el ID
+$nombreCampania = isset($campaignsMap2[$id_campania]) ? $campaignsMap2[$id_campania] : "Nombre no disponible";
+$id_tema = $plan['id_temas'];
+$programas = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Programas?select=*');
+// Obtener el nombre del tema basado en el ID
+$nombreTema = isset($temasMap2[$id_tema]['NombreTema']) ? $temasMap2[$id_tema]['NombreTema'] : "Nombre no disponible";
+$idMedio = isset($temasMap2[$id_tema]['id_medio']) ? $temasMap2[$id_tema]['id_medio'] : "ID Medio no disponible";
+$selectedFrFactura = $plan['fr_factura'];
+// Ejemplo de datos obtenidos de la base de datos (asumiendo JSON decode)
+$datosRecopilados = $plan['datosRecopilados']['datos'];
+$tipoitem = $plan['tipo_item'];
+// Mapear los datos recopilados a un formato utilizable en el formulario
+$programasTemasData = [];
+foreach ($datosRecopilados as $dato) {
+    $programasTemasData[] = [
+        'programa_id' => $dato['programa_id'],
+        'tema_id' => $dato['tema_id'],
+        'calendario' => $dato['calendario'],
+        'descuento' => $dato['descuento'],
+        'valor_neto' => $dato['valor_neto'],
+        'valor_bruto' => $dato['valor_bruto'],
+        'segundos' => $dato['segundos'],
+        'clasificacion' => $dato['clasificacion'],
+        'valor_total' => $dato['valor_total']
+    ];
+}
 
 include '../../componentes/header.php';
 
 include '../../componentes/sidebar.php';
 ?>
 <style>
-
+.nameusu{color: #6878f2; font-weight: 700; font-size: 20px;}
+.correusu{font-size:16px; color:black;}
 /* Para navegadores Webkit (Chrome, Safari, etc.) */
 input[type="number"]::-webkit-outer-spin-button,
 input[type="number"]::-webkit-inner-spin-button {
@@ -38,8 +171,7 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
     -moz-appearance: textfield;
 }
-.nameusu{color: #6878f2; font-weight: 700; font-size: 20px;}
-.correusu{font-size:16px; color:black;}
+
   .calendario .selectores {
     display: none; /* Oculta los selectores */
 }
@@ -178,6 +310,7 @@ border:1px solid #ff0000;
     <ol class="breadcrumb">
       <li class="breadcrumb-item"><a href="<?php echo $ruta; ?>dashboard">Home</a></li>
       <li class="breadcrumb-item"><a href="<?php echo $ruta; ?>ListPlanes.php">Ver Planes</a></li>
+      <li class="breadcrumb-item active" aria-current="page"><?php echo $plan['NombrePlan']; ?></li>
     </ol>
   </nav>
     <section class="section">
@@ -187,7 +320,7 @@ border:1px solid #ff0000;
     padding: 50px;">
     <form id="formularioPlan">
                     <!-- Campos del formulario -->
-                    <div><div class="fountun"><div><h3 class="titulo-registro mb-3">Agregar Plan</h3> </div><div class="sau titulot2"><span id="selected-month-span"></span><span id="selected-year-span"></span></div></div>
+                    <div><div class="fountun"><div><h3 class="titulo-registro mb-3">Editar Orden</h3> </div><div class="sau titulot2"><span id="selected-month-span"></span><span id="selected-year-span"></span></div></div>
                         
                         <div class="row">
                             <div class="col">
@@ -201,12 +334,15 @@ border:1px solid #ff0000;
         <div class="input-group-prepend">
             <span class="input-group-text"><i class="bi bi-person"></i></span>
         </div>
-        <input class="form-control" type="text" id="search-client" placeholder="Buscar cliente..." oninput="filterClients()" required>
+        <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreCliente); ?>" id="search-client" placeholder="Buscar cliente..." oninput="filterClients()" required>
         <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
         <div class="invalid-feedback">
     Por favor, seleccione un cliente.
 </div>
-        <input type="hidden" id="selected-client-id" name="selected-client-id">
+        <input  type="hidden"  id="selected-client-id" value="<?php echo $id_cliente; ?>" name="selected-client-id" >
+                                            <input type="hidden"  id="selected-calendar-id" value="<?php echo $plan['id_calendar']; ?>" name="selected-calendar-id" >
+                                            <input type="hidden" id="selected-plan-id" value="<?php echo $id_planes_publicidad; ?>" name="selected-plan-id" >
+                                            <input   type="hidden" id="ordenpublicidad-id" value="<?php echo htmlspecialchars($id_ordenes_de_comprar); ?>" name="ordenpublicidad-id" >
     </div>
     <ul id="client-list" class="client-dropdown">
         <!-- Aquí se mostrarán las opciones filtradas -->
@@ -218,7 +354,7 @@ border:1px solid #ff0000;
                                         <div class="input-group-prepend">
                                             <span class="input-group-text"><i class="bi bi-tag"></i></span>
                                         </div>
-                                        <input class="form-control" placeholder="Nombre de Plan" name="nombrePlan" required>
+                                        <input class="form-control" placeholder="Nombre de Plan" value="<?php echo $plan['NombrePlan']; ?>" name="nombrePlan" required>
                                     </div>
 
                                 <div class="row"> 
@@ -230,28 +366,28 @@ border:1px solid #ff0000;
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-box"></i></span>
                                                 </div>
-                                                <input class="form-control" type="text" id="search-product" placeholder="Buscar producto..." required>
+                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreProducto); ?>" id="search-product" placeholder="Buscar producto..." required>
                                                 <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
-                                                <input type="hidden" id="selected-product-id" name="selected-product-id">
+                                                <input type="hidden" id="selected-product-id" value="<?php echo $plan['id_producto']; ?>" name="selected-product-id">
                                             </div>
                                             <ul id="product-list" class="client-dropdown">
                                                 <!-- Aquí se mostrarán las opciones filtradas -->
                                             </ul>
                                         </div>
                             
-                                            <label class="labelforms" for="id_contrato">Contrato</label>
+                                        <label class="labelforms" for="id_contrato">Contrato</label>
                                                         <div class="custom-select-container">
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
                                                                 </div>
-                                                                <input class="form-control" type="text" id="search-contrato" placeholder="Buscar contrato..." required>
+                                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreContrato); ?>" id="search-contrato" placeholder="Buscar contrato..." required>
                                                                 <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
-                                                                <input type="hidden"  id="selected-contrato-id" name="selected-contrato-id">
-                                                                <input type="hidden"  id="selected-proveedor-id" name="selected-proveedor-id">
-                                                                <input type="hidden"  id="selected-num-contrato" name="selected-num-contrato">
-                                                                <input type="hidden" class="selected-anio" id="selected-anio" name="selected-anio">
-                                                                <input type="hidden" class="selected-mes" id="selected-mes" name="selected-mes">
+                                                                <input type="hidden"  id="selected-contrato-id" value="<?php echo htmlspecialchars($id_contrato); ?>" name="selected-contrato-id">
+                                                                <input type="hidden"  id="selected-proveedor-id" value="<?php echo htmlspecialchars($idProveedor); ?>" name="selected-proveedor-id">
+                                                                <input type="hidden"  id="selected-num-contrato" value="<?php echo htmlspecialchars($numContrato); ?>" name="selected-num-contrato">
+                                                                <input type="hidden" class="selected-anio" value="<?php echo htmlspecialchars($idAnio); ?>" id="selected-anio" name="selected-anio">
+                                                                <input type="hidden" class="selected-mes" value="<?php echo htmlspecialchars($idMes); ?>" id="selected-mes" name="selected-mes">
                                                                                                             </div>
                                                             <ul id="contrato-list" class="client-dropdown">
                                                                 <!-- Aquí se mostrarán las opciones filtradas -->
@@ -265,9 +401,9 @@ border:1px solid #ff0000;
                                                 <div class="input-group-prepend">
                                                     <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
                                                 </div>
-                                                <input class="form-control" type="text" id="search-soporte" placeholder="Buscar soporte..." required>
+                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreSoporte); ?>" id="search-soporte" placeholder="Buscar soporte..." required>
                                                 <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
-                                                <input type="hidden" id="selected-soporte-id" name="selected-soporte-id" value="">
+                                                <input type="hidden" id="selected-soporte-id" value="<?php echo $plan['id_soporte']; ?>" name="selected-soporte-id" value="">
                                             </div>
                                             <ul id="soporte-list" class="client-dropdown">
                                                 <!-- Aquí se mostrarán las opciones filtradas -->
@@ -287,10 +423,10 @@ border:1px solid #ff0000;
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text"><i class="bi bi-bullseye"></i></span>
                                                                 </div>
-                                                                <input class="form-control" type="text" id="search-campania" placeholder="Buscar campaña..." required>
+                                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreCampania); ?>" id="search-campania" placeholder="Buscar campaña..." required>
                                                                 <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
-                                                                <input type="hidden" id="selected-campania-id" name="selected-campania-id">
-                                                                <input type="hidden" id="selected-campania-agencia" name="selected-campania-agencia">
+                                                                <input  type="hidden"  id="selected-campania-id" name="selected-campania-id" value="<?php echo $plan['id_campania']; ?>">
+                                                                <input type="hidden"  id="selected-campania-agencia" name="selected-campania-agencia" value="<?php echo htmlspecialchars($id_ordenes_de_comprar2); ?>">
                                                             </div>
                                                             <ul id="campania-list" class="client-dropdown">
                                                                 <!-- Aquí se mostrarán las opciones filtradas -->
@@ -302,9 +438,9 @@ border:1px solid #ff0000;
                                                                 <div class="input-group-prepend">
                                                                     <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
                                                                 </div>
-                                                                <input class="form-control" type="text" id="search-orden" placeholder="Buscar Orden..." required>
+                                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreOrdenx); ?>" id="search-orden" placeholder="Buscar Orden..." required>
                                                                 <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
-                                                                <input  type="hidden"  id="selected-orden-id" name="selected-orden-id">
+                                                                <input  type="hidden"  id="selected-orden-id" value="<?php echo htmlspecialchars($id_ordenes_de_comprar7); ?>" name="selected-orden-id">
                                                             </div>
                                                             <ul id="orden-list" class="client-dropdown">
                                                                 <!-- Aquí se mostrarán las opciones filtradas -->
@@ -316,12 +452,12 @@ border:1px solid #ff0000;
                                                                                                     <div class="input-group-prepend">
                                                                                                             <span class="input-group-text"><i class="bi bi-person"></i></span>
                                                                                                         </div>
-                                                                                                    <select id="forma-facturacion" name="forma-facturacion" class="form-control" required>
-                                                                                                        <option value="" disabled selected>Selecciona una opción</option>
-                                                                                                        <option value="afecta">Afecta</option>
-                                                                                                        <option value="exenta">Exenta</option>
-                                                                                                        <option value="exportacion">Exportación</option>
-                                                                                                    </select>
+                                                                                                        <select id="forma-facturacion" name="forma-facturacion" class="form-control">
+    <option value="" disabled <?php echo ($selectedFrFactura === '') ? 'selected' : ''; ?>>Selecciona una opción</option>
+    <option value="afecta" <?php echo ($selectedFrFactura === 'afecta') ? 'selected' : ''; ?>>Afecta</option>
+    <option value="exenta" <?php echo ($selectedFrFactura === 'exenta') ? 'selected' : ''; ?>>Exenta</option>
+    <option value="exportacion" <?php echo ($selectedFrFactura === 'exportacion') ? 'selected' : ''; ?>>Exportación</option>
+</select>
                                                                                                 </div>
 
                                                      
@@ -492,7 +628,7 @@ border:1px solid #ff0000;
             </div>
             <!-- Aquí se reemplaza el input por un select -->
             <select id="selected-tipo" class="form-control selected-tipo" name="selected-tipo">
-                <option value="" disabled selected>Escoge el tipo de ítem</option>
+                <option value="<?php echo $plan['tipo_item']; ?>" disabled selected><?php echo $plan['tipo_item']; ?></option>
                 <option value="AUSPICIO">AUSPICIO</option>
                 <option value="PAUTA LIBRE">PAUTA LIBRE</option>
                 <option value="VPS">VPS</option>
@@ -511,7 +647,7 @@ border:1px solid #ff0000;
                                      <div class="col">
                                             <label for="descripcion" class="labelforms">Detalle</label>
                                             <div class="custom-textarea-container">
-                                                <textarea id="descripcion" name="descripcion" class="form-control" rows="4" placeholder="Introduce la detalle aquí..."></textarea>
+                                                <textarea id="descripcion" name="descripcion" class="form-control" rows="4" placeholder="Introduce la detalle aquí..."><?php echo $plan['detalle']; ?></textarea>
                                             </div>
                                             
                                      </div>
@@ -524,7 +660,7 @@ border:1px solid #ff0000;
         <span class="nameusu"><?php echo $nombre_usuario ?></span><br>
         <span class="correusu"><?php echo $correoUsuario ?></span>
     </div>
-</div>
+</div>                 
                                                             
 
 
@@ -547,97 +683,255 @@ border:1px solid #ff0000;
     </section>
 </div>
 
+
 <script>
-// Obtiene el checkbox y el contenedor del código
-const checkbox = document.getElementById('mostrarDescuento');
-const container = document.getElementById('descuento-container');
+// ACA EMPIEZA LA LOGICA DE LOS BUSCADORES INCLUIDO EL INITIALIZE CALENDAR
+ // Pasar datos PHP a JavaScript
+const programasTemasData = <?php echo json_encode($programasTemasData); ?>;
+const clasificacionesMap = <?php echo json_encode($clasificaciones); ?>;
+const programasMap = <?php echo json_encode($programas); ?>;
+const mesesMap = <?php echo json_encode($mesesMap); ?>;
+const aniosMap = <?php echo json_encode($aniosMap); ?>;
+// Función para cargar los datos iniciales
+// Función mejorada para cargar los datos iniciales
 
-// Agrega un evento de cambio al checkbox
-checkbox.addEventListener('change', () => {
-  // Si el checkbox está seleccionado, muestra el contenedor del código
-  if (checkbox.checked) {
-    container.style.display = 'block';
-  } else {
-    // Si el checkbox no está seleccionado, oculta el contenedor del código
-    container.style.display = 'none';
-  }
-});
+// Función para cargar los spans con los valores de año y mes
+function cargarAñoMesSpans() {
+    const yearSpan = document.getElementById("selected-year-span");
+    const monthSpan = document.getElementById("selected-month-span");
+    
+    // Obtener los valores de los campos ocultos
+    const selectedAnio = document.getElementById("selected-anio").value;
+    const selectedMes = document.getElementById("selected-mes").value;
 
-function validateForm() {
-    var form = document.getElementById('formularioPlan');
-    var valid = true;
+    // Verificar si aniosMap y mesesMap están definidos (asegúrate de que estén disponibles)
+    if (yearSpan && aniosMap && aniosMap[selectedAnio]) {
+        yearSpan.textContent = aniosMap[selectedAnio].years || 'N/A';
+    }
 
-    // Validar campos requeridos
-    var requiredFields = form.querySelectorAll('[required]');
-    requiredFields.forEach(function(field) {
-        if (!field.value.trim()) {
-            valid = false;
-            field.classList.add('is-invalid');
-        } else {
-            field.classList.remove('is-invalid');
-        }
-    });
-
-    // Habilitar o deshabilitar el botón de envío
-    var submitButton = document.getElementById('submitButton');
-    submitButton.disabled = !valid;
-
-    return valid; // Asegúrate de devolver el valor booleano
+    if (monthSpan && mesesMap && mesesMap[selectedMes]) {
+        monthSpan.textContent = mesesMap[selectedMes].Nombre + ' / ' || 'N/A';
+    }
 }
 
-// Escuchar eventos de entrada y cambio para validar el formulario
-document.getElementById('formularioPlan').addEventListener('input', validateForm);
-document.getElementById('formularioPlan').addEventListener('change', validateForm);
-
-// Validar el formulario cuando se intente enviar
-document.getElementById('formularioPlan').addEventListener('submit', function(event) {
-    if (!validateForm()) {
-        event.preventDefault();  // Evita el envío si el formulario no es válido
-    }
+// Llamar a la función cuando la página se cargue
+document.addEventListener('DOMContentLoaded', function() {
+    cargarAñoMesSpans();
 });
-</script>
 
-<script>
+function loadCalendarData(group, calendarioData) {
+    if (!calendarioData || calendarioData.length === 0) {
+        console.log('No hay datos de calendario para cargar');
+        return;
+    }
+    
+    // Obtener mes y año predefinidos de los campos ocultos
+    const mesId = document.getElementById('selected-mes').value;
+    const anioId = document.getElementById('selected-anio').value;
+        
+    // Establecer mes y año en los selectores (si es necesario)
+    const mesSelector = group.querySelector('.mesSelector');
+    const anioSelector = group.querySelector('.anioSelector');
+    
+    if (mesSelector && anioSelector) {
+        mesSelector.value = mesId;
+        anioSelector.value = anioId;
+        
+        // Disparar eventos change para generar el calendario
+        mesSelector.dispatchEvent(new Event('change'));
+        anioSelector.dispatchEvent(new Event('change'));
+    }
+       // Poblar los datos del calendario con un pequeño retraso
+    setTimeout(() => {
+        calendarioData.forEach(registro => {
+            // Verificar que el mes del registro coincida con el mes seleccionado
+            if (registro.mes.toString() === mesId) {
+                // Selector para encontrar el input del día específico
+                const selector = `.dia-input[data-dia="${registro.dia}"][data-mes="${mesId}"][data-anio="${anioId}"]`;
+                const diaInput = group.querySelector(selector);
+                
+                if (diaInput) {
+                    diaInput.value = registro.cantidad;
+                    // Disparar evento input para activar cualquier listener
+                    diaInput.dispatchEvent(new Event('input', { bubbles: true }));
+                    console.log(`Llenando día ${registro.dia} con cantidad ${registro.cantidad}`);
+                } else {
+                    console.warn('No se encontró input para:', { selector, registro });
+                }
+            } else {
+                console.log(`Registro de día ${registro.dia} no coincide con mes actual (${mesId})`);
+            }
+        });
+    }, 500);
+}
 
-function validateDynamicField(fieldId) {
-    var field = document.getElementById(fieldId);
-    if (!field.value.trim()) {
-        field.classList.add('is-invalid');
-        return false;
+function initializeValoresCalculator(group) {
+    const inputValorNeto = group.querySelector('.selected-valorneto');
+    const inputValorBruto = group.querySelector('.selected-valorbruto');
+    const inputDescuento = group.querySelector('.selected-descuentov');
+    const inputValorTotal = group.querySelector('.selected-valortotal');
+
+    if (!inputValorNeto || !inputValorBruto || !inputDescuento || !inputValorTotal) {
+        console.error("Error: No se pudieron encontrar todos los inputs necesarios en el grupo");
+        return;
+    }
+
+    const calcularValores = () => {
+        const valorNeto = parseFloat(inputValorNeto.value) || 0;
+        const valorBruto = Math.round(valorNeto * 1.19);
+        const descuento = parseFloat(inputDescuento.value) || 0;
+        const valorTotal = Math.max(0, valorBruto - descuento);
+
+        inputValorBruto.value = valorBruto;
+        inputValorTotal.value = valorTotal;
+
+        // Actualizar totales globales
+        updateTotalesGlobales();
+    };
+
+    // Agregar event listeners
+    inputValorNeto.addEventListener('input', calcularValores);
+    inputDescuento.addEventListener('input', calcularValores);
+}
+function updateTotalesGlobales() {
+    const grupos = document.querySelectorAll('.programas-temas-group');
+    const divTotales = document.querySelector('.totalestotales');
+    
+    if (!divTotales) {
+        console.error("No se encontró el div con clase 'totalestotales'");
+        return;
+    }
+
+    let totalValorNeto = 0;
+    let totalValorBruto = 0;
+    let totalDescuento = 0;
+    let totalValorTotal = 0;
+
+    // Calcular totales 
+    grupos.forEach((grupo, index) => {
+        const valorNeto = parseFloat(grupo.querySelector('.selected-valorneto').value) || 0;
+        const valorBruto = parseFloat(grupo.querySelector('.selected-valorbruto').value) || 0;
+        const descuento = parseFloat(grupo.querySelector('.selected-descuentov').value) || 0;
+        const valorTotal = parseFloat(grupo.querySelector('.selected-valortotal').value) || 0;
+
+        totalValorNeto += valorNeto;
+        totalValorBruto += valorBruto;
+        totalDescuento += descuento;
+        totalValorTotal += valorTotal;
+    });
+
+    // Mostrar totales globales en tabla
+    divTotales.innerHTML = `
+        <table class="finishtab table table-bordered" style="width: auto; margin-left: auto;">
+            <tbody>
+                <tr>
+                    <td class="fw-bold">Valor Neto Total:</td>
+                    <td class="text-end">$${totalValorNeto.toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Valor Bruto Total:</td>
+                    <td class="text-end">$${totalValorBruto.toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Descuento Total:</td>
+                    <td class="text-end">$${totalDescuento.toLocaleString()}</td>
+                </tr>
+                <tr class="table-active">
+                    <td class="fw-bold">Valor Total General:</td>
+                    <td class="text-end fw-bold">$${totalValorTotal.toLocaleString()}</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+}
+
+function loadInitialData(programasTemasData) {
+    const container = document.getElementById('programasTemasContainer');
+    
+    // Eliminar todos los grupos existentes excepto el primero
+    const groups = container.querySelectorAll('.programas-temas-group');
+    for (let i = 1; i < groups.length; i++) {
+        groups[i].remove();
+    }
+    
+    // Cargar cada conjunto de datos
+    programasTemasData.forEach((data, index) => {
+        // Si no es el primer conjunto, crear un nuevo grupo
+        if (index > 0) {
+            addProgramasTemasGroup();
+        }
+        
+        // Obtener el grupo actual
+        const groups = container.querySelectorAll('.programas-temas-group');
+        const currentGroup = groups[index];
+        
+        // Cargar datos del programa
+        const searchProgramaInput = currentGroup.querySelector('.search-programa');
+        const selectedProgramaIdInput = currentGroup.querySelector('.selected-programa-id');
+        const programa = programasMap.find(p => p.id.toString() === data.programa_id);
+        if (programa) {
+            searchProgramaInput.value = programa.descripcion;
+            selectedProgramaIdInput.value = programa.id;
+            currentGroup.querySelector('#hora-inicio').value = programa['hora_inicio'];
+            currentGroup.querySelector('#hora-fin').value = programa['hora_fin'];
+        }
+
+          // Cargar datos de clasificación
+          const searchClasificacionInput = currentGroup.querySelector('#search-clasificacion');
+        const selectedClasificacionInput = currentGroup.querySelector('.selected-clasi');
+        const clasificacion = clasificacionesMap.find(c => c.id.toString() === data.clasificacion);
+        if (clasificacion) {
+            searchClasificacionInput.value = clasificacion.NombreClasificacion;
+            selectedClasificacionInput.value = clasificacion.id;
+        }
+        
+        // Cargar datos del tema
+        const searchTemasInput = currentGroup.querySelector('.search-temas');
+        const selectedTemasIdInput = currentGroup.querySelector('.selected-temas-id');
+        const tema = temasMap.find(t => t.id.toString() === data.tema_id);
+        if (tema) {
+            searchTemasInput.value = tema.nombreTema;
+            selectedTemasIdInput.value = tema.id;
+            currentGroup.querySelector('#selected-temas-codigo').value = tema.CodigoMegatime;
+            currentGroup.querySelector('#selected-id-medio').value = tema.id_medio;
+            currentGroup.querySelector('#selected-segundos').value = tema.Duracion;
+
+        }
+
+       
+        
+        // Cargar valores monetarios
+        currentGroup.querySelector('.selected-valorneto').value = data.valor_neto || '';
+        currentGroup.querySelector('.selected-valorbruto').value = data.valor_bruto || '';
+        currentGroup.querySelector('.selected-descuentov').value = data.descuento || '0';
+        currentGroup.querySelector('.selected-valortotal').value = data.valor_total || '';
+        
+        // Cargar datos del calendario de manera asíncrona
+        setTimeout(() => {
+            loadCalendarData(currentGroup, data.calendario);
+        }, index * 200); // Agregamos un delay incremental para cada grupo
+    });
+     // Llamar a updateTotalesGlobales después de cargar todos los grupos
+     updateTotalesGlobales();
+}
+
+// Inicialización de los datos
+function initializeFormData(programasTemasData) {
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => {
+            loadInitialData(programasTemasData);
+        });
     } else {
-        field.classList.remove('is-invalid');
-        return true;
+        loadInitialData(programasTemasData);
     }
 }
 
-document.getElementById('formularioPlan').addEventListener('submit', function(event) {
-    var valid = true;
-
-    // Validar campos estáticos con required
-    var requiredFields = document.querySelectorAll('[required]');
-    requiredFields.forEach(function(field) {
-        if (!field.value.trim()) {
-            valid = false;
-            field.classList.add('is-invalid');
-        } else {
-            field.classList.remove('is-invalid');
-        }
-    });
-
-    // Validar campos dinámicos (ejemplo de validación adicional)
-    valid = valid && validateDynamicField('selected-client-id');
-    valid = valid && validateDynamicField('selected-product-id');
-
-    if (!valid) {
-        event.preventDefault();
-        alert('Por favor, complete todos los campos obligatorios.');
-    }
-});
-
-
+// Llamar a la inicialización
+initializeFormData(programasTemasData);
 
 // Asignar clientes desde PHP al script
 const clientes = <?php echo json_encode($clientesMap); ?>;
+
 
 // Función para mostrar todas las opciones cuando se hace clic en el input
 function showAllClients() {
@@ -831,6 +1125,7 @@ function clearSearchProduct() {
     document.querySelector(".clear-btn").style.display = 'none';
 }
 
+// Asignar contratos desde PHP al script
 // Asignar contratos desde PHP al script
 const contratos = <?php echo json_encode($contratosMap); ?>;
 
@@ -1278,90 +1573,6 @@ function initializeClasificacionSearch(groupElement) {
         }
     });
 }
-
-
-
-function initializeValoresCalculator(group) {
-    const inputValorNeto = group.querySelector('.selected-valorneto');
-    const inputValorBruto = group.querySelector('.selected-valorbruto');
-    const inputDescuento = group.querySelector('.selected-descuentov');
-    const inputValorTotal = group.querySelector('.selected-valortotal');
-
-    if (!inputValorNeto || !inputValorBruto || !inputDescuento || !inputValorTotal) {
-        console.error("Error: No se pudieron encontrar todos los inputs necesarios en el grupo");
-        return;
-    }
-
-    const calcularValores = () => {
-        const valorNeto = parseFloat(inputValorNeto.value) || 0;
-        const valorBruto = Math.round(valorNeto * 1.19);
-        const descuento = parseFloat(inputDescuento.value) || 0;
-        const valorTotal = Math.max(0, valorBruto - descuento);
-
-        inputValorBruto.value = valorBruto;
-        inputValorTotal.value = valorTotal;
-
-        // Actualizar totales globales
-        updateTotalesGlobales();
-    };
-
-    // Agregar event listeners
-    inputValorNeto.addEventListener('input', calcularValores);
-    inputDescuento.addEventListener('input', calcularValores);
-}
-
-function updateTotalesGlobales() {
-    const grupos = document.querySelectorAll('.programas-temas-group');
-    const divTotales = document.querySelector('.totalestotales');
-    
-    if (!divTotales) {
-        console.error("No se encontró el div con clase 'totalestotales'");
-        return;
-    }
-
-    let totalValorNeto = 0;
-    let totalValorBruto = 0;
-    let totalDescuento = 0;
-    let totalValorTotal = 0;
-
-    // Calcular totales 
-    grupos.forEach((grupo, index) => {
-        const valorNeto = parseFloat(grupo.querySelector('.selected-valorneto').value) || 0;
-        const valorBruto = parseFloat(grupo.querySelector('.selected-valorbruto').value) || 0;
-        const descuento = parseFloat(grupo.querySelector('.selected-descuentov').value) || 0;
-        const valorTotal = parseFloat(grupo.querySelector('.selected-valortotal').value) || 0;
-
-        totalValorNeto += valorNeto;
-        totalValorBruto += valorBruto;
-        totalDescuento += descuento;
-        totalValorTotal += valorTotal;
-    });
-
-    // Mostrar totales globales en tabla
-    divTotales.innerHTML = `
-        <table class="finishtab table table-bordered" style="width: auto; margin-left: auto;">
-            <tbody>
-                <tr>
-                    <td class="fw-bold">Valor Neto Total:</td>
-                    <td class="text-end">$${totalValorNeto.toLocaleString()}</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold">Valor Bruto Total:</td>
-                    <td class="text-end">$${totalValorBruto.toLocaleString()}</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold">Descuento Total:</td>
-                    <td class="text-end">$${totalDescuento.toLocaleString()}</td>
-                </tr>
-                <tr class="table-active">
-                    <td class="fw-bold">Valor Total General:</td>
-                    <td class="text-end fw-bold">$${totalValorTotal.toLocaleString()}</td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-}
-
 // Función para renderizar el dropdown de programas (mejorada)
 function renderProgramaDropdown(programas, programaList, searchInput, selectedProgramaIdInput) {
     programaList.innerHTML = '';
@@ -1436,7 +1647,6 @@ function clearSearch(button) {
     selectedProgramaIdInput.value = '';
     programaList.style.display = 'none';
 }
-
 
 
 
@@ -1649,7 +1859,8 @@ function clearSearch() {
             const temasMap = <?php echo json_encode($temasMap); ?>;
 
             // Función para inicializar la búsqueda de temas en un grupo específico
-function initializeTemasSearch(group) {
+            // Función para inicializar la búsqueda de temas en un grupo específico
+            function initializeTemasSearch(group) {
     const searchTemasInput = group.querySelector('.search-temas');
     const temasList = group.querySelector('.temas-list');
     const selectedTemasIdInput = group.querySelector('.selected-temas-id');
@@ -1830,8 +2041,7 @@ function initializeTemasSearch(group) {
                 document.getElementById("temas-list").style.display = "none";            
                 document.querySelector(".clear-btn").style.display = 'none';
             }
-            const mesesMap = <?php echo json_encode($mesesMap); ?>;
-            const aniosMap = <?php echo json_encode($aniosMap); ?>;
+
 // Función para inicializar el calendario usando solo valores del contrato
 function initializeCalendar(group) {
     const diasContainer = group.querySelector('.diasContainer');
@@ -1927,7 +2137,6 @@ function addProgramasTemasGroup() {
     updateTotalesGlobales();
 }
 
-
 // Inicializar el calculador en el grupo inicial cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
     const initialGroup = document.querySelector('.programas-temas-group');
@@ -1936,6 +2145,7 @@ document.addEventListener('DOMContentLoaded', () => {
         updateTotalesGlobales();
     }
 });
+
 function removeProgramasTemasGroup(button) {
     const container = document.getElementById('programasTemasContainer');
     const groups = container.querySelectorAll('.programas-temas-group');
@@ -1965,34 +2175,67 @@ document.querySelectorAll('.programas-temas-group').forEach(group => {
 document.addEventListener('DOMContentLoaded', function () {
     const firstGroup = document.querySelector('.programas-temas-group');
     initializeCalendar(firstGroup);
-    initializeClasificacionSearch(firstGroup);
+
     // Asegúrate de ocultar el botón de eliminar en el primer grupo
     const removeButton = firstGroup.querySelector('.remove-group-btn');
     if (removeButton) removeButton.style.display = 'none';
 });
 
 </script>
+
 <script>
+function validateForm() {
+    var form = document.getElementById('formularioPlan');
+    var valid = true;
+
+    // Validar campos requeridos
+    var requiredFields = form.querySelectorAll('[required]');
+    requiredFields.forEach(function(field) {
+        if (!field.value.trim()) {
+            valid = false;
+            field.classList.add('is-invalid');
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+
+    // Habilitar o deshabilitar el botón de envío
+    var submitButton = document.getElementById('submitButton');
+    submitButton.disabled = !valid;
+
+    return valid; // Asegúrate de devolver el valor booleano
+}
+
+// Escuchar eventos de entrada y cambio para validar el formulario
+document.getElementById('formularioPlan').addEventListener('input', validateForm);
+document.getElementById('formularioPlan').addEventListener('change', validateForm);
+
+// Validar el formulario cuando se intente enviar
+document.getElementById('formularioPlan').addEventListener('submit', function(event) {
+    if (!validateForm()) {
+        event.preventDefault();  // Evita el envío si el formulario no es válido
+    }
+});
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('formularioPlan');
     const submitButton = document.getElementById('submitButton');
 
     // Prevenir el envío tradicional del formulario
-    form.addEventListener('submit', function(event) {
-        event.preventDefault(); // Esto es crucial para evitar el refresh
-        
-        if (!validateForm()) {
-            Swal.fire({
-                title: 'Error',
-                text: 'Por favor, completa todos los campos requeridos.',
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-            return;
-        }
-        
-        enviarDatos();
-    });
+    form.addEventListener('submit', async function(event) {
+    event.preventDefault();
+    
+    if (!validateForm()) {
+        Swal.fire({
+            title: 'Error',
+            text: 'Por favor, completa todos los campos requeridos.',
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+        return;
+    }
+    
+    await enviarDatos();
+});
 
 // Función para recopilar datos
 function recopilarUsuario() {
@@ -2005,8 +2248,7 @@ function recopilarUsuario() {
     };
 }
 
-
-
+// Función para recopilar datos
 function recopilarDatos() {
     const grupos = document.querySelectorAll('.programas-temas-group');
     const datosRecopilados = [];
@@ -2085,19 +2327,26 @@ function recopilarDatos() {
     };
 }
 
-    async function enviarDatos() {
-        try {
-            // Mostrar loading en el botón
-            const btnText = submitButton.querySelector('.btn-txt');
-            const spinner = submitButton.querySelector('.spinner-border');
-            btnText.style.display = 'none';
-            spinner.style.display = 'inline-block';
-            submitButton.disabled = true;
 
-            const datos = recopilarDatos();
-            const userdatos = recopilarUsuario();
-            const datosPlan = {
-                NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
+
+
+async function enviarDatos() {
+    try {
+        const datos = recopilarDatos();  // Asegúrate de que recopilarDatos() devuelva los datos correctos para la tabla "json"
+        const usuariodato = recopilarUsuario();
+        // Usa el id_planes_publicidad ya existente
+        const id_planes_publicidad = <?php echo json_encode($planEncontrado); ?>;
+        const id_ordenes_de_comprar = <?php echo json_encode($id_ordenP); ?>;
+        
+        
+        console.log(id_ordenes_de_comprar, "ORDENES");
+        console.log(id_planes_publicidad, "Planes");
+        
+        // Preparar los datos para la actualización de PlanesPublicidad
+        const datosPlan = {
+            id_planes_publicidad: id_planes_publicidad,
+            NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
+            usuarioregistro: usuariodato,
                 id_cliente: document.getElementById('selected-client-id').value,
                 id_producto: document.getElementById('selected-product-id').value,
                 id_contrato: document.getElementById('selected-contrato-id').value,
@@ -2108,107 +2357,117 @@ function recopilarDatos() {
                 tipo_item: document.getElementById('selected-tipo').value,                
                 fr_factura: document.getElementById('forma-facturacion').value,
                 estado: '1',
-                usuarioregistro: userdatos,
                 datosRecopilados: datos
-            };
+        };
+        
+        console.log(datosPlan, "datosplan");
 
-            // Primera inserción - PlanesPublicidad
-            const responsePlan = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                    'Prefer': 'return=representation'
-                },
-                body: JSON.stringify(datosPlan)
-            });
+        // Configuración de headers para Supabase
+        const headers = {
+            'Content-Type': 'application/json',
+            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc'
+        };
 
-            if (!responsePlan.ok) {
-                throw new Error(`Error en PlanesPublicidad: ${responsePlan.status}`);
-            }
+        // Primera solicitud: Actualizar PlanesPublicidad
+        const responsePlan = await fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?id_planes_publicidad=eq.${id_planes_publicidad}`, {
+            method: 'PUT',
+            headers: headers,
+            body: JSON.stringify(datosPlan)
+        });
 
-            const planData = await responsePlan.json();
-            const id_planes_publicidad = planData[0].id_planes_publicidad;
+        if (!responsePlan.ok) {
+            const errorText = await responsePlan.text();
+            throw new Error(`HTTP error! status: ${responsePlan.status}, message: ${errorText}`);
+        }
 
-            // Segunda inserción - OrdenesDePublicidad
-            const datosOrden = {
-                id_cliente: document.getElementById('selected-client-id').value ?? null,
+        console.log('Actualización del plan exitosa');
+
+        // Preparar los datos para la actualización de OrdenesDePublicidad (primera parte)
+        const datosOrdenpublicidad = {
+            estado: '0',
+            id_ordenes_de_comprar: id_ordenes_de_comprar,
+            estadoorden: 'Anulada',
+            usuarioregistro: usuariodato
+        };
+
+        // Segunda solicitud: Actualizar OrdenesDePublicidad (primera parte)
+        const responseOrdenPub1 = await fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?id_ordenes_de_comprar=eq.${id_ordenes_de_comprar}`, {
+            method: 'PUT',
+            headers: {
+                ...headers,
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(datosOrdenpublicidad)
+        });
+
+        if (!responseOrdenPub1.ok) {
+            const errorText = await responseOrdenPub1.text();
+            throw new Error(`HTTP error! status: ${responseOrdenPub1.status}, message: ${errorText}`);
+        }
+
+        console.log('Actualización de OrdenesDePublicidad exitosa');
+
+        // Preparar los datos para la nueva orden de publicidad
+        const datosOrdenpublicidad2 = {
+
+            id_cliente: document.getElementById('selected-client-id').value ?? null,
                 num_contrato: document.getElementById('selected-contrato-id').value ?? null,
                 id_proveedor: document.getElementById('selected-proveedor-id').value ?? null,
                 id_soporte: document.getElementById('selected-soporte-id').value ?? null,
                 id_tema: document.getElementById('selected-temas-id').value ?? null,
                 id_plan: id_planes_publicidad,
                 detalle: document.getElementById('descripcion').value ?? null,
-                usuarioregistro: userdatos,
                 datosRecopiladosb: datos,
+                usuarioregistro: usuariodato,
                 tipo_item: document.getElementById('selected-tipo').value ?? null,
                 Megatime: document.getElementById('selected-temas-codigo').value ?? null,
                 id_agencia: document.getElementById('selected-campania-agencia').value ?? null,
                 id_clasificacion: document.getElementById('selected-id-clasificacion').value || null,
                 numero_orden: document.getElementById('selected-orden-id').value ?? null,
-                estado: '1'
-            };
+                estado: '1',
+                remplaza: id_ordenes_de_comprar
+        };
 
-            const responseOrden = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                },
-                body: JSON.stringify(datosOrden)
-            });
+        // Tercera solicitud: Crear nueva orden de publicidad
+        const responseNuevaOrden = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad', {
+            method: 'POST',
+            headers: {
+                ...headers,
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(datosOrdenpublicidad2)
+        });
 
-            if (!responseOrden.ok) {
-                throw new Error(`Error en OrdenesDePublicidad: ${responseOrden.status}`);
-            }
-
-            // Éxito
-            await Swal.fire({
-                title: '¡Éxito!',
-                text: 'Los datos se han guardado correctamente.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-
-            window.location.href = '/ListPlanes.php';
-
-        } catch (error) {
-            console.error('Error al guardar los datos:', error);
-            await Swal.fire({
-                title: 'Error',
-                text: 'Error al guardar los datos: ' + error.message,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        } finally {
-            // Restaurar el botón
-            const btnText = submitButton.querySelector('.btn-txt');
-            const spinner = submitButton.querySelector('.spinner-border');
-            btnText.style.display = 'inline-block';
-            spinner.style.display = 'none';
-            submitButton.disabled = false;
+        if (!responseNuevaOrden.ok) {
+            const errorText = await responseNuevaOrden.text();
+            throw new Error(`HTTP error! status: ${responseNuevaOrden.status}, message: ${errorText}`);
         }
+
+        console.log('Creación de nueva OrdenesDePublicidad exitosa');
+
+        Swal.fire({
+            title: '¡Éxito!',
+            text: 'Los datos se han actualizado correctamente.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/ListOrdenes.php';
+            }
+        });
+    } catch (error) {
+        console.error('Error al actualizar los datos:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Error al actualizar los datos: ' + error.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
     }
+}
 });
 
-
-
-function showLoading() {
-    let loadingElement = document.getElementById('custom-loading');
-    if (!loadingElement) {
-        loadingElement = document.createElement('div');
-        loadingElement.id = 'custom-loading';
-        loadingElement.innerHTML = `
-            <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(255, 255, 255, 0.8); display: flex; justify-content: center; align-items: center; z-index: 9999;">
-                <img src="/assets/img/loading.gif" alt="Cargando..." style="width: 220px; height: 135px;">
-            </div>
-        `;
-        document.body.appendChild(loadingElement);
-    }
-    loadingElement.style.display = 'block';
-}
 </script>
 
 
@@ -2216,4 +2475,3 @@ function showLoading() {
 
 
 <?php include '../../componentes/footer.php'; ?>
-

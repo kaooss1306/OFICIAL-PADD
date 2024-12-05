@@ -134,30 +134,114 @@ include 'componentes/sidebar.php';
                 <div id="updateAlert" class="alert" style="display:none;" role="alert"></div>
 
                 <form id="formularioactualizarTema">
-                    <!-- Campos del formulario -->
+                   <!-- Campos del formulario -->
                     <div>
-                        <h3 class="titulo-registro mb-3">Editar Tema</h3>
+                        <h3 class="titulo-registro mb-3">Actualizar Tema</h3>
                         <div class="row">
                             <div class="col">
                                 <div class="form-group">
-                                <input type="hidden" class="form-control"  name="id_tema">
-                              
-                                    <label class="labelforms" for="codigo">Nombre de Tema</label>
+                  
+                                    <!-- Select de Medios -->
+                                    <label class="labelforms" for="id_medio">Medios</label>
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text"><i class="bi bi-bullseye"></i></span>
+                                            </div>
+                                            <select class="form-control" name="id_medio">
+                                                <?php if (!empty($mediosMap)): ?>
+                                                    <?php foreach ($mediosMap as $id => $medio): ?>
+                                                        <option value="<?php echo htmlspecialchars($id); ?>">
+                                                            <?php echo htmlspecialchars($medio['NombredelMedio']); ?>
+                                                        </option>
+                                                    <?php endforeach; ?>
+                                                <?php else: ?>
+                                                    <option value="">No hay medios disponibles</option>
+                                                <?php endif; ?>
+                                            </select>
+                                        </div>
+                                 
+
+                                    <!-- Campos Dinámicos Ocultos -->
+
+                                    <div class="input-group" id="group-duracion" style="display:none;">
+                                    <label class="labelforms" for="codigo">Duración</label>
                                     <div class="input-group">
                                         <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                            <span class="input-group-text"><i class="bi bi-calendar"></i></span>
                                         </div>
-                                        <input class="form-control" placeholder="Nombre de Tema" name="NombreTema">
-                                    </div>
+                                        <input class="form-control" placeholder="Duración" name="Duracion">
+                                    </div>            
+                                    </div>  
+                                    <div class="input-group" id="group-color" style="display:none;">
+                                    <label class="labelforms" for="codigo">Color</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-card-text"></i></span>
+                                        </div>
+                                        <input class="form-control" placeholder="Color" name="color">
+                                    </div>            
+                                    </div> 
+                                    <div class="input-group" id="group-codigo_megatime" style="display:none;">
+                                    <label class="labelforms" for="codigo">Codigo Megatime</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-broadcast"></i></span>
+                                        </div>
+                                        <input class="form-control" placeholder="Codigo Megatime" name="CodigoMegatime">
+                                    </div>            
+                                    </div>   
+                                    
+                                    <div class="input-group" id="group-calidad" style="display:none;">
+                                    <label class="labelforms" for="calidad">Calidad</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-stars"></i></span>
+                                        </div>
+                                        <select class="form-control" name="id_Calidad">
+                                            <?php if (!empty($calidadsMap)): ?>
+                                                <?php foreach ($calidadsMap as $id => $calidad): ?>
+                                                    <option value="<?php echo htmlspecialchars($id); ?>">
+                                                        <?php echo htmlspecialchars($calidad['NombreCalidad']); ?>
+                                                    </option>
+                                                <?php endforeach; ?>
+                                            <?php else: ?>
+                                                <option value="">No hay opciones disponibles</option>
+                                            <?php endif; ?>
+                                        </select>
+                                    </div>      
+                                    </div>       
 
-                                   
+                                    <div class="input-group" id="group-cooperado" style="display:none;">
+                                     
+                                    <label class="labelforms" for="codigo">Cooperado</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                                        </div>
+                                        <select class="form-control" name="cooperado">
+                                            <option value="Sí">Sí</option>
+                                            <option value="No">No</option>
+                                        </select>
+                                    </div>        
+                                    </div>   
+
+                                    <div class="input-group" id="group-rubro" style="display:none;">
+                                    <label class="labelforms" for="codigo">Rubro</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-bullseye"></i></span>
+                                        </div>
+                                        <input class="form-control" placeholder="Rubro" name="rubro">
+                                    </div>             
+                                    </div>               
+                        <!-- FIN Dinámicos Ocultos -->
                                 </div>
                             </div>
                         </div>
                     </div>
             
                     <div class="d-flex justify-content-end mt-3">
-                        <button class="btn btn-primary btn-lg rounded-pill" type="submit" id="actualizarTemax">
+                        <button class="btn btn-primary btn-lg rounded-pill" type="submit" id="agregarTemax">
                             <span class="btn-txt">Guardar Tema</span>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
                         </button>
@@ -203,13 +287,7 @@ include 'componentes/sidebar.php';
                                                 <?php endif; ?>
                                             </select>
                                         </div>
-                                    <label class="labelforms" for="codigo">Nombre de Tema</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        </div>
-                                        <input class="form-control" placeholder="Nombre de Tema" name="NombreTema">
-                                    </div>
+                                 
 
                                     <!-- Campos Dinámicos Ocultos -->
 
@@ -374,6 +452,13 @@ document.addEventListener('DOMContentLoaded', function() {
     // Manejar el evento de cambio en el campo de selección
     mediosSelect.addEventListener('change', updateFields);
 });
+
+function getTemasData(idTemas) {
+    var temasMap = <?php echo json_encode($temasMap); ?>;
+    return temasMap[idTemas] || null;
+}
+
+
 </script>
 <script src="assets/js/toggleTema.js"></script>
 <script src="assets/js/agregarTema.js"></script>

@@ -85,14 +85,11 @@ require_once 'componentes/sidebar.php';
                                             <td data-key="numeroContrato">
                                             <?php echo htmlspecialchars($contratosMap[$orden['num_contrato']]['num_contrato'] ?? ''); ?>
                                             </td>
-                                            <td data-key="nombreProveedor"><?php echo htmlspecialchars($proveedoresMap[$orden['id_proveedor']]['nombreProveedor'] ?? ''); ?></td>
-                                            <td data-key="mega"><?php echo htmlspecialchars($orden['Megatime']); ?></td>
-                                            <td data-key="tema"><?php echo htmlspecialchars($temasMap[$orden['id_tema']]['NombreTema'] ?? ''); ?></td>
-                                            <td data-key="soporte"><?php echo htmlspecialchars($soportesMap[$orden['id_soporte']]['nombreIdentficiador'] ?? ''); ?></td>
-                                            <td data-key="clasificacion"><?php echo htmlspecialchars($clasificacionesMap[$orden['id_clasificacion']]['NombreClasificacion'] ?? ''); ?></td>
-                                            <td>
-                                            <?php echo $orden['fechaCreacion']; ?>
-                                            </td>
+                                            <td><?php echo htmlspecialchars($proveedoresMap[$orden['id_proveedor']]['nombreProveedor'] ?? ''); ?></td>
+                                            <td><?php echo htmlspecialchars($orden['Megatime']); ?></td>
+                                            <td><?php echo htmlspecialchars($temasMap[$orden['id_tema']]['NombreTema'] ?? ''); ?></td>
+                                            <td><?php echo htmlspecialchars($soportesMap[$orden['id_soporte']]['nombreIdentficiador'] ?? ''); ?></td>
+                                            <td><?php echo htmlspecialchars($clasificacionesMap[$orden['id_clasificacion']]['NombreClasificacion'] ?? ''); ?></td>
                                             <td>
                                             <div class="alineado">
                                             <label class="custom-switch sino" data-toggle="tooltip" 
@@ -112,6 +109,9 @@ require_once 'componentes/sidebar.php';
                                                         onclick="cargarDatosFormulario(<?php echo $orden['id_ordenes_de_comprar']; ?>);">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>Main Content -->
+                                                    <a class="btn btn-success micono" href="querys/modulos/editarOrden.php?id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>">
+    <i class="fas fa-pencil-alt"></i>
+</a>
                                                 </td>
                                           
                                         </tr>

@@ -21,6 +21,8 @@
     }
     $soporte_medios = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/soporte_medios?select=*');
     // Obtener datos+
+    $medios = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Medios?select=*');
+    $programas = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Programas?select=*');
     $soportes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Soportes?select=*');
     $agencias = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Agencias?select=*');
     $clientes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Clientes?select=*');
@@ -51,7 +53,10 @@ $proveedoresMap = [];
 foreach ($proveedores as $proveedore) {
     $proveedoresMap[$proveedore['id_proveedor']] = $proveedore;
 }
-
+$programasMap = [];
+foreach ($programas as $prom) {
+    $programasMap[$prom['id']] = $prom;
+}
 $tipoclientesMap2 = [];
 foreach ($tiposCliente as $tipocliente) {
     $tipoclientesMap[$tipocliente['id_tyipoCliente']] = $tipocliente;
@@ -73,3 +78,7 @@ foreach ($calendar as $calendario) {
     $calendarMap[$calendario['id_calendar']] = $calendario['matrizCalendario'];
 }
 
+$mediosMap = [];
+foreach ($medios as $medio) {
+    $mediosMap[$medio['id']] = $medio;
+}

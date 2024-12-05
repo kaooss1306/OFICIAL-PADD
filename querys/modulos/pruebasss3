@@ -1,0 +1,165 @@
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formularioPlan');
+    const submitButton = document.getElementById('submitButton');
+
+    // Prevenir el envío tradicional del formulario
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Esto es crucial para evitar el refresh
+        
+        if (!validateForm()) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor, completa todos los campos requeridos.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        enviarDatos();
+    });
+    const id_planes_publicidad = <?php echo json_encode($id_planes_publicidad); ?>;
+const idordenP = <?php echo json_encode($id_ordenP); ?>;
+
+function enviarDatos() {
+    const datos = recopilarDatos();  // Asegúrate de que recopilarDatos() devuelva los datos correctos para la tabla "json"
+
+    // Usa el id_planes_publicidad ya existente
+    const id_planes_publicidad = document.getElementById('selected-plan-id').value;
+    const id_ordenes_de_comprar = document.getElementById('ordenpublicidad-id').value; // Obtén el valor del campo oculto
+    console.log(id_ordenes_de_comprar, "ORDENES");
+    console.log(id_planes_publicidad, "Planes");
+    // Preparar los datos para la actualización de PlanesPublicidad
+    const datosPlan = {
+        NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
+        id_cliente: document.getElementById('selected-client-id').value,
+        id_producto: document.getElementById('selected-product-id').value,
+        id_contrato: document.getElementById('selected-contrato-id').value,
+        id_soporte: document.getElementById('selected-soporte-id').value,
+        detalle: document.getElementById('descripcion').value,
+        id_campania: document.getElementById('selected-campania-id').value,
+        id_temas: document.getElementById('selected-temas-id').value,
+        fr_factura: document.getElementById('forma-facturacion').value,
+        id_calendar: id_calendar, // Usa el id_calendar existente
+        id_planes_publicidad: id_planes_publicidad
+    };
+    console.log(datosPlan, "datosplan");
+
+    // Configuración de headers para Supabase
+    const headers = {
+        'Content-Type': 'application/json',
+        'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+        'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc'
+    };
+
+    // Primera solicitud: Actualizar PlanesPublicidad
+    fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?id_planes_publicidad=eq.${id_planes_publicidad}`, {
+        method: 'PUT',
+        headers: headers,
+        body: JSON.stringify(datosPlan)
+    })
+    .then(response => {
+        console.log('Respuesta completa de la actualización del plan:', response);
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+            });
+        }
+        return response.text();
+    })
+    .then(data => {
+        console.log('Actualización del plan exitosa:', data);
+
+        // Preparar los datos para la actualización de OrdenesDePublicidad (primera parte)
+        const datosOrdenpublicidad = {
+            estado: 0,
+            id_ordenes_de_comprar: id_ordenes_de_comprar,
+            estadoorden: 'Anulada'
+        };
+
+        // Segunda solicitud: Actualizar OrdenesDePublicidad (primera parte)
+        return fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?id_ordenes_de_comprar=eq.${id_ordenes_de_comprar}`, {
+            method: 'PUT',
+            headers: {
+                ...headers,
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(datosOrdenpublicidad)
+        });
+    })
+    .then(response => {
+        console.log('Respuesta completa de la actualización de OrdenesDePublicidad:', response);
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+            });
+        }
+        return response.text();
+    })
+    .then(data => {
+        console.log('Actualización de OrdenesDePublicidad exitosa:', data);
+
+        // Preparar los datos para la nueva orden de publicidad
+        const datosOrdenpublicidad2 = {
+            id_cliente: document.getElementById('selected-client-id').value,
+            num_contrato: document.getElementById('selected-contrato-id').value,
+            id_proveedor: document.getElementById('selected-proveedor-id').value,
+            id_soporte: document.getElementById('selected-soporte-id').value,
+            id_tema: document.getElementById('selected-temas-id').value,
+            id_plan: id_planes_publicidad,
+            remplaza: id_ordenes_de_comprar,
+            estado: 1,
+            id_ordenes_de_comprar: id_ordenes_de_comprar,
+            Megatime: document.getElementById('selected-temas-codigo').value,
+            id_agencia: document.getElementById('selected-campania-agencia').value,
+            id_clasificacion: document.getElementById('selected-id-clasificacion').value === "" ? null : document.getElementById('selected-id-clasificacion').value,
+            numero_orden: document.getElementById('selected-orden-id').value
+        };
+
+        // Tercera solicitud: Crear nueva orden de publicidad
+        return fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad', {
+            method: 'POST',
+            headers: {
+                ...headers,
+                'Prefer': 'return=representation'
+            },
+            body: JSON.stringify(datosOrdenpublicidad2)
+        });
+    })
+    .then(response => {
+        console.log('Respuesta completa de la creación de nueva OrdenesDePublicidad:', response);
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+            });
+        }
+        return response.text();
+    })
+    .then(data => {
+        console.log('Creación de nueva OrdenesDePublicidad exitosa:', data);
+        Swal.fire({
+            title: '¡Éxito!',
+            text: 'Los datos se han actualizado correctamente.',
+            icon: 'success',
+            confirmButtonText: 'OK'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                window.location.href = '/ListOrdenes.php';
+            }
+        });
+    })
+    .catch(error => {
+        console.error('Error al actualizar los datos:', error);
+        Swal.fire({
+            title: 'Error',
+            text: 'Error al actualizar los datos: ' + error.message,
+            icon: 'error',
+            confirmButtonText: 'OK'
+        });
+    });
+}
+
+<html> <button id="submitButton" class="btn btn-primary btn-lg rounded-pill" type="submit">
+                            <span class="btn-txt">Guardar Plan</span>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
+                        </button></html>

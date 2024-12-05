@@ -31,9 +31,9 @@ $tipoP = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/TipoDePub
 $anios = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Anios?select=*');
 $meses = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Meses?select=*');
 $tipoGeracionOrden = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/TipoGeneracionDeOrden?select=*');
-
-
-
+$ordenesPublicidad = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?select=*');
+$temas = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Temas?select=*');
+$soportes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Soportes?select=*');
 
 
 $contratosMap = [];
@@ -44,6 +44,10 @@ $clientesMap = [];
 foreach ($clientes as $cliente) {
     $clientesMap[$cliente['id_cliente']] = $cliente;
 }
+$soportesMap = [];
+foreach ($soportes as $soporte) {
+    $soportesMap[$soporte['id_soporte']] = $soporte;
+}
 
 $productosMap = [];
 foreach ($productos as $producto) {
@@ -52,6 +56,10 @@ foreach ($productos as $producto) {
 $proveedorMap = [];
 foreach ($proveedores as $proveedor) {
     $proveedorMap[$proveedor['id_proveedor']] = $proveedor;
+}
+$proveedoresMap =[];
+foreach ($proveedores as $proveedor) {
+    $proveedoresMap[$proveedor['id_proveedor']] = $proveedor;
 }
 $mediosMap = [];
 foreach ($medios as $medio) {
@@ -78,6 +86,9 @@ $ordenMap = [];
 foreach ($tipoGeracionOrden as $orden) {
     $ordenMap[$orden['id']] = $orden;
 }
-
+$temasMap = [];
+foreach ($temas as $tema) {
+    $temasMap[$tema['id_tema']] = $tema;
+}
 
 ?>

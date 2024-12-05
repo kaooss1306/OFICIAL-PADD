@@ -34,6 +34,67 @@ function loadProveedorData(button) {
     }
 }
 
+function loadPrograma(button) {
+    var idPrograma = button.getAttribute('data-idprograma');
+    var idSoporte = button.getAttribute('data-id-soporte');
+    var programa = getProgramaData(idPrograma);
+    var idMedios2 = JSON.parse(button.getAttribute('data-idmedios2'));
+    // Corrigiendo el uso de console.log
+    console.log(idMedios2, "medios");
+    if (programa) {
+        document.querySelector('input[name="idProgramas"]').value = idPrograma;
+        document.querySelector('input[name="idSoporteInput"]').value = idSoporte;
+        document.querySelector('input[name="codigoPrograma"]').value = programa.codigo_programa;
+        document.querySelector('input[name="horaInicio"]').value = programa.hora_inicio;
+        document.querySelector('input[name="horaFin"]').value = programa.hora_fin;
+        document.querySelector('input[name="decripcionp"]').value = programa.descripcion;
+        document.querySelector('input[name="codigomegatimeP"]').value = programa.cod_prog_megatime;
+        if (idMedios2 && Array.isArray(idMedios2)) {
+            var idMediosString2 = idMedios2.join(',');
+            document.querySelector('input[name="idmedios2"]').value = idMediosString2;
+            updateMediosDropdown(idMedios2);
+        }
+    
+    } else {
+        console.log("No se encontró el proveedor con ID:", idPrograma);
+    }
+}
+
+
+function getFormProgra() {
+    const formData = new FormData(document.getElementById('formactualizarPrograma'));
+
+    // Convertir FormData a objeto para imprimirlo
+    const dataObject = {};
+    formData.forEach((value, key) => {
+        if (key === 'id_medios[]') {
+            if (!dataObject[key]) {
+                dataObject[key] = [];
+            }
+            dataObject[key].push(value);
+        } else {
+            dataObject[key] = value;
+        }
+    });
+
+
+    console.log(dataObject, "aqui el actualizar señores"); // Imprime el objeto con los datos del formulario
+
+    return {
+        codigo_programa: dataObject.codigoPrograma,
+        descripcion: dataObject.decripcionp,
+        hora_inicio: dataObject.horaInicio,
+        hora_fin: dataObject.horaFin,
+        cod_prog_megatime: dataObject.codigomegatimeP,
+        estado: '1',
+        id_medios: dataObject['id_medios[]'],
+        soporte_id: dataObject.idSoporteInput,
+        programaid: dataObject.idProgramas,
+        
+    };
+}
+
+
 
 function getFormData3() {
     const formData = new FormData(document.getElementById('formactualizarproveedor'));
@@ -175,6 +236,104 @@ async function submitForm3(event) {
         alert("Error de red, intentelo nuevamente");
     }
 }
+
+// Función para enviar el formulario
+async function submitForm4(event) {
+    event.preventDefault(); // Evita la recarga de la página
+
+    const formData = getFormProgra();
+    const idProgramas = document.querySelector('input[name="idProgramas"]').value;
+
+    const programaData = {
+        nombreIdentificador: formData.nombreIdentificador,
+        codigo_programa: formData.codigo_programa,
+        descripcion: formData.descripcion,
+        hora_inicio: formData.hora_inicio,
+        hora_fin: formData.hora_fin,
+        cod_prog_megatime: formData.cod_prog_megatime,
+        estado: formData.estado,
+    };
+
+
+    const headersList = {
+        "Content-Type": "application/json",
+        "apikey": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc",
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc"
+    };
+
+    try {
+        // Actualizar el proveedor
+        const response = await fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Programas?id=eq.${idProgramas}`, {
+            method: "PATCH",
+            body: JSON.stringify(programaData),
+            headers: headersList
+        });
+    
+        if (response.ok) {
+            // Eliminar registros antiguos de proveedor_medios asociados al id_proveedor
+            const deleteResponse = await fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/programa_medios?id_programa=eq.${idProgramas}`, {
+                method: "DELETE",
+                headers: headersList
+            });
+    
+            if (deleteResponse.ok) {
+                // Verificar si hay id_medios para registrar
+                if (Array.isArray(formData.id_medios) && formData.id_medios.length > 0) {
+                    const proveedorMediosData = formData.id_medios.map(id_medio => ({
+                        id_programa: idProgramas,
+                        id_medios: id_medio
+                    }));
+    
+                    const insertResponse = await fetch("https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/programa_medios", {
+                        method: "POST",
+                        body: JSON.stringify(proveedorMediosData),
+                        headers: headersList
+                    });
+    
+                    if (insertResponse.ok) {
+                        mostrarExito('Actualización correcta');
+                    } else {
+                        const errorData = await insertResponse.text();
+                        console.error("Error en proveedor_medios:", errorData);
+                        alert("Error al registrar los medios, intente nuevamente");
+                    }
+                } else {
+                    mostrarExito('Actualización correcta');
+                }
+    
+                $('#actualizarPrograma').modal('hide');
+                $('#formactualizarPrograma')[0].reset();
+          
+                await Swal.fire({
+                    title: '¡Éxito!',
+                    text: 'Actualización correcta',
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+                // Mostrar el GIF de carga
+                showLoading();
+                location.reload();
+            } else {
+                const errorData = await deleteResponse.text();
+                console.error("Error al eliminar proveedor_medios:", errorData);
+                alert("Error al eliminar los medios antiguos, intente nuevamente");
+            }
+        } else {
+            const errorData = await response.json();
+            console.error("Error:", errorData);
+            alert("Error al actualizar el proveedor, intente nuevamente");
+        }
+    } catch (error) {
+        console.error("Error de red:", error);
+        alert("Error de red, intentelo nuevamente");
+    }
+}
+
+
+
+
+
+
 function showLoading() {
     let loadingElement = document.getElementById('custom-loading');
     if (!loadingElement) {
@@ -206,3 +365,4 @@ async function mostrarExito(mensaje) {
 }
 // Asigna el evento de envío al formulario de actualizar proveedor
 document.getElementById('formactualizarproveedor').addEventListener('submit', submitForm3);
+document.getElementById('formactualizarPrograma').addEventListener('submit', submitForm4);

@@ -16,6 +16,7 @@ $idPerfil = $_SESSION["user"]["id_perfil"] ?? "Usuario";
 
 $ruta = "https://supreme-space-potato-5rj57rp96q9hpgp6-3000.app.github.dev/";
 
+
 include 'funciones.php';
 
 ?>

@@ -32,7 +32,10 @@ $temas = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Temas?sel
 $camptem = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Temas?select=*');
 $calidadsMap = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/campania_temas?select=*');
 
-
+$temasMap = [];
+foreach ($temas as $tema) {
+    $temasMap[$tema['id_tema']] = $tema;
+}
 $coperadosMap = [];
 foreach ($coperados as $coperado) {
     $coperadosMap[$coperado['id_cooperado']] = $coperado;
