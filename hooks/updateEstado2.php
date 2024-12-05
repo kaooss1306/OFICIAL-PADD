@@ -12,7 +12,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $estado = filter_input(INPUT_POST, 'estado', FILTER_VALIDATE_INT);
     $tipo = filter_input(INPUT_POST, 'tipo', FILTER_SANITIZE_FULL_SPECIAL_CHARS);
 
-    if ($id === false || $id === null || $estado === false || $estado === null || !in_array($tipo, ['plan', 'tema', 'cliente', 'proveedor', 'orden'])) {
+    if ($id === false || $id === null || $estado === false || $estado === null || !in_array($tipo, ['programa','plan', 'tema', 'cliente', 'proveedor', 'orden'])) {
         echo json_encode(['success' => false, 'message' => 'Datos de entrada inválidos']);
         exit;
     }
@@ -51,6 +51,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }elseif ($tipo === 'cliente') {
         $url = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Clientes?id_cliente=eq.$id";
         $idField = 'id_cliente';
+    }elseif ($tipo === 'programa') {
+        $url = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Programas?id=eq.$id";
+        $idField = 'id';
     }elseif ($tipo === 'proveedor'){
         $url = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Proveedores?id_proveedor=eq.$id";
         $idField = 'id_proveedor';

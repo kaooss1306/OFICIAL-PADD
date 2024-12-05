@@ -7,7 +7,7 @@ if (!isset($_SESSION['user']) || empty($_SESSION['user'])) {
     exit();
 }
 $user_name = $_SESSION['user_name'];
-$nombreUsuario = $_SESSION['user_name'] ?? 'Usuario Desconocido';
+$nombre_usuario = $_SESSION["user"]["Nombres"] ?? "Usuario";
 
 // Capturar correo de usuario
 $correoUsuario = $_SESSION['user_email'] ?? 'Correo No Disponible';
@@ -38,7 +38,8 @@ input[type="number"]::-webkit-inner-spin-button {
 input[type="number"] {
     -moz-appearance: textfield;
 }
-
+.nameusu{color: #6878f2; font-weight: 700; font-size: 20px;}
+.correusu{font-size:16px; color:black;}
   .calendario .selectores {
     display: none; /* Oculta los selectores */
 }
@@ -516,7 +517,14 @@ border:1px solid #ff0000;
                                      </div>
                                      </div> 
                                      <div class="totalestotales"></div>
-                                                          <div><?php echo $nombreUsuario ?> <?php echo $correoUsuario ?></div>
+                                     <div style="margin-top:30px; display: flex; justify-content: flex-end; text-align: center; width: 100%;">
+    <div>
+        <input class="nombreuser" hidden value="<?php echo $nombre_usuario ?>">
+        <input class="correouser" hidden value="<?php echo $correoUsuario ?>">
+        <span class="nameusu"><?php echo $nombre_usuario ?></span><br>
+        <span class="correusu"><?php echo $correoUsuario ?></span>
+    </div>
+</div>
                                                             
 
 
@@ -1987,6 +1995,18 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
 // Función para recopilar datos
+function recopilarUsuario() {
+    const nombreusers = document.querySelector('.nombreuser')?.value || null;
+    const correousers = document.querySelector('.correouser')?.value || null;
+
+    return {
+        nombreusuario: nombreusers,
+        correousuario: correousers
+    };
+}
+
+
+
 function recopilarDatos() {
     const grupos = document.querySelectorAll('.programas-temas-group');
     const datosRecopilados = [];
@@ -2075,7 +2095,7 @@ function recopilarDatos() {
             submitButton.disabled = true;
 
             const datos = recopilarDatos();
-            
+            const userdatos = recopilarUsuario();
             const datosPlan = {
                 NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
                 id_cliente: document.getElementById('selected-client-id').value,
@@ -2088,6 +2108,7 @@ function recopilarDatos() {
                 tipo_item: document.getElementById('selected-tipo').value,                
                 fr_factura: document.getElementById('forma-facturacion').value,
                 estado: '1',
+                usuarioregistro: userdatos,
                 datosRecopilados: datos
             };
 
@@ -2119,6 +2140,7 @@ function recopilarDatos() {
                 id_tema: document.getElementById('selected-temas-id').value ?? null,
                 id_plan: id_planes_publicidad,
                 detalle: document.getElementById('descripcion').value ?? null,
+                usuarioregistro: userdatos,
                 datosRecopiladosb: datos,
                 tipo_item: document.getElementById('selected-tipo').value ?? null,
                 Megatime: document.getElementById('selected-temas-codigo').value ?? null,

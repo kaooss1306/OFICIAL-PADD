@@ -180,8 +180,8 @@ include '../componentes/sidebar.php';
                                                     </div>
                                                     <div class="agregar">
                                                     <a type="button" class="btn btn-primary micono" data-bs-toggle="modal" data-bs-target="#modalAgregarTema" data-id-campania="<?php echo $datosCampania['id_campania']; ?>">
-    <i class="fas fa-plus-circle"></i> Agregar Temas
-</a>
+                                                        <i class="fas fa-plus-circle"></i> Agregar Temas
+                                                    </a>
 
                                                     </div>
                                                 </div>

@@ -53,7 +53,10 @@ $proveedoresMap = [];
 foreach ($proveedores as $proveedore) {
     $proveedoresMap[$proveedore['id_proveedor']] = $proveedore;
 }
-
+$programasMap = [];
+foreach ($programas as $prom) {
+    $programasMap[$prom['id']] = $prom;
+}
 $tipoclientesMap2 = [];
 foreach ($tiposCliente as $tipocliente) {
     $tipoclientesMap[$tipocliente['id_tyipoCliente']] = $tipocliente;
