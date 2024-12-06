@@ -139,7 +139,10 @@
                     obtenerFacturaYOrden(IdCampania);
                     // Aquí puedes agregar código para actualizar la UI o realizar alguna acción adicional
                     const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarFactura'));
+                    $('#formularioFactura')[0].reset();
+                    $('.modal-backdrop').css('display', 'none');
                     modal.hide();
+                    
                 } else {
                     return response.json().then(errorData => {
                         console.error('Error al agregar la factura:', errorData);

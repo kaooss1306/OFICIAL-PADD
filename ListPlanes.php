@@ -199,28 +199,30 @@ include 'componentes/sidebar.php';
     echo isset($clientesMap[$idCliente]) ? $clientesMap[$idCliente] : 'N/A'; 
     ?>
 </td>
-    <td data-key="nombrePlan"><?php echo $plan['NombrePlan']; ?></td>
-    <?php
-    // Verificar si existe un id_calendar en el plan actual
-    if (isset($calendarMap[$plan['id_calendar']])) {
-        // Extraer la matriz de calendario
-        $matrizCalendario = $calendarMap[$plan['id_calendar']];
 
-        // Obtener el primer mes y año
-        $mesNumero = $matrizCalendario[0]['mes'];
-        $anio = $matrizCalendario[0]['anio'];
+    <td><?php echo $plan['NombrePlan']; ?></td>
+    <?php 
+// Si ya es un array, simplemente usa el array directamente
+$datosRecopilados = $plan['datosRecopilados'];
 
-        // Convertir el número de mes a nombre
-        $mes = isset($mesesNombres[$mesNumero]) ? $mesesNombres[$mesNumero] : 'N/A';
-    } else {
-        $mes = 'N/A';
-        $anio = 'N/A';
-    }
-    ?>
+// Inicializa las variables antes del bloque condicional
+$nombreMes = 'Mes no especificado';
+$nombreAnio = 'Año no especificado';
+
+if (!empty($datosRecopilados['datos'])) {
+    $primerGrupo = $datosRecopilados['datos'][0];
     
-    <!-- <td><?php echo $mes; ?></td>
-    <td><?php echo $anio; ?></td> -->
-    <td data-key="fecha_creacion"><?php echo $plan['fechaCreacion']; ?></td>
+    $mesId = $primerGrupo['calendario'][0]['mes'];
+    $anioId = $primerGrupo['calendario'][0]['anio'];
+    
+    $nombreMes = $mesesMap[$mesId]['Nombre'] ?? 'Mes no encontrado';
+    $nombreAnio = $aniosMap[$anioId]['years'] ?? 'Año no encontrado';
+}
+?>
+    
+    <td><?php echo $nombreMes; ?></td>
+    <td><?php echo $nombreAnio; ?></td>
+
     <td>
     <div class="alineado">
     <label class="custom-switch mt-2" data-toggle="tooltip" 

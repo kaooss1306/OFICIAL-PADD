@@ -646,6 +646,7 @@ document.addEventListener('DOMContentLoaded', function() {
         .then(response => response.json())
         .then(data => {
             if (data.success) {
+                $('#addClienteModal').modal('hide');
                 Swal.fire({
                     title: '¡Éxito!',
                     text: 'Cliente agregado exitosamente',
@@ -653,10 +654,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     confirmButtonText: 'OK'
                 }).then((result) => {
                     if (result.isConfirmed) {
+                        showLoading();
                         location.reload();
                     }
                 });
-                $('#addClienteModal').modal('hide');
+                
             } else {
                 Swal.fire({
                     title: 'Error',

@@ -764,15 +764,16 @@ document.addEventListener('DOMContentLoaded', function() {
             }
 
             $('#comisionModal').modal('hide');
-            await Swal.fire({
-                icon: 'success',
-                title: 'Éxito',
-                text: 'Comisión guardada exitosamente',
-                showConfirmButton: false,
-                timer: 1500
-            });
+$('.modal-backdrop').css('display', 'none');
 
-            await cargarComisiones();
+await Swal.fire({
+    icon: 'success',
+    title: 'Éxito',
+    text: 'Comisión guardada exitosamente',
+    showConfirmButton: false,
+    timer: 1500
+});
+await cargarComisiones();
             const otrosTab = document.querySelector('a[href="#otros"]');
             if (otrosTab) {
                 const tab = new bootstrap.Tab(otrosTab);
@@ -1036,40 +1037,6 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     }
 
-    async function agregarComision(event) {
-        event.preventDefault();
-        const formData = new FormData(event.target);
-        const data = {
-            id_cliente: parseInt(idCliente),
-            id_tipoMoneda: parseInt(formData.get('nombreMoneda')),
-            id_formatoComision: parseInt(formData.get('nombreFormato')),
-            valorComision: parseFloat(formData.get('valorComision')),
-            inicioComision: formData.get('inicioComision'),
-            finComision: formData.get('finComision')
-        };
-
-        try {
-            const response = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Comisiones', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': SUPABASE_API_KEY,
-                    'Authorization': `Bearer ${SUPABASE_API_KEY}`,
-                    'Prefer': 'return=minimal'
-                },
-                body: JSON.stringify(data)
-            });
-
-            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
-
-            mostrarExito('Comisión agregada correctamente');
-            bootstrap.Modal.getInstance(document.getElementById('comisionModal')).hide();
-            await cargarYMostrarComisiones();
-        } catch (error) {
-            console.error('Error al agregar la comisión:', error);
-            mostrarError('No se pudo agregar la comisión: ' + error.message);
-        }
-    }
 
     function obtenerNombreMoneda(id) {
         const monedas = <?php echo json_encode($monedasMap); ?>;

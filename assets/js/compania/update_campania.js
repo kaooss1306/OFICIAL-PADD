@@ -37,7 +37,6 @@ function cargarDatosFormulario(id) {
                 document.getElementById('Id_AgenciaUpdate').value = campaign.Id_Agencia;
                 document.getElementById('id_ProductoUpdate').value = campaign.id_Producto;
                 document.getElementById('PresupuestoUpdate').value = campaign.Presupuesto;
-                document.getElementById('Planes_PublicidadUpdate').value = campaign.Id_Planes_Publicidad;
 
             } else {
                 console.error('No se encontraron datos para la campaña con ID:', id);
@@ -70,8 +69,6 @@ function actualizarCompania() {
     const id_ProductoUpdate = formData.get('id_ProductoUpdate');
     const PresupuestoUpdate = formData.get('PresupuestoUpdate');
 
-    const Id_Planes_Publicidad = formData.get('Planes_PublicidadUpdate');
-
     console.log('ID de la campaña: ' + Id_Planes_Publicidad);
 
     // Crear un objeto con los datos del formulario
@@ -85,7 +82,6 @@ function actualizarCompania() {
         "Id_Agencia": parseInt(Id_AgenciaUpdate),
         "id_Producto": parseInt(id_ProductoUpdate),
         "Presupuesto": parseInt(PresupuestoUpdate),
-        "Id_Planes_Publicidad": parseInt(Id_Planes_Publicidad),
     };
     
    
