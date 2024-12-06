@@ -540,7 +540,7 @@ border:1px solid #ff0000;
                     <button id="submitButton" class="btn btn-primary btn-lg rounded-pill" type="submit">
                             <span class="btn-txt">Guardar Plan</span>
                             <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
-                        </button>
+                    </button>
                     </div>
                 </form>
                 </div>

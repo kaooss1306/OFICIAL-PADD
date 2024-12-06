@@ -22,7 +22,6 @@ async function guardarCompania(event) {
         "id_Producto": parseInt(jsonData.id_Producto, 10),
         "Presupuesto": parseFloat(jsonData.Presupuesto),
         // "id_Temas": parseInt(jsonData.id_Temas, 10),
-        "Id_Planes_Publicidad": jsonData.Planes_Publicidad ? parseInt(jsonData.Planes_Publicidad, 10) : null,
         "estado": true,
         "fechaCreacion": fechaCreacion
     };

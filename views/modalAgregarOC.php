@@ -80,6 +80,7 @@ document.addEventListener('DOMContentLoaded', function() {
         "Codigo": Codigo,
         "fechaOrden": fechaConvertida,
         "monto": Monto,
+        "estado": '1',
         "id_campania": idCampania
     };
 
@@ -105,7 +106,9 @@ document.addEventListener('DOMContentLoaded', function() {
             });
             obtenerOrdenCompra(idCampania);
             const modal = bootstrap.Modal.getInstance(document.getElementById('modalAgregarOC'));
+            $('#formularioOC')[0].reset();
             modal.hide();
+            $('.modal-backdrop').css('display', 'none');
             // Aquí puedes agregar código para actualizar la UI o realizar alguna acción adicional
         } else {
             return response.json().then(errorData => {

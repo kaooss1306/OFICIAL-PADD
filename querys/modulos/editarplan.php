@@ -15,55 +15,36 @@ $correoUsuario = $_SESSION['user_email'] ?? 'Correo No Disponible';
 include '../qplanes.php';
 
 
-if ($_SERVER["REQUEST_METHOD"] == "GET") {
-    // Verificar la existencia de id_orden
-    if (!isset($_GET['id_orden'])) {
-        echo "ID de la orden no proporcionado.";
+if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id_planes_publicidad'])) {
+    // Obtener el ID del plan de la URL y convertirlo a entero
+    $id_planes_publicidad = (int) $_GET['id_planes_publicidad'];
+
+    // Obtener todos los planes desde Supabase
+  
+    // Verificar que $planes es un array y tiene datos
+    if (!is_array($planes) || empty($planes)) {
+        echo "No se obtuvieron datos de los planes.";
         exit;
     }
-    
-    // Validar y convertir id_orden
-    $id_ordenP = (int) $_GET['id_orden'];
-    
-    // Verificar que id_ordenP no sea cero después de la conversión
-    if ($id_ordenP === 0) {
-        echo "ID de orden no válido.";
-        exit;
-    }
-    
-    // Buscar en $ordenespuMap para obtener el ID del plan
-    $planEncontrado = null;
-    foreach ($ordenespuMap as $orden) {
-        if ($orden['id_ordenespu'] === $id_ordenP) {
-            $planEncontrado = $orden['idplanorden'];
-            break;
-        }
-    }
-    
-    // Verificar que $planEncontrado no sea null
-    if ($planEncontrado === null) {
-        echo "No se encontró un plan para la orden " . $id_ordenP;
-        exit;
-    }
-    
-    // Buscar el plan completo en $planes
+
+    // Buscar el plan que coincida con el ID
     $plan = null;
     foreach ($planes as $item) {
-        if ((int) $item['id_planes_publicidad'] === (int) $planEncontrado) {
+        if ((int) $item['id_planes_publicidad'] === (int) $id_planes_publicidad) {
             $plan = $item;
             break;
         }
     }
-    
+
     // Verifica si se encontró el plan
     if ($plan === null) {
         echo "No se encontró el plan publicitario.";
         exit;
     }
- 
-    
+
+   
 } else {
-    echo "Método de solicitud no válido.";
+    echo "ID del plan no proporcionado.";
 }
 // Verifica si la respuesta contiene datos
 if (is_array($ordenepublicidad) && !empty($ordenepublicidad)) {
@@ -2253,122 +2234,98 @@ function recopilarDatos() {
 }
 
 
-async function enviarDatos() {
-    try {
-        const datos = recopilarDatos();  // Asegúrate de que recopilarDatos() devuelva los datos correctos para la tabla "json"
-        const usuariodato = recopilarUsuario();
-        // Usa el id_planes_publicidad ya existente
-        const id_planes_publicidad = <?php echo json_encode($planEncontrado); ?>;
-        const id_ordenes_de_comprar = <?php echo json_encode($id_ordenP); ?>;
-        
-        
-        console.log(id_ordenes_de_comprar, "ORDENES");
-        console.log(id_planes_publicidad, "Planes");
-        
-        // Preparar los datos para la actualización de PlanesPublicidad
+const id_planes_publicidad = <?php echo json_encode($id_planes_publicidad); ?>;
+console.log(id_planes_publicidad,"asdad" );
+console.log(id_calendar,"asdad2" );
+function enviarDatos() {
+    const datos = recopilarDatos();  // Asegúrate de que recopilarDatos() devuelva los datos correctos para la tabla "json"
+
+    // Usa el id_planes_publicidad ya existente
+    const id_planes_publicidad = document.getElementById('selected-plan-id').value;
+    const id_ordenes_de_comprar = document.getElementById('ordenpublicidad-id').value; // Obtén el valor del campo oculto
+    console.log(id_ordenes_de_comprar,"ORDENES");
+    
+
+        // Preparar los datos para la segunda actualización
         const datosPlan = {
-            id_planes_publicidad: id_planes_publicidad,
             NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
-            usuarioregistro: usuariodato,
-                id_cliente: document.getElementById('selected-client-id').value,
-                id_producto: document.getElementById('selected-product-id').value,
-                id_contrato: document.getElementById('selected-contrato-id').value,
-                id_soporte: document.getElementById('selected-soporte-id').value,
-                detalle: document.getElementById('descripcion').value,
-                id_campania: document.getElementById('selected-campania-id').value,
-                id_temas: document.getElementById('selected-temas-id').value,
-                tipo_item: document.getElementById('selected-tipo').value,                
-                fr_factura: document.getElementById('forma-facturacion').value,
-                estado: '1',
-                datosRecopilados: datos
+            id_cliente: document.getElementById('selected-client-id').value,
+            id_producto: document.getElementById('selected-product-id').value,
+            id_contrato: document.getElementById('selected-contrato-id').value,
+            id_soporte: document.getElementById('selected-soporte-id').value,
+            detalle: document.getElementById('descripcion').value,
+            id_campania: document.getElementById('selected-campania-id').value,
+            id_temas: document.getElementById('selected-temas-id').value,
+            usuarioregistro: userdatos,
+            fr_factura: document.getElementById('forma-facturacion').value,
+            id_calendar: id_calendar, // Usa el id_calendar existente
+            id_planes_publicidad: id_planes_publicidad
         };
-        
-        console.log(datosPlan, "datosplan");
-
-        // Configuración de headers para Supabase
-        const headers = {
-            'Content-Type': 'application/json',
-            'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-            'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc'
-        };
-
-        // Primera solicitud: Actualizar PlanesPublicidad
-        const responsePlan = await fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?id_planes_publicidad=eq.${id_planes_publicidad}`, {
-            method: 'PUT',
-            headers: headers,
-            body: JSON.stringify(datosPlan)
-        });
-
-        if (!responsePlan.ok) {
-            const errorText = await responsePlan.text();
-            throw new Error(`HTTP error! status: ${responsePlan.status}, message: ${errorText}`);
-        }
-
-        console.log('Actualización del plan exitosa');
-
-        // Preparar los datos para la actualización de OrdenesDePublicidad (primera parte)
-        const datosOrdenpublicidad = {
-            estado: '0',
-            id_ordenes_de_comprar: id_ordenes_de_comprar,
-            estadoorden: 'Anulada',
-            usuarioregistro: usuariodato
-        };
-
-        // Segunda solicitud: Actualizar OrdenesDePublicidad (primera parte)
-        const responseOrdenPub1 = await fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?id_ordenes_de_comprar=eq.${id_ordenes_de_comprar}`, {
+        console.log(datosPlan,"datosplan");
+        // Actualización del registro en la tabla "PlanesPublicidad"
+        fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?id_planes_publicidad=eq.${id_planes_publicidad}`, {
             method: 'PUT',
             headers: {
-                ...headers,
+                'Content-Type': 'application/json',
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+            },
+            body: JSON.stringify(datosPlan)
+        });
+    }.then(response => {
+        console.log('Respuesta completa de la actualización del plan:', response);
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+            });
+        }
+        return response.text();
+    })
+    .then(data => {
+        console.log('Actualización del plan exitosa:', data);
+
+        // Preparar los datos para la tercera actualización
+        const datosOrdenpublicidad = {
+            // Agrega los campos necesarios aquí
+            // Ejemplo:
+            id_cliente: document.getElementById('selected-client-id').value,
+            num_contrato: document.getElementById('selected-contrato-id').value,
+            id_proveedor: document.getElementById('selected-proveedor-id').value,
+            id_soporte: document.getElementById('selected-soporte-id').value,
+            id_tema: document.getElementById('selected-temas-id').value,
+            id_plan: id_planes_publicidad,
+            id_calendar: id_calendar,
+            usuarioregistro: userdatos,
+            id_ordenes_de_comprar: id_ordenes_de_comprar,
+            Megatime: document.getElementById('selected-temas-codigo').value,
+            id_agencia: document.getElementById('selected-campania-agencia').value,
+            id_clasificacion: document.getElementById('selected-id-clasificacion').value === "" ? null : document.getElementById('selected-id-clasificacion').value,
+            numero_orden: document.getElementById('selected-orden-id').value
+        };
+
+        // Actualización del registro en la tabla "OrdenesDePublicidad"
+        return fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?id_ordenes_de_comprar=eq.${id_ordenes_de_comprar}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
                 'Prefer': 'return=representation'
             },
             body: JSON.stringify(datosOrdenpublicidad)
         });
-
-        if (!responseOrdenPub1.ok) {
-            const errorText = await responseOrdenPub1.text();
-            throw new Error(`HTTP error! status: ${responseOrdenPub1.status}, message: ${errorText}`);
+    })
+    .then(response => {
+        console.log('Respuesta completa de la actualización de OrdenesDePublicidad:', response);
+        if (!response.ok) {
+            return response.text().then(text => {
+                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
+            });
         }
-
-        console.log('Actualización de OrdenesDePublicidad exitosa');
-
-        // Preparar los datos para la nueva orden de publicidad
-        const datosOrdenpublicidad2 = {
-
-            id_cliente: document.getElementById('selected-client-id').value ?? null,
-                num_contrato: document.getElementById('selected-contrato-id').value ?? null,
-                id_proveedor: document.getElementById('selected-proveedor-id').value ?? null,
-                id_soporte: document.getElementById('selected-soporte-id').value ?? null,
-                id_tema: document.getElementById('selected-temas-id').value ?? null,
-                id_plan: id_planes_publicidad,
-                detalle: document.getElementById('descripcion').value ?? null,
-                datosRecopiladosb: datos,
-                usuarioregistro: usuariodato,
-                tipo_item: document.getElementById('selected-tipo').value ?? null,
-                Megatime: document.getElementById('selected-temas-codigo').value ?? null,
-                id_agencia: document.getElementById('selected-campania-agencia').value ?? null,
-                id_clasificacion: document.getElementById('selected-id-clasificacion').value || null,
-                numero_orden: document.getElementById('selected-orden-id').value ?? null,
-                estado: '1',
-                remplaza: id_ordenes_de_comprar
-        };
-
-        // Tercera solicitud: Crear nueva orden de publicidad
-        const responseNuevaOrden = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad', {
-            method: 'POST',
-            headers: {
-                ...headers,
-                'Prefer': 'return=representation'
-            },
-            body: JSON.stringify(datosOrdenpublicidad2)
-        });
-
-        if (!responseNuevaOrden.ok) {
-            const errorText = await responseNuevaOrden.text();
-            throw new Error(`HTTP error! status: ${responseNuevaOrden.status}, message: ${errorText}`);
-        }
-
-        console.log('Creación de nueva OrdenesDePublicidad exitosa');
-
+        return response.text();
+    })
+    .then(data => {
+        console.log('Actualización de OrdenesDePublicidad exitosa:', data);
         Swal.fire({
             title: '¡Éxito!',
             text: 'Los datos se han actualizado correctamente.',
@@ -2379,7 +2336,8 @@ async function enviarDatos() {
                 window.location.href = '/ListPlanes.php';
             }
         });
-    } catch (error) {
+    })
+    .catch(error => {
         console.error('Error al actualizar los datos:', error);
         Swal.fire({
             title: 'Error',
@@ -2387,8 +2345,7 @@ async function enviarDatos() {
             icon: 'error',
             confirmButtonText: 'OK'
         });
-    }
-}
+    });
 });
 
 </script>
