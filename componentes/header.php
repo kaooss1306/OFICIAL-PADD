@@ -14,7 +14,7 @@ $avatar_usuario = $_SESSION["user"]["Avatar"] ?? "Usuario";
 $iduser = $_SESSION["user"]["id_usuario"] ?? "Usuario";
 $idPerfil = $_SESSION["user"]["id_perfil"] ?? "Usuario";
 
-$ruta = "https://supreme-space-potato-5rj57rp96q9hpgp6-3000.app.github.dev/";
+$ruta = "https://laughing-trout-rw96xxv6957hx7xg-3000.app.github.dev/";
 
 
 

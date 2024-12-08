@@ -71,7 +71,7 @@ require_once 'componentes/sidebar.php';
                                             <th>Cod Megatime</th>
                                             <th>Tema</th>
                                             <th>Soporte</th>
-                                            <th>Clasificación</th>
+                                     
                                             <th>Fecha</th>
                                             <th>Estado</th>
                                             <th>Acciones</th>
@@ -89,7 +89,8 @@ require_once 'componentes/sidebar.php';
                                             <td><?php echo htmlspecialchars($orden['Megatime']); ?></td>
                                             <td><?php echo htmlspecialchars($temasMap[$orden['id_tema']]['NombreTema'] ?? ''); ?></td>
                                             <td><?php echo htmlspecialchars($soportesMap[$orden['id_soporte']]['nombreIdentficiador'] ?? ''); ?></td>
-                                            <td><?php echo htmlspecialchars($clasificacionesMap[$orden['id_clasificacion']]['NombreClasificacion'] ?? ''); ?></td>
+                                         
+                                            <td><?php echo htmlspecialchars($orden['fechaCreacion'] ?? ''); ?></td>
                                             <td>
                                             <div class="alineado">
                                             <label class="custom-switch sino" data-toggle="tooltip" 
