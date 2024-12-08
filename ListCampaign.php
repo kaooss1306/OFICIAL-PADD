@@ -48,7 +48,9 @@ include 'componentes/sidebar.php';
                                 <label for="fechaFin" class="placeholder">Fecha de Fin:</label>
                                     <input type="date" id="fechaFin" class="form-control" />
                                 </div>
+                                
                                 </div>
+
                                 <div class="col-md-2 d-flex align-items-end justify-content-start">
                               <div class="acciones-contenedor">
                               <label for="acciones" class="placeholder"> </label>
@@ -86,6 +88,7 @@ include 'componentes/sidebar.php';
                                     <tbody>
                                         <?php foreach ($campaign as $campania): ?>
                                             <tr data-fecha-creacion="<?php echo $campania['fechaCreacion']; ?>">
+
                                                 <td data-key="id_campania"><?php echo $campania['id_campania']; ?></td>
                                                 <td data-key="nombreCliente"><?php echo $clientesMap[$campania['id_Cliente']]['nombreCliente'] ?? ''; ?></td>
                                                 <td data-key="NombreCampania"><?php echo $campania['NombreCampania']; ?></td>
@@ -127,6 +130,8 @@ include 'componentes/sidebar.php';
 </div>
 
 <script>
+
+
 // Variables globales
 let allRows = [];
 let originalRows = [];
@@ -168,13 +173,14 @@ function filtrarPorRangoFechas() {
         const fechaCampania = new Date(fila.getAttribute('data-fecha-creacion'));
         const inicio = new Date(fechaInicio);
         const fin = new Date(fechaFin);
-
         // Ajustar horas para comparación precisa
         inicio.setHours(0, 0, 0, 0);
         fin.setHours(23, 59, 59, 999);
 
         return fechaCampania >= inicio && fechaCampania <= fin;
     });
+
+
 
     // Actualizar tabla
     actualizarTabla(filasFiltradas);
@@ -287,6 +293,12 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 });
+
+
+
+
+
+
 </script>
 
 <style>
