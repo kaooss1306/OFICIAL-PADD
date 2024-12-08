@@ -122,6 +122,8 @@ foreach ($ordenpublicidad as $ordenpu){
         'id_ordenespu' => $ordenpu['id_ordenes_de_comprar'],
         'datosrecopilados' => $ordenpu['datosRecopiladosb'],
         'tipo_item' => $ordenpu['tipo_item'],
+        'nombreusuario' => $ordenpu['usuarioregistro']['nombreusuario'] ?? '', 
+        'correousuario' => $ordenpu['usuarioregistro']['correousuario'] ?? '', 
         'remplaza' => $ordenpu['remplaza']
 
     ];
@@ -216,6 +218,8 @@ $nombreAnio = isset($anioId) && isset($aniosMap[$anioId])
     min-width: 30px;
 
 }
+.nameusu{color: #6878f2; font-weight: 700; font-size: 20px;}
+.correusu{font-size:16px; color:black;}
 .table-responsive {
         width: 100%;
         overflow-x: auto;
@@ -568,7 +572,7 @@ $totales = calcularTotales($datosProcesados);
                     
                     <td class="text-center"><?php echo $programa['totalDias']; ?></td>
                     <td class="text-end">$<?php echo number_format($programa['tarifaBruta'], 0, ',', '.'); ?></td>
-                    <td class="text-center"><?php echo $programa['descuento']; ?>%</td>
+                    <td class="text-center">$<?php echo $programa['descuento']; ?></td>
                     <td class="text-end">$<?php echo number_format($programa['tarifaNegociada'], 0, ',', '.'); ?></td>
                     <td class="text-end">$<?php echo number_format($programa['totalNeto'], 0, ',', '.'); ?></td>
                 </tr>
@@ -597,6 +601,14 @@ $totales = calcularTotales($datosProcesados);
         </tbody>
     </table>
 </div>
+<div style="margin-top:30px; display: flex; justify-content: flex-end; text-align: center; width: 100%;">
+                                            <div>
+                                                <input class="nombreuser" hidden value="<?php echo $nombre_usuario ?>">
+                                                <input class="correouser" hidden value="<?php echo $correoUsuario ?>">
+                                                <span class="nameusu"><?php echo $ordenespuMap[0]['nombreusuario']; ?></span><br>
+                                                <span class="correusu"><?php echo $ordenespuMap[0]['correousuario']; ?></span>
+                                            </div>
+                                        </div>
 
 </div>
 
