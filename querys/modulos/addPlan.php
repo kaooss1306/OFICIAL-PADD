@@ -517,19 +517,15 @@ border:1px solid #ff0000;
                                      </div>
                                      </div> 
                                      <div class="totalestotales"></div>
-                                     <div style="margin-top:30px; display: flex; justify-content: flex-end; text-align: center; width: 100%;">
-    <div>
-        <input class="nombreuser" hidden value="<?php echo $nombre_usuario ?>">
-        <input class="correouser" hidden value="<?php echo $correoUsuario ?>">
-        <span class="nameusu"><?php echo $nombre_usuario ?></span><br>
-        <span class="correusu"><?php echo $correoUsuario ?></span>
-    </div>
-</div>
-                                                            
-
-
-                                                                    
-                                                                    </div>
+                                        <div style="margin-top:30px; display: flex; justify-content: flex-end; text-align: center; width: 100%;">
+                                            <div>
+                                                <input class="nombreuser" hidden value="<?php echo $nombre_usuario ?>">
+                                                <input class="correouser" hidden value="<?php echo $correoUsuario ?>">
+                                                <span class="nameusu"><?php echo $nombre_usuario ?></span><br>
+                                                <span class="correusu"><?php echo $correoUsuario ?></span>
+                                            </div>
+                                        </div>
+                                    </div>
                                                                     </div>
                                                         
                                                             </div>

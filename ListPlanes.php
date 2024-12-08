@@ -10,12 +10,22 @@ include './querys/qplanes.php';
 $campaigns = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Campania?select=*');
 $clientes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Clientes?select=*');
 $contratos = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Contratos?select=*');
+$ordenepublicidad = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?select=*');
 $planes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?select=*');
 $meses = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Meses?select=*');
 $anos = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Anios?select=*');
 $productos = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Productos?select=*');
 $jsonData = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/json?select=*');
 $calendarMap = [];
+
+$ordenesporplan = [];
+foreach ($ordenepublicidad as $orden) {
+    $id_plan = $orden['id_plan']; // Asume que este es el nombre correcto de la columna
+    if (!isset($ordenesporplan[$id_plan])) {
+        $ordenesporplan[$id_plan] = [];
+    }
+    $ordenesporplan[$id_plan][] = $orden;
+}
 
 foreach ($jsonData as $calendar) {
     // Aquí asumimos que `id_calendar` es único y usamos su valor como clave en nuestro mapa
@@ -173,78 +183,109 @@ include 'componentes/sidebar.php';
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-striped" id="tableExportadora-simplificada">
-                                    <thead>
-                                        <tr>
-                                            <th>ID</th>
-                                            <th>Nombre Contrato</th>
-                                            <th>Cliente</th>
-                                            <th>Nombre plan</th>
-                                            <!-- <th>Mes</th>
-                                            <th>Año</th> -->
-                                            <th>Fecha de Creación</th>
-                                            <th>Estado</th>
-                                            <th>Acciones</th>
-                                        </tr>
-                                    </thead>
-                                    <tbody>
-                                <?php foreach ($planes as $plan): ?>
-<tr data-fecha-creacion="<?php echo $plan['fechaCreacion']; ?>">
-    <td data-key="idplan"><?php echo $plan['id_planes_publicidad']; ?></td>
-    <td><?php echo isset($contratosMap[$plan['id_contrato']]) ? $contratosMap[$plan['id_contrato']]['nombreContrato'] : 'N/A'; ?></td>
+                            <table class="table table-striped" id="tableExportadora">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre plan</th>
+            <th>Nombre Contrato</th>
+            <th>Cliente</th>
+            <th>Mes</th>
+            <th>Año</th>
+            <th>Estado</th>
+            <th>Órdenes</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+    <?php foreach ($planes as $plan): 
+        // Buscar órdenes relacionadas con este plan
+        $ordenesDelPlan = array_filter($ordenespuMap, function($ordenpu) use ($plan) {
+            return $ordenpu['idplanorden'] == $plan['id_planes_publicidad'];
+        });
 
-    <td data-key="nombrecliente">
-    <?php 
-    $idCliente = $contratosMap[$plan['id_contrato']]['idCliente'];
-    echo isset($clientesMap[$idCliente]) ? $clientesMap[$idCliente] : 'N/A'; 
     ?>
-</td>
+        <tr>
+            <td><?php echo $plan['id_planes_publicidad']; ?></td>
+            <td><?php echo $plan['NombrePlan']; ?></td>
+            <td><?php echo isset($contratosMap[$plan['id_contrato']]) ? $contratosMap[$plan['id_contrato']]['nombreContrato'] : 'N/A'; ?></td>
+            <td>
+                <?php 
+                $idCliente = $contratosMap[$plan['id_contrato']]['idCliente'];
+                echo isset($clientesMap[$idCliente]) ? $clientesMap[$idCliente] : 'N/A';
+                ?>
+            </td>
+            
+            <?php 
+            $datosRecopilados = $plan['datosRecopilados'];
+            $nombreMes = 'Mes no especificado'; 
+            $nombreAnio = 'Año no especificado';
 
-    <td><?php echo $plan['NombrePlan']; ?></td>
+            if (!empty($datosRecopilados['datos'])) {
+                $primerGrupo = $datosRecopilados['datos'][0];
+                $mesId = $primerGrupo['calendario'][0]['mes'];
+                $anioId = $primerGrupo['calendario'][0]['anio'];
+
+                $nombreMes = $mesesMap[$mesId]['Nombre'] ?? 'Mes no encontrado';
+                $nombreAnio = $aniosMap[$anioId]['years'] ?? 'Año no encontrado';
+            } 
+            ?>
+
+            <td><?php echo $nombreMes; ?></td>
+            <td><?php echo $nombreAnio; ?></td>
+            <td>
+                <div class="alineado">
+                    <label class="custom-switch mt-2" data-toggle="tooltip"
+                        title="<?php echo $plan['estado'] == 1 ? 'Desactivar plan' : 'Activar plan'; ?>">
+                        <input type="checkbox" name="custom-switch-checkbox-<?php echo $plan['id_planes_publicidad']; ?>"
+                            class="custom-switch-input estado-switch"
+                            data-id="<?php echo $plan['id_planes_publicidad']; ?>"
+                            data-tipo="plan"
+                            <?php echo $plan['estado'] == 1 ? 'checked' : ''; ?>>
+                        <span class="custom-switch-indicator"></span>
+                    </label>
+                </div>
+            </td>
+            
+            <td>
     <?php 
-// Si ya es un array, simplemente usa el array directamente
-$datosRecopilados = $plan['datosRecopilados'];
+    // Buscar la orden activa (sin estado)
+    $ordenActiva = null;
+    foreach ($ordenesDelPlan as $orden) {
+        if (empty($orden['estadoorden'])) {
+            $ordenActiva = $orden;
+            break;
+        }
+    }
 
-// Inicializa las variables antes del bloque condicional
-$nombreMes = 'Mes no especificado';
-$nombreAnio = 'Año no especificado';
-
-if (!empty($datosRecopilados['datos'])) {
-    $primerGrupo = $datosRecopilados['datos'][0];
-    
-    $mesId = $primerGrupo['calendario'][0]['mes'];
-    $anioId = $primerGrupo['calendario'][0]['anio'];
-    
-    $nombreMes = $mesesMap[$mesId]['Nombre'] ?? 'Mes no encontrado';
-    $nombreAnio = $aniosMap[$anioId]['years'] ?? 'Año no encontrado';
-}
-?>
-    
-    <td><?php echo $nombreMes; ?></td>
-    <td><?php echo $nombreAnio; ?></td>
-
-    <td>
-    <div class="alineado">
-    <label class="custom-switch mt-2" data-toggle="tooltip" 
-           title="<?php echo $plan['estado'] == 1 ? 'Desactivar plan' : 'Activar plan'; ?>">
-        <input type="checkbox" name="custom-switch-checkbox-<?php echo $plan['id_planes_publicidad']; ?>" 
-               class="custom-switch-input estado-switch" 
-               data-id="<?php echo $plan['id_planes_publicidad']; ?>"
-               data-tipo="plan"
-               <?php echo $plan['estado'] == 1 ? 'checked' : ''; ?>>
-        <span class="custom-switch-indicator"></span>
-    </label>
-</div>
+    if ($ordenActiva): ?>
+        ID <?php echo $ordenActiva['id_ordenespu']; ?> - Estado Activa 
+        <a style="margin-left:15px;" class="btn btn-primary micono" 
+           href="querys/modulos/orden.php?id_orden=<?php echo $ordenActiva['id_ordenespu']; ?>" 
+           data-toggle="tooltip" 
+           title="Ver Orden">
+            <i class="fas fa-eye"></i>
+        </a>
+    <?php else: ?>
+        <span class="badge badge-secondary">Sin órdenes</span>
+    <?php endif; ?>
 </td>
-<td>
-                                            <a class="btn btn-primary micono"href="views/viewPlan.php?id=<?php echo $plan['id_planes_publicidad']; ?>" data-toggle="tooltip" title="Ver Proveedor"><i class="fas fa-eye "></i></a> 
 
-                                                <a class="btn btn-success micono" href="querys/modulos/editarplan.php?id_planes_publicidad=<?php echo $plan['id_planes_publicidad']; ?>"><i class="fas fa-pencil-alt"></i></a>
-                                            </td>                                   
-</tr>
-<?php endforeach; ?>
-                                    </tbody>
-                                </table>
+
+            <td>
+                <a class="btn btn-primary micono" href="views/viewPlan.php?id=<?php echo $plan['id_planes_publicidad']; ?>" data-toggle="tooltip" title="Ver Plan">
+                    <i class="fas fa-eye"></i>
+                </a>
+
+
+                <a class="btn btn-success micono" href="querys/modulos/editarplan.php?id_planes_publicidad=<?php echo $plan['id_planes_publicidad']; ?>">
+                    <i class="fas fa-pencil-alt"></i>
+                </a>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </tbody>
+</table>
                             </div>
                         </div>
                     </div>
@@ -354,6 +395,9 @@ if (!empty($datosRecopilados['datos'])) {
 </div>
 
 <script>
+    $(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+});
 const clientesMap = <?php echo json_encode($clientesMap); ?>;
 const productosMap = <?php echo json_encode($productosMap); ?>;
 const campaignsMap = <?php echo json_encode($campaignsMap); ?>;
