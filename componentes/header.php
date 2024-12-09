@@ -15,7 +15,7 @@ $iduser = $_SESSION["user"]["id_usuario"] ?? "Usuario";
 $idPerfil = $_SESSION["user"]["id_perfil"] ?? "Usuario";
 
 
-$ruta = "https://probable-spork-95rwg54xr9737r4g-3000.app.github.dev/";
+$ruta = "https://redesigned-tribble-7gwp9vj9pv7cpppx-3000.app.github.dev/";
 
 
 

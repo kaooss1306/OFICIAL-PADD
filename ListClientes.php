@@ -8,6 +8,7 @@ include 'querys/qclientes.php';
 include 'componentes/header.php';
 include 'componentes/sidebar.php';
 ?>
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <style>
     .is-invalid {
         border-color: #dc3545 !important;
@@ -87,6 +88,14 @@ include 'componentes/sidebar.php';
                                             <input type="date" class="form-control" id="dateTo" placeholder="Fecha hasta">
                                         </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <button id="resetFilters" class="btn btn-secondary">
+                                            <i class="fas fa-redo"></i> 
+                                        </button>
+                                        <button id="exportarExcel" class="btn btn-success" disabled>
+                                        <i class="fas fa-file-excel"></i> 
+                                    </button>
+                                    </div>
                                 </div>
                                 <table class="table table-striped" id="tableExportadora">
                                     <thead>
@@ -108,16 +117,16 @@ include 'componentes/sidebar.php';
                                     <tbody>
                                         <?php foreach ($clientes as $cliente): ?>
                                         <tr>
-                                            <td><?php echo $cliente['id_cliente']; ?></td>
-                                            <td><?php echo date('d/m/Y', strtotime($cliente['created_at'])); ?></td>
-                                            <td><?php echo $cliente['nombreCliente']; ?></td>
-                                            <td><?php echo $cliente['nombreFantasia']; ?></td>
+                                            <td data-key="id_cliente"><?php echo $cliente['id_cliente']; ?></td>
+                                            <td data-key="fechaCreacion"><?php echo date('d/m/Y', strtotime($cliente['created_at'])); ?></td>
+                                            <td data-key="nombreCliente"><?php echo $cliente['nombreCliente']; ?></td>
+                                            <td data-key="NombreFantasia"><?php echo $cliente['nombreFantasia']; ?></td>
                                             <td><?php echo $cliente['grupo']; ?></td>
-                                            <td><?php echo $cliente['razonSocial']; ?></td>
-                                            <td><?php echo $tiposClienteMap[$cliente['id_tipoCliente']] ?? ''; ?></td>
-                                            <td><?php echo $cliente['RUT']; ?></td>
-                                            <td><?php echo $regionesMap[$cliente['id_region']] ?? ''; ?></td>
-                                            <td><?php echo $comunasMap[$cliente['id_comuna']] ?? ''; ?></td>
+                                            <td data-key="razonSocial"><?php echo $cliente['razonSocial']; ?></td>
+                                            <td data-key="TipoDeCliente"><?php echo $tiposClienteMap[$cliente['id_tipoCliente']] ?? ''; ?></td>
+                                            <td data-key="RUTEmpresa"><?php echo $cliente['RUT']; ?></td>
+                                            <td data-key="Region"><?php echo $regionesMap[$cliente['id_region']] ?? ''; ?></td>
+                                            <td data-key="Comuna"><?php echo $comunasMap[$cliente['id_comuna']] ?? ''; ?></td>
                                             <td>
                                                 <div class="alineado">
                                                     <label class="custom-switch sino" data-toggle="tooltip" 
@@ -918,24 +927,32 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    function filterTable() {
-        const searchText = document.getElementById('searchInput').value.toLowerCase();
-        const dateFrom = document.getElementById('dateFrom').value;
-        const dateTo = document.getElementById('dateTo').value;
-        const rows = document.querySelectorAll('#tableExportadora tbody tr');
+  
+});
+</script>
 
-        rows.forEach(row => {
-            let showRow = true;
-            const textContent = row.textContent.toLowerCase();
-            const dateCell = row.querySelector('td:nth-child(2)').textContent; // Fecha está en la segunda columna
-            const rowDate = convertDateFormat(dateCell);
+<script>
+function filterTable() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    const rows = document.querySelectorAll('#tableExportadora tbody tr');
+    
+    let visibleRowCount = 0;
 
-            // Filtrar por texto
-            if (searchText && !textContent.includes(searchText)) {
-                showRow = false;
-            }
+    rows.forEach(row => {
+        let showRow = true;
+        const textContent = row.textContent.toLowerCase();
+        const dateCell = row.querySelector('td:nth-child(2)')?.textContent?.trim();
+        const rowDate = dateCell ? convertDateFormat(dateCell) : null;
 
-            // Filtrar por rango de fechas
+        // Text filter
+        if (searchText && !textContent.includes(searchText)) {
+            showRow = false;
+        }
+
+        // Date range filter
+        if (rowDate) {
             if (dateFrom && dateTo) {
                 if (rowDate < dateFrom || rowDate > dateTo) {
                     showRow = false;
@@ -945,23 +962,93 @@ document.addEventListener('DOMContentLoaded', function() {
             } else if (dateTo && rowDate > dateTo) {
                 showRow = false;
             }
+        } else if ((dateFrom || dateTo) && (dateFrom !== '' || dateTo !== '')) {
+            showRow = false;
+        }
 
-            row.style.display = showRow ? '' : 'none';
-        });
-    }
+        row.style.display = showRow ? '' : 'none';
+        
+        if (showRow) {
+            visibleRowCount++;
+        }
+    });
 
-    function convertDateFormat(dateStr) {
+    // Update export button state
+    const exportButton = document.getElementById('exportarExcel');
+    exportButton.disabled = visibleRowCount === 0;
+}
+
+function convertDateFormat(dateStr) {
+    try {
         const parts = dateStr.split('/');
-        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+        if (parts.length === 3) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+    } catch (error) {
+        console.error('Error converting date:', error);
+    }
+    return null;
+}
+
+function exportarExcel() {
+    const visibleRows = document.querySelectorAll('#tableExportadora tbody tr:not([style*="display: none"])');
+    
+    if (visibleRows.length === 0) {
+        Swal2.fire({
+            icon: 'warning',
+            title: 'No hay datos para exportar',
+            text: 'Aplique filtros para ver datos antes de exportar'
+        });
+        return;
     }
 
-    document.getElementById('searchInput').addEventListener('input', filterTable);
-    document.getElementById('dateFrom').addEventListener('change', filterTable);
-    document.getElementById('dateTo').addEventListener('change', filterTable);
+    const datosExportar = Array.from(visibleRows).map(fila => ({
+        'ID': fila.querySelector('[data-key="id_cliente"]').textContent,
+        'Fecha': fila.querySelector('[data-key="fechaCreacion"]').textContent,
+        'Cliente': fila.querySelector('[data-key="nombreCliente"]').textContent,
+        'Nombre de Fantasia': fila.querySelector('[data-key="NombreFantasia"]').textContent,
+        'Tipo de Cliente': fila.querySelector('[data-key="TipoDeCliente"]').textContent,
+        'Razón Social': fila.querySelector('[data-key="razonSocial"]').textContent,
+        'RUT Empresa': fila.querySelector('[data-key="RUTEmpresa"]').textContent,
+        'Region': fila.querySelector('[data-key="Region"]').textContent,
+        'Comuna': fila.querySelector('[data-key="Comuna"]').textContent
+    }));
 
-    window.addEventListener('load', hideLoading);
+    const hoja = XLSX.utils.json_to_sheet(datosExportar);
+    const libro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libro, hoja, "Campañas");
+
+    XLSX.writeFile(libro, 'Clientes_Exportados.xlsx');
+}
+
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    filterTable();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const dateFrom = document.getElementById('dateFrom');
+    const dateTo = document.getElementById('dateTo');
+    const exportButton = document.getElementById('exportarExcel');
+    const resetButton = document.getElementById('resetFilters');
+
+    searchInput.addEventListener('input', filterTable);
+    dateFrom.addEventListener('change', filterTable);
+    dateTo.addEventListener('change', filterTable);
+    exportButton.addEventListener('click', exportarExcel);
+    
+    if (resetButton) {
+        resetButton.addEventListener('click', resetFilters);
+    }
+
+    // Initially disable export if no rows
+    exportButton.disabled = document.querySelectorAll('#tableExportadora tbody tr').length === 0;
 });
 </script>
+
 
 <?php include 'componentes/settings.php'; ?>
 <script src="assets/js/toggleClientes.js"></script>

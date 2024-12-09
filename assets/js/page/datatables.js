@@ -73,11 +73,14 @@ $('#tableExportadora').DataTable({
     {
       targets: -1, // Última columna
       visible: true,
-      searchable: true,
+      searchable: false,
       printable: false,
       ordering: true
     }
-  ]
-});
+  ],
+  searching: false // Oculta la barra de búsqueda de la tabla
+}
+
+);
 
 $('.btn-export-excel').addClass('disabled');

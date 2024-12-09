@@ -79,6 +79,8 @@ foreach ($contratos as $contrato) {
 include 'componentes/header.php';
 include 'componentes/sidebar.php';
 ?>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 <style>
 
 .custom-select-container {
@@ -122,7 +124,6 @@ include 'componentes/sidebar.php';
 </style>
   <!-- Incluir librerías necesarias -->
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
 
 <div class="main-content">
 <nav aria-label="breadcrumb">
@@ -144,49 +145,42 @@ include 'componentes/sidebar.php';
                             </div>
                         </div>
                         </div>
-                        <div class="filtros-container">
-                            <div class="row">
-                                <div class="col-md-5">
-                                <div class="input-container">
-                                <label for="fechaInicio" class="placeholder">Fecha de inicio</label>
-                                    <input type="date" id="fechaInicio" class="form-control" />
-                                  
-                                </div>
-                                </div>
-                                <div class="col-md-5">
-                                <div class="input-container">
-
-                                <label for="fechaFin" class="placeholder">Fecha de Fin:</label>
-                                    <input type="date" id="fechaFin" class="form-control" />
-                                </div>
-                                
-                                </div>
-
-                                <div class="col-md-2 d-flex align-items-end justify-content-start">
-                              <div class="acciones-contenedor">
-                              <label for="acciones" class="placeholder"> </label>
-                              <div class="btn-group">
-                                        <button id="filtrarFechas" class="btn btn-primary mr-2">
-                                            <i class="fas fa-filter"></i> 
-                                        </button>
-                                        <button id="limpiarFiltros" class="btn btn-secondary mr-2">
-                                            <i class="fas fa-times"></i> 
-                                        </button>
-                                        <button id="exportarExcel" class="btn btn-success">
-                                            <i class="fas fa-file-excel"></i> 
-                                        </button>
-                                    </div>
-                              </div>
-                                  
-                                </div>
-                            </div>
-                        </div>
+                       
                         <div class="card-body">
+                        <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar...">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                            <input type="date" class="form-control" id="dateFrom" placeholder="Fecha desde">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                            <input type="date" class="form-control" id="dateTo" placeholder="Fecha hasta">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button id="resetFilters" class="btn btn-secondary">
+                                            <i class="fas fa-redo"></i> 
+                                        </button>
+                                        <button id="exportarExcel" class="btn btn-success" disabled>
+                                        <i class="fas fa-file-excel"></i> 
+                                    </button>
+                                    </div>
+                                </div>
                             <div class="table-responsive">
                             <table class="table table-striped" id="tableExportadora">
     <thead>
         <tr>
             <th>ID</th>
+            <th>Fecha Ingreso</th>
             <th>Nombre plan</th>
             <th>Nombre Contrato</th>
             <th>Cliente</th>
@@ -206,10 +200,11 @@ include 'componentes/sidebar.php';
 
     ?>
         <tr>
-            <td><?php echo $plan['id_planes_publicidad']; ?></td>
-            <td><?php echo $plan['NombrePlan']; ?></td>
-            <td><?php echo isset($contratosMap[$plan['id_contrato']]) ? $contratosMap[$plan['id_contrato']]['nombreContrato'] : 'N/A'; ?></td>
-            <td>
+            <td data-key="id_plan"><?php echo $plan['id_planes_publicidad']; ?></td>
+            <td data-key="fechaCreacion"><?php echo date('d/m/Y', strtotime($plan['created_at'])); ?></td>
+            <td data-key="nombreplan"><?php echo $plan['NombrePlan']; ?></td>
+            <td data-key="nombre_contrato"><?php echo isset($contratosMap[$plan['id_contrato']]) ? $contratosMap[$plan['id_contrato']]['nombreContrato'] : 'N/A'; ?></td>
+            <td data-key="cliente">
                 <?php 
                 $idCliente = $contratosMap[$plan['id_contrato']]['idCliente'];
                 echo isset($clientesMap[$idCliente]) ? $clientesMap[$idCliente] : 'N/A';
@@ -231,8 +226,8 @@ include 'componentes/sidebar.php';
             } 
             ?>
 
-            <td><?php echo $nombreMes; ?></td>
-            <td><?php echo $nombreAnio; ?></td>
+            <td data-key="mes"><?php echo $nombreMes; ?></td>
+            <td data-key="anio"><?php echo $nombreAnio; ?></td>
             <td>
                 <div class="alineado">
                     <label class="custom-switch mt-2" data-toggle="tooltip"
@@ -247,7 +242,7 @@ include 'componentes/sidebar.php';
                 </div>
             </td>
             
-            <td>
+            <td data-key="ordenes">
     <?php 
     // Buscar la orden activa (sin estado)
     $ordenActiva = null;
@@ -702,6 +697,132 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 </script>
+
+
+<script>
+function filterTable() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    const rows = document.querySelectorAll('#tableExportadora tbody tr');
+    
+    let visibleRowCount = 0;
+
+    rows.forEach(row => {
+        let showRow = true;
+        const textContent = row.textContent.toLowerCase();
+        const dateCell = row.querySelector('td:nth-child(2)')?.textContent?.trim();
+        const rowDate = dateCell ? convertDateFormat(dateCell) : null;
+
+        // Text filter
+        if (searchText && !textContent.includes(searchText)) {
+            showRow = false;
+        }
+
+        // Date range filter
+        if (rowDate) {
+            if (dateFrom && dateTo) {
+                if (rowDate < dateFrom || rowDate > dateTo) {
+                    showRow = false;
+                }
+            } else if (dateFrom && rowDate < dateFrom) {
+                showRow = false;
+            } else if (dateTo && rowDate > dateTo) {
+                showRow = false;
+            }
+        } else if ((dateFrom || dateTo) && (dateFrom !== '' || dateTo !== '')) {
+            showRow = false;
+        }
+
+        row.style.display = showRow ? '' : 'none';
+        
+        if (showRow) {
+            visibleRowCount++;
+        }
+    });
+
+    // Update export button state
+    const exportButton = document.getElementById('exportarExcel');
+    exportButton.disabled = visibleRowCount === 0;
+}
+
+function convertDateFormat(dateStr) {
+    try {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+    } catch (error) {
+        console.error('Error converting date:', error);
+    }
+    return null;
+}
+
+function exportarExcel() {
+    const visibleRows = document.querySelectorAll('#tableExportadora tbody tr:not([style*="display: none"])');
+    
+    if (visibleRows.length === 0) {
+        Swal2.fire({
+            icon: 'warning',
+            title: 'No hay datos para exportar',
+            text: 'Aplique filtros para ver datos antes de exportar'
+        });
+        return;
+    }
+
+    const datosExportar = Array.from(visibleRows).map(fila => ({
+        'ID': fila.querySelector('[data-key="id_plan"]').textContent,
+        'Fecha': fila.querySelector('[data-key="fechaCreacion"]').textContent,
+        'Nombre Plan': fila.querySelector('[data-key="nombreplan"]').textContent,
+        'Nombre de Contrato': fila.querySelector('[data-key="nombre_contrato"]').textContent,
+        'Cliente': fila.querySelector('[data-key="cliente"]').textContent,
+        'Mes': fila.querySelector('[data-key="mes"]').textContent,
+        'Año': fila.querySelector('[data-key="anio"]').textContent,
+        'Orden': fila.querySelector('[data-key="ordenes"]').textContent
+    }));
+
+    const hoja = XLSX.utils.json_to_sheet(datosExportar);
+    const libro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libro, hoja, "Campañas");
+
+    XLSX.writeFile(libro, 'Planes_Exportados.xlsx');
+}
+
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    filterTable();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const dateFrom = document.getElementById('dateFrom');
+    const dateTo = document.getElementById('dateTo');
+    const exportButton = document.getElementById('exportarExcel');
+    const resetButton = document.getElementById('resetFilters');
+
+    searchInput.addEventListener('input', filterTable);
+    dateFrom.addEventListener('change', filterTable);
+    dateTo.addEventListener('change', filterTable);
+    exportButton.addEventListener('click', exportarExcel);
+    
+    if (resetButton) {
+        resetButton.addEventListener('click', resetFilters);
+    }
+
+    // Initially disable export if no rows
+    exportButton.disabled = document.querySelectorAll('#tableExportadora tbody tr').length === 0;
+});
+</script>
+
+
+
+
+
+
+
+
 <style>
 .filtros-container {
     padding: 20px;
