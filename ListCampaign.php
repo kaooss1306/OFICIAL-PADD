@@ -28,51 +28,44 @@ include 'componentes/sidebar.php';
                                 <h4>Listado de Campañas</h4>
                             </div>
                             <div class="ml-auto">
-                                        <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarCampania">
-                                            <i class="fas fa-plus-circle"></i> Agregar Campañas
-                                        </a>
-                                    </div>
-                        </div>
-                        <div class="filtros-container">
-                            <div class="row">
-                                <div class="col-md-5">
-                                <div class="input-container">
-                                <label for="fechaInicio" class="placeholder">Fecha de inicio</label>
-                                    <input type="date" id="fechaInicio" class="form-control" />
-                                  
-                                </div>
-                                </div>
-                                <div class="col-md-5">
-                                <div class="input-container">
-
-                                <label for="fechaFin" class="placeholder">Fecha de Fin:</label>
-                                    <input type="date" id="fechaFin" class="form-control" />
-                                </div>
-                                
-                                </div>
-
-                                <div class="col-md-2 d-flex align-items-end justify-content-start">
-                              <div class="acciones-contenedor">
-                              <label for="acciones" class="placeholder"> </label>
-                              <div class="btn-group">
-                                        <button id="filtrarFechas" class="btn btn-primary mr-2">
-                                            <i class="fas fa-filter"></i> 
-                                        </button>
-                                        <button id="limpiarFiltros" class="btn btn-secondary mr-2">
-                                            <i class="fas fa-times"></i> 
-                                        </button>
-                                        <button id="exportarExcel" class="btn btn-success">
-                                            <i class="fas fa-file-excel"></i> 
-                                        </button>
-                                    </div>
-                              </div>
-                                  
-                                </div>
+                                <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalAgregarCampania">
+                                    <i class="fas fa-plus-circle"></i> Agregar Campañas
+                                </a>
                             </div>
                         </div>
+                   
                         <div class="card-body">
                             <div class="table-responsive">
-                                <table class="table table-striped text-center" id="tableExportadora-simplificada">
+                                <div class="row mb-3">
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar...">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                            <input type="date" class="form-control" id="dateFrom" placeholder="Fecha desde">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                            <input type="date" class="form-control" id="dateTo" placeholder="Fecha hasta">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button id="resetFilters" class="btn btn-secondary">
+                                            <i class="fas fa-redo"></i> 
+                                        </button>
+                                        <button id="exportarExcel" class="btn btn-success" disabled>
+                                        <i class="fas fa-file-excel"></i> 
+                                    </button>
+                                    </div>
+                                </div>
+                                <table class="table table-striped" id="tableExportadora">
+                                  
                                     <thead>
                                         <tr>
                                             <th>ID</th>
@@ -88,13 +81,12 @@ include 'componentes/sidebar.php';
                                     <tbody>
                                         <?php foreach ($campaign as $campania): ?>
                                             <tr data-fecha-creacion="<?php echo $campania['fechaCreacion']; ?>">
-
                                                 <td data-key="id_campania"><?php echo $campania['id_campania']; ?></td>
                                                 <td data-key="nombreCliente"><?php echo $clientesMap[$campania['id_Cliente']]['nombreCliente'] ?? ''; ?></td>
                                                 <td data-key="NombreCampania"><?php echo $campania['NombreCampania']; ?></td>
                                                 <td data-key="NombreDelProducto"><?php echo $productosMap[$campania['id_Producto']]['NombreDelProducto'] ?? ''; ?></td>
                                                 <td data-key="Anio"><?php echo $aniosMap[$campania['Anio']]['years'] ?? ''; ?></td>
-                                                <td data-key="fecha_creacion"><?php echo $campania['fechaCreacion']; ?></td>
+                                                <td data-key="fecha_creacion"><?php echo date('d/m/Y', strtotime($campania['fechaCreacion'])); ?></td>
                                                 <td>
                                                     <div class="alineado">
                                                         <label class="custom-switch sino" data-toggle="tooltip"
@@ -120,7 +112,6 @@ include 'componentes/sidebar.php';
                                     </tbody>
                                 </table>
                             </div>
-                        
                         </div>
                     </div>
                 </div>
@@ -130,200 +121,119 @@ include 'componentes/sidebar.php';
 </div>
 
 <script>
+function filterTable() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    const rows = document.querySelectorAll('#tableExportadora tbody tr');
+    
+    let visibleRowCount = 0;
 
+    rows.forEach(row => {
+        let showRow = true;
+        const textContent = row.textContent.toLowerCase();
+        const dateCell = row.querySelector('td:nth-child(6)')?.textContent?.trim();
+        const rowDate = dateCell ? convertDateFormat(dateCell) : null;
 
-// Variables globales
-let allRows = [];
-let originalRows = [];
+        // Text filter
+        if (searchText && !textContent.includes(searchText)) {
+            showRow = false;
+        }
 
-// Función para inicializar filas
-function inicializarFilas() {
-    const rows = document.querySelectorAll('#tableExportadora-simplificada tbody tr');
-    allRows = Array.from(rows);
-    originalRows = Array.from(rows);
-}
+        // Date range filter
+        if (rowDate) {
+            if (dateFrom && dateTo) {
+                if (rowDate < dateFrom || rowDate > dateTo) {
+                    showRow = false;
+                }
+            } else if (dateFrom && rowDate < dateFrom) {
+                showRow = false;
+            } else if (dateTo && rowDate > dateTo) {
+                showRow = false;
+            }
+        } else if ((dateFrom || dateTo) && (dateFrom !== '' || dateTo !== '')) {
+            showRow = false;
+        }
 
-// Función para filtrar por rango de fechas
-function filtrarPorRangoFechas() {
-    const fechaInicio = document.getElementById('fechaInicio').value;
-    const fechaFin = document.getElementById('fechaFin').value;
-
-    // Validaciones
-    if (!fechaInicio || !fechaFin) {
-        Swal.fire({
-            icon: 'warning',
-            title: 'Campos incompletos',
-            text: 'Por favor, seleccione tanto la fecha de inicio como la fecha de fin.'
-        });
-        return;
-    }
-
-    // Validar orden de fechas
-    if (new Date(fechaInicio) > new Date(fechaFin)) {
-        Swal.fire({
-            icon: 'error',
-            title: 'Rango de fechas inválido',
-            text: 'La fecha de inicio debe ser anterior a la fecha de fin.'
-        });
-        return;
-    }
-
-    // Filtrar filas
-    const filasFiltradas = originalRows.filter(fila => {
-        const fechaCampania = new Date(fila.getAttribute('data-fecha-creacion'));
-        const inicio = new Date(fechaInicio);
-        const fin = new Date(fechaFin);
-        // Ajustar horas para comparación precisa
-        inicio.setHours(0, 0, 0, 0);
-        fin.setHours(23, 59, 59, 999);
-
-        return fechaCampania >= inicio && fechaCampania <= fin;
+        row.style.display = showRow ? '' : 'none';
+        
+        if (showRow) {
+            visibleRowCount++;
+        }
     });
 
-
-
-    // Actualizar tabla
-    actualizarTabla(filasFiltradas);
-
-    // Manejar paginación
-    manejarPaginacion();
-
-    // Información de resultados
-    Swal.fire({
-        icon: 'info',
-        title: 'Filtrado Completado',
-        text: `Se encontraron ${filasFiltradas.length} campañas en el rango seleccionado.`
-    });
+    // Update export button state
+    const exportButton = document.getElementById('exportarExcel');
+    exportButton.disabled = visibleRowCount === 0;
 }
 
-// Función para manejar la visibilidad de la paginación
-function manejarPaginacion() {
-    const filasVisibles = document.querySelectorAll('#tableExportadora-simplificada tbody tr').length;
-    const paginacion = document.querySelector('.pagination');
-
-    if (paginacion) {
-        // Ocultar la paginación si hay menos de 10 o 50 registros
-        if (filasVisibles < 10 || filasVisibles < 50) {
-            paginacion.style.display = 'none';
-        } else {
-            paginacion.style.display = '';
+function convertDateFormat(dateStr) {
+    try {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
         }
+    } catch (error) {
+        console.error('Error converting date:', error);
     }
-}
-function manejarPaginacionLimpiar() {
-    const filasVisibles = document.querySelectorAll('#tableExportadora-simplificada tbody tr').length;
-    const paginacion = document.querySelector('.pagination');
-
-    if (paginacion) {
-        // Ocultar la paginación si hay menos de 10 o 50 registros
-        if (filasVisibles < 10 || filasVisibles < 50) {
-            paginacion.style.display = 'flex';
-        } else {
-            paginacion.style.display = '';
-        }
-    }
+    return null;
 }
 
-
-// Función para actualizar tabla
-function actualizarTabla(filas) {
-    const tbody = document.querySelector('#tableExportadora-simplificada tbody');
-    tbody.innerHTML = '';
-    filas.forEach(fila => tbody.appendChild(fila));
-    // manejarPaginacion();
-}
-
-// Función para exportar a Excel
 function exportarExcel() {
-    const filasAExportar = document.querySelectorAll('#tableExportadora-simplificada tbody tr');
-
-    // Validar que haya filas
-    if (filasAExportar.length === 0) {
-        Swal.fire({
+    const visibleRows = document.querySelectorAll('#tableExportadora tbody tr:not([style*="display: none"])');
+    
+    if (visibleRows.length === 0) {
+        Swal2.fire({
             icon: 'warning',
-            title: 'Sin datos',
-            text: 'No hay campañas para exportar.'
+            title: 'No hay datos para exportar',
+            text: 'Aplique filtros para ver datos antes de exportar'
         });
         return;
     }
 
-    // Preparar datos para exportación
-    const datosExportar = Array.from(filasAExportar).map(fila => ({
-        Cliente: fila.querySelector('[data-key="nombreCliente"]').textContent,
+    const datosExportar = Array.from(visibleRows).map(fila => ({
+        'ID': fila.querySelector('[data-key="id_campania"]').textContent,
+        'Cliente': fila.querySelector('[data-key="nombreCliente"]').textContent,
         'Nombre de Campaña': fila.querySelector('[data-key="NombreCampania"]').textContent,
-        Producto: fila.querySelector('[data-key="NombreDelProducto"]').textContent,
-        Año: fila.querySelector('[data-key="Anio"]').textContent,
+        'Producto': fila.querySelector('[data-key="NombreDelProducto"]').textContent,
+        'Año': fila.querySelector('[data-key="Anio"]').textContent,
         'Fecha de Creación': fila.querySelector('[data-key="fecha_creacion"]').textContent
     }));
 
-    // Crear libro de Excel
     const hoja = XLSX.utils.json_to_sheet(datosExportar);
     const libro = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(libro, hoja, "Campañas");
 
-    // Descargar archivo
     XLSX.writeFile(libro, 'Campañas_Exportadas.xlsx');
 }
 
-// Función para limpiar filtros
-function limpiarFiltros() {
-    document.getElementById('fechaInicio').value = '';
-    document.getElementById('fechaFin').value = '';
-    actualizarTabla(originalRows);
-    manejarPaginacionLimpiar();
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    filterTable();
 }
 
-// Event Listeners
 document.addEventListener('DOMContentLoaded', () => {
-    inicializarFilas();
-    // manejarPaginacion();
-    manejarPaginacionLimpiar()
-    document.getElementById('filtrarFechas').addEventListener('click', filtrarPorRangoFechas);
-    document.getElementById('exportarExcel').addEventListener('click', exportarExcel);
-    document.getElementById('limpiarFiltros').addEventListener('click', limpiarFiltros);
+    const searchInput = document.getElementById('searchInput');
+    const dateFrom = document.getElementById('dateFrom');
+    const dateTo = document.getElementById('dateTo');
+    const exportButton = document.getElementById('exportarExcel');
+    const resetButton = document.getElementById('resetFilters');
 
-    const inputs = document.querySelectorAll('input[type="date"]');
-    inputs.forEach(input => {
-        input.addEventListener('change', function () {
-            if (this.value) {
-                this.classList.add('not-empty');
-            } else {
-                this.classList.remove('not-empty');
-            }
-        });
-    });
+    searchInput.addEventListener('input', filterTable);
+    dateFrom.addEventListener('change', filterTable);
+    dateTo.addEventListener('change', filterTable);
+    exportButton.addEventListener('click', exportarExcel);
+    
+    if (resetButton) {
+        resetButton.addEventListener('click', resetFilters);
+    }
+
+    // Initially disable export if no rows
+    exportButton.disabled = document.querySelectorAll('#tableExportadora tbody tr').length === 0;
 });
-
-
-
-
-
-
 </script>
-
-<style>
-.filtros-container {
-    padding: 20px;
-
-}
-.pagination {
-    display: flex;
-    justify-content: center;
-    margin-top: 20px;
-}
-.btn-group button {
-    height: 42px;
-    width: 50px;
-}
-
-.card-header {
-    justify-content: space-between;
-}
-.acciones-contenedor {
-    display: flex;
-    flex-direction: column;
-}
-</style>
 
 <?php 
 include 'views/modalAgregarCampania.php';
@@ -331,5 +241,3 @@ include 'views/modalUpdateCampania.php';
 include 'componentes/settings.php';
 include 'componentes/footer.php';
 ?>
-
-

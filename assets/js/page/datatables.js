@@ -64,21 +64,11 @@ $('#tableExportadora-simplificada').DataTable({
 });
 
 $('#tableExportadora').DataTable({
-  dom: 'Bfrtip',
+
   language: {
     url: '//cdn.datatables.net/plug-ins/2.1.3/i18n/es-MX.json',
   },
-  buttons: [
-
-    {
-      extend: 'csv',
-      exportOptions: { columns: ':not(:last-child)' }
-    },
-    {
-      extend: 'excel',
-      exportOptions: { columns: ':not(:last-child)' }
-    }
-  ],
+ 
   columnDefs: [
     {
       targets: -1, // Última columna
@@ -90,4 +80,4 @@ $('#tableExportadora').DataTable({
   ]
 });
 
-
+$('.btn-export-excel').addClass('disabled');
