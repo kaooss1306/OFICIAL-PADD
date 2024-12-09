@@ -542,3 +542,9 @@ body {
 #avatarImagen {
     border-radius: 20px !important;
 }
+button#resetFilters {
+    height: 42px;
+}
+button#exportarExcel {
+    height: 42px;
+}

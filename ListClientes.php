@@ -68,10 +68,31 @@ include 'componentes/sidebar.php';
                         </div>
                         <div class="card-body">
                             <div class="table-responsive">
+                                <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar...">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                            <input type="date" class="form-control" id="dateFrom" placeholder="Fecha desde">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                            <input type="date" class="form-control" id="dateTo" placeholder="Fecha hasta">
+                                        </div>
+                                    </div>
+                                </div>
                                 <table class="table table-striped" id="tableExportadora">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
+                                            <th>Fecha de Ingreso</th>
                                             <th>Nombre Cliente</th>
                                             <th>Nombre de Fantasia</th>
                                             <th>Grupo</th>
@@ -88,6 +109,7 @@ include 'componentes/sidebar.php';
                                         <?php foreach ($clientes as $cliente): ?>
                                         <tr>
                                             <td><?php echo $cliente['id_cliente']; ?></td>
+                                            <td><?php echo date('d/m/Y', strtotime($cliente['created_at'])); ?></td>
                                             <td><?php echo $cliente['nombreCliente']; ?></td>
                                             <td><?php echo $cliente['nombreFantasia']; ?></td>
                                             <td><?php echo $cliente['grupo']; ?></td>
@@ -895,6 +917,47 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         });
     }
+
+    function filterTable() {
+        const searchText = document.getElementById('searchInput').value.toLowerCase();
+        const dateFrom = document.getElementById('dateFrom').value;
+        const dateTo = document.getElementById('dateTo').value;
+        const rows = document.querySelectorAll('#tableExportadora tbody tr');
+
+        rows.forEach(row => {
+            let showRow = true;
+            const textContent = row.textContent.toLowerCase();
+            const dateCell = row.querySelector('td:nth-child(2)').textContent; // Fecha está en la segunda columna
+            const rowDate = convertDateFormat(dateCell);
+
+            // Filtrar por texto
+            if (searchText && !textContent.includes(searchText)) {
+                showRow = false;
+            }
+
+            // Filtrar por rango de fechas
+            if (dateFrom && dateTo) {
+                if (rowDate < dateFrom || rowDate > dateTo) {
+                    showRow = false;
+                }
+            } else if (dateFrom && rowDate < dateFrom) {
+                showRow = false;
+            } else if (dateTo && rowDate > dateTo) {
+                showRow = false;
+            }
+
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+
+    function convertDateFormat(dateStr) {
+        const parts = dateStr.split('/');
+        return `${parts[2]}-${parts[1]}-${parts[0]}`;
+    }
+
+    document.getElementById('searchInput').addEventListener('input', filterTable);
+    document.getElementById('dateFrom').addEventListener('change', filterTable);
+    document.getElementById('dateTo').addEventListener('change', filterTable);
 
     window.addEventListener('load', hideLoading);
 });
