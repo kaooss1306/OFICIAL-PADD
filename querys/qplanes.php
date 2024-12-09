@@ -87,18 +87,18 @@ $campaniaTemasMap = [];
 foreach ($campania_temas as $relacion) {
     $campaniaTemasMap[$relacion['id_campania']][] = $relacion['id_temas'];
 }
-$temasMap = [];
-foreach ($temas as $tema) {
-    if ($tema['estado'] === true) {
-    $temasMap[] = [
-        'id' => $tema['id_tema'],
-        'nombreTema' => $tema['NombreTema'],
-        'CodigoMegatime' => $tema['CodigoMegatime'],
-        'id_medio' => $tema['id_medio'],
-        'Duracion' => $tema['Duracion']
-    ];
-}
-}
+    $temasMap = [];
+    foreach ($temas as $tema) {
+        if ($tema['estado'] === true) {
+        $temasMap[] = [
+            'id' => $tema['id_tema'],
+            'nombreTema' => $tema['NombreTema'],
+            'CodigoMegatime' => $tema['CodigoMegatime'],
+            'id_medio' => $tema['id_medio'],
+            'Duracion' => $tema['Duracion']
+        ];
+    }
+    }
 
 
 
@@ -156,7 +156,8 @@ foreach ($clientes as $cliente) {
     if ($cliente['estado'] === true) {
         $clientesMap[] = [
             'id' => $cliente['id_cliente'],
-            'nombreCliente' => $cliente['nombreCliente']
+            'nombreCliente' => $cliente['nombreCliente'], 
+            'razonSocial' => $cliente['razonSocial']
         ];
     }
 }
@@ -166,6 +167,7 @@ foreach ($productos as $producto) {
     $productosMap[] = [
         'id' => $producto['id'],
         'nombreProducto' => $producto['NombreDelProducto'],
+        'razonSocial' => $producto['razonSocial'],
         'idCliente' => $producto['Id_Cliente']
     ];
 }

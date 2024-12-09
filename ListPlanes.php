@@ -260,12 +260,7 @@ include 'componentes/sidebar.php';
 
     if ($ordenActiva): ?>
         ID <?php echo $ordenActiva['id_ordenespu']; ?> - Estado Activa 
-        <a style="margin-left:15px;" class="btn btn-primary micono" 
-           href="querys/modulos/orden.php?id_orden=<?php echo $ordenActiva['id_ordenespu']; ?>" 
-           data-toggle="tooltip" 
-           title="Ver Orden">
-            <i class="fas fa-eye"></i>
-        </a>
+ 
     <?php else: ?>
         <span class="badge badge-secondary">Sin órdenes</span>
     <?php endif; ?>
@@ -273,9 +268,23 @@ include 'componentes/sidebar.php';
 
 
             <td>
-                <a class="btn btn-primary micono" href="views/viewPlan.php?id=<?php echo $plan['id_planes_publicidad']; ?>" data-toggle="tooltip" title="Ver Plan">
+                <?php 
+                    $id_orden_de_compra = null;
+                    $planes = $plan['id_planes_publicidad'];
+                    foreach ($ordenespuMap as $ordenpu) {
+                        if ($ordenpu['idplanorden'] == $planes && 
+                            (empty($ordenpu['estadoorden']) || is_null($ordenpu['estadoorden']))) {
+                            $id_orden_de_compra = $ordenpu['id_ordenespu'];
+                            break;
+                        }
+                    }
+                ?>
+                <a class="btn btn-primary micono" href="querys/modulos/orden.php?id_orden=<?php echo $id_orden_de_compra; ?>" data-toggle="tooltip" title="Ver Plan">
                     <i class="fas fa-eye"></i>
                 </a>
+
+
+
 
 
                 <a class="btn btn-success micono" href="querys/modulos/editarplan.php?id_planes_publicidad=<?php echo $plan['id_planes_publicidad']; ?>">
