@@ -120,9 +120,10 @@ $id_campania = $plan['id_campania'];
 // Obtener el nombre de la campaña basado en el ID
 $nombreCampania = isset($campaignsMap2[$id_campania]) ? $campaignsMap2[$id_campania] : "Nombre no disponible";
 $id_tema = $plan['id_temas'];
+$nombreTema = isset($temasMap2[$id_tema]['NombreTema']) ? $temasMap2[$id_tema]['NombreTema'] : "Nombre no disponible";
 $programas = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Programas?select=*');
 // Obtener el nombre del tema basado en el ID
-$nombreTema = isset($temasMap2[$id_tema]['NombreTema']) ? $temasMap2[$id_tema]['NombreTema'] : "Nombre no disponible";
+
 $idMedio = isset($temasMap2[$id_tema]['id_medio']) ? $temasMap2[$id_tema]['id_medio'] : "ID Medio no disponible";
 $selectedFrFactura = $plan['fr_factura'];
 // Ejemplo de datos obtenidos de la base de datos (asumiendo JSON decode)
@@ -311,7 +312,7 @@ border:1px solid #ff0000;
     margin: 0 auto;
     padding: 50px;">
     <form id="formularioPlan">
-        <input value="<?php echo $id_orden_de_compra;?>">
+        <input type="hidden" value="<?php echo $id_orden_de_compra;?>">
                     <!-- Campos del formulario -->
                     <div><div class="fountun"><div><h3 class="titulo-registro mb-3">Editar Plan</h3> </div><div class="sau titulot2"><span id="selected-month-span"></span><span id="selected-year-span"></span></div></div>
                         

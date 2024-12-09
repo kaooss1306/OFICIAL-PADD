@@ -8,153 +8,78 @@ include '../querys/qplanes.php';
 // Obtener el ID del cliente de la URL
 $idPlan = isset($_GET['id']) ? $_GET['id'] : null;
 $id_planes_publicidad = (int) $_GET['id'];
-
-// Obtener todos los planes desde Supabase
-
-// Verificar que $planes es un array y tiene datos
-if (!is_array($planes) || empty($planes)) {
-    echo "No se obtuvieron datos de los planes.";
-    exit;
-}
-
-// Buscar el plan que coincida con el ID
-$plan = null;
-foreach ($planes as $item) {
-    if ((int) $item['id_planes_publicidad'] === (int) $id_planes_publicidad) {
-        $plan = $item;
+// Filtrar el plan específico basado en el ID
+$plan_seleccionado = null;
+foreach ($planes as $plan) {
+    if ($plan['id_planes_publicidad'] == $id_planes_publicidad) {
+        $plan_seleccionado = $plan;
         break;
     }
 }
 
-// Verifica si se encontró el plan
-if ($plan === null) {
-    echo "No se encontró el plan publicitario.";
-    exit;
-}
-if (!$idPlan) {
-    die("No se proporcionó un ID de cliente válido.");
-}
-
-// Obtener datos del cliente específico
-$url = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?id_planes_publicidad=eq.$idPlan&select=*";
-$planmed = makeRequest($url);
-$datosPlan = $planmed[0];
-// Verificar si se obtuvo el medio
-
-// Obtener datos
-$temas = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Temas?select=*');
-$soportes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Soportes?select=*');
-$proveedores = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Proveedores?select=*');
-$clientes = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Clientes?select=*');
-$contratos = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Contratos?select=*');
- 
-$meses = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Meses?select=*');
-$anos = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Anios?select=*');
-$productos = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Productos?select=*');
-$jsonData = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/json?select=*');
-$calendarMap = [];
-
-foreach ($jsonData as $calendar) {
-    // Aquí asumimos que `id_calendar` es único y usamos su valor como clave en nuestro mapa
-    $calendarMap[$calendar['id_calendar']] = $calendar['matrizCalendario'];
-}
-$mesesNombres = [
-    1 => 'Enero',
-    2 => 'Febrero',
-    3 => 'Marzo',
-    4 => 'Abril',
-    5 => 'Mayo',
-    6 => 'Junio',
-    7 => 'Julio',
-    8 => 'Agosto',
-    9 => 'Septiembre',
-    10 => 'Octubre',
-    11 => 'Noviembre',
-    12 => 'Diciembre'
-];
-
-$clientesMap = [];
-foreach ($clientes as $cliente) {
-    $clientesMap[$cliente['id_cliente']] = [
-        'nombreCliente' => $cliente['nombreCliente'],
-        'razonSocial' => $cliente['razonSocial']
-    ];
-}
-$campaignsMap2 = [];
-foreach ($campaigns as $campaign) {
-    $campaignsMap2[$campaign['id_campania']] = [
-        'id' => $campaign['id_campania'],
-        'nombreCampania' => $campaign['NombreCampania'],
-        'idCliente' => $campaign['id_Cliente']
-    ];
-}
-
-$soportesMap = [];
-foreach ($soportes as $soporte) {
-    $soportesMap[] = [
-        'id' => $soporte['id_soporte'],
-        'nombreIdentficiador' => $soporte['nombreIdentficiador'],
-        'idProveedor' => $soporte['id_proveedor']
-    ];
-}
-$temasMap2 = [];
-foreach ($temas as $tema) {
-    $temasMap2[] = [
-        'id' => $tema['id_tema'],
-        'NombreTema' => $tema['NombreTema'],
-        'CodigoMegatime' => $tema['CodigoMegatime'],
-        'id_medio' => $tema['id_medio']
-    ];
-}
 
 
-$contratosMap = [];
-foreach ($contratos as $contrato) {
-    $contratosMap[$contrato['id']] = [
-        'nombreContrato' => $contrato['NombreContrato'],
-        'idCliente' => $contrato['IdCliente'],
-        'idProveedor' => $contrato['IdProveedor']
-    ];
-}
-$proveedoresMap = [];
-foreach ($proveedores as $proveedor) {
-    $proveedoresMap[$proveedor['id']] = [
-        'nombreProveedor' => $proveedor['NombreProveedor']
-    ];
-}
-$calendarMap2 = [];
-foreach ($jsonData as $calendar) {
-    // Aquí asumimos que `id_calendar` es único y usamos su valor como clave en nuestro mapa
-    $calendarMap2[$calendar['id_calendar']] = $calendar['matrizCalendario'];
+$nombre_plan = $plan_seleccionado['NombrePlan'];
+$idproducto = $plan_seleccionado['id_producto'];
+$idcampaña = $plan_seleccionado['id_campania'];
+$idSoporte = $plan_seleccionado['id_soporte'];
+$fac = $plan_seleccionado['fr_factura'];
+$idcontrato = $plan_seleccionado['id_contrato'];
+$idCliente = $plan_seleccionado['id_cliente'];
+
+$nombreCliente = '';
+$razonSocial = '';
+foreach ($clientesMap as $cliente) {
+    if ($cliente['id'] == $idCliente) {
+        $nombreCliente = $cliente['nombreCliente'];
+        $razonSocial = $cliente['razonSocial'];
+        break; // Terminar el bucle una vez encontrado
+    }
 }
 
-// Luego, para acceder a 'razonSocial' del cliente correspondiente al 'id_cliente' del plan seleccionado:
-$idCliente = $datosPlan['id_cliente']; // Aquí obtienes el 'id_cliente' del plan seleccionado
-$idPlan = $datosPlan['id_soporte'];
-$idTem = $datosPlan['id_temas'];
-$idCam = $datosPlan['id_campania'];
-$idContrato = $datosPlan['id_contrato'];
-$nombreProveedor = isset($proveedoresMap[$idProveedor]) ? $proveedoresMap[$idProveedor]['nombreProveedor'] : null;
-$contra = isset($contratosMap[$idContrato]) ? $contratosMap[$idContrato]['nombreContrato'] : null;
-$cammoe = isset($campaignsMap2[$idCam]) ? $campaignsMap2[$idCam]['nombreCampania'] : null;
-$razonSocial = isset($clientesMap[$idCliente]) ? $clientesMap[$idCliente]['razonSocial'] : null;
-$nombreCliente = isset($clientesMap[$idCliente]) ? $clientesMap[$idCliente]['nombreCliente'] : null;
-$soportename = isset($soportesMap[$idPlan]) ? $soportesMap[$idPlan]['nombreIdentficiador'] : null;
-$temm = isset($temasMap2[$idTem]) ? $temasMap2[$idTem]['NombreTema'] : null;
-
-$id_calendar = $plan['id_calendar'];
-$matrizCalendario = isset($calendarMap2[$id_calendar]) ? $calendarMap2[$id_calendar] : [];
-
-// Determinar el mes y año iniciales a partir de la matrizCalendario
-$mesInicial = isset($matrizCalendario[0]) ? $matrizCalendario[0]['mes'] : date('n');
-$anioInicial = isset($matrizCalendario[0]) ? $matrizCalendario[0]['anio'] : date('Y');
-$anioID = null; // Variable para almacenar el ID
-foreach ($anios2 as $anio) {
-  if ($anio['years'] == $anioInicial) {
-      $anioID = $anio['id'];
-      break; // Salir del bucle una vez encontrado
-  }
+$nombreProducto = '';
+$razonSocialProducto = '';
+foreach ($productosMap as $producto) {
+    if ($producto['id'] == $idproducto) {
+        $nombreProducto = $producto['nombreProducto'];
+        $razonSocialProducto = $producto['razonSocial'];
+        break; // Terminar el bucle una vez encontrado
+    }
 }
+$nombreSoporte = '';
+foreach ($soportesMap as $soporte) {
+    if ($soporte['id'] == $idSoporte) {
+        $nombreSoporte = $soporte['nombreSoporte'];
+        break; // Terminar el bucle una vez encontrado
+    }
+}
+$nombreCampania = '';
+foreach ($campaignsMap as $campaign) {
+    if ($campaign['id'] == $idcampaña) {
+        $nombreCampania = $campaign['nombreCampania'];
+        break; // Terminar el bucle una vez encontrado
+    }
+}
+
+$contratoSeleccionado = null;
+foreach ($contratosMap as $contrato) {
+    if ($contrato['id'] == $idcontrato) {
+        $contratoSeleccionado = $contrato;
+        break; // Salimos del loop cuando encontramos el contrato
+    }
+}
+$nombreContrato = $contratoSeleccionado['nombreContrato'];
+$idAnio = $contratoSeleccionado['id_Anio'];
+$idMes = $contratoSeleccionado['id_Mes'];
+
+// 3. Obtener el 'years' usando el id_Anio
+$year = isset($aniosMap[$idAnio]) ? $aniosMap[$idAnio]['years'] : null;
+
+// 4. Obtener el 'Nombre' del mes usando el id_Mes
+$mes = isset($mesesMap[$idMes]) ? $mesesMap[$idMes]['Nombre'] : null;
+
+
+
 include '../componentes/header.php';
 include '../componentes/sidebar.php';
 
@@ -223,7 +148,7 @@ include '../componentes/sidebar.php';
                                 </div>
                                 <div class="nombrex author-box-name">
 
-                                    <?php echo $datosPlan['NombrePlan']; ?>
+                                    <?php echo $id_orden_de_compra ?>
                                 </div>
                                 
                               
@@ -241,24 +166,40 @@ include '../componentes/sidebar.php';
                   </div>
                   <div class="card-body">
     <div class="py-4">
-                      
+
+                            <p class="clearfix">
+                                <span class="float-start">Cliente</span>
+                                <span class="float-right text-muted "><?php echo $nombreCliente ; ?></span>
+                            </p>
                             <p class="clearfix">
                                 <span class="float-start">Razón Social</span>
                                 <span class="float-right text-muted "><?php echo $razonSocial; ?></span>
                             </p>
-                             
+                            <p class="clearfix">
+                                <span class="float-start">Producto</span>
+                                <span class="float-right text-muted "><?php echo $nombreProducto; ?></span>
+                            </p>
                             <p class="clearfix">
                                 <span class="float-start">Soporte</span>
-                                <span class="float-right text-muted "><?php echo $soportename; ?></span>
-                            </p> 
-                            <p class="clearfix">
-                                <span class="float-start">Tema</span>
-                                <span class="float-right text-muted "><?php echo $temm; ?></span>
+                                <span class="float-right text-muted "><?php echo $nombreSoporte; ?></span>
                             </p> 
                             <p class="clearfix">
                                 <span class="float-start">Campaña</span>
-                                <span class="float-right text-muted "><?php echo $cammoe; ?><?php echo $idCam; ?></span>
+                                <span class="float-right text-muted "><?php echo $nombreCampania; ?></span>
                             </p>
+                            <p class="clearfix">
+                                <span class="float-start">Contrato</span>
+                                <span class="float-right text-muted "><?php echo $nombreContrato; ?></span>
+                            </p> 
+                            <p class="clearfix">
+                                <span class="float-start">Año</span>
+                                <span class="float-right text-muted "><?php echo $year; ?></span>
+                            </p> 
+                            <p class="clearfix">
+                                <span class="float-start">Mes</span>
+                                <span class="float-right text-muted "><?php echo $mes ; ?></span>
+                            </p> 
+                            
                             <p class="clearfix">
                                 <span class="float-start">Contrato</span>
                                 <span class="float-right text-muted "><?php echo $contra; ?><?php echo $idContrato; ?></span>
@@ -430,258 +371,3 @@ include '../componentes/sidebar.php';
       <?php include '../componentes/settings.php'; ?>
 <script src="../../../assets/js/updateMedio.js"></script>
 <?php include '../componentes/footer.php'; ?>
-
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    var anioID = <?php echo json_encode($anioID); ?>;
-    console.log('El ID para el año es:', anioID);
-    mesSelector.value = <?php echo $mesInicial; ?>;
-anioSelector.value = <?php echo json_encode($anioID); ?>;
-
-const diasContainer = document.getElementById('diasContainer');
-const submitButton = document.getElementById('submitButton');
-
-if (!mesSelector || !anioSelector || !diasContainer ) {
-    console.error('No se pudieron encontrar todos los elementos necesarios');
-    return;
-}
-
-const mesesMap = <?php echo json_encode($mesesMap); ?>;
-const aniosMap = <?php echo json_encode($aniosMap); ?>;
-const calendarMap2 = <?php echo json_encode($calendarMap2); ?>;
-const idCalendar = <?php echo json_encode($plan['id_calendar']); ?>;
-
-console.log('ID del Calendario:', idCalendar);
-console.log('Contenido de aniosMap:', aniosMap);
-
-function actualizarCalendario() {
-    const mesId = parseInt(mesSelector.value);
-    const anioId = parseInt(anioSelector.value);
-
-    console.log('Valor de anioSelector:', anioSelector.value, 'anioId:', anioId);
-    console.log('Mes seleccionado:', mesId, mesesMap[mesId]);
-    console.log('Año seleccionado:', anioId, aniosMap[anioId]);
-
-    if (isNaN(anioId)) {
-        console.error('El valor de anioId no es un número válido:', anioSelector.value);
-        return;
-    }
-
-    if (!aniosMap[anioId] || typeof aniosMap[anioId].years === 'undefined') {
-        console.error('No se encontró el año en aniosMap:', anioId);
-        return;
-    }
-
-    const mes = parseInt(mesesMap[mesId]['Id']);
-    const anio = parseInt(aniosMap[anioId]['years']);
-    const diasSemana = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'];
-    console.log('Mes y año para cálculos:', mes, anio);
-
-    const diasEnMes = new Date(anio, mes, 0).getDate();
-    console.log('Días en el mes:', diasEnMes);
-
-    diasContainer.innerHTML = '';
-
-    const matrizCalendario = calendarMap2[idCalendar] || [];
-
-    for (let dia = 1; dia <= diasEnMes; dia++) {
-
-        const fecha = new Date(anio, mes - 1, dia);
-        const nombreDia = diasSemana[fecha.getDay()];
-
-        const diaElement = document.createElement('div');
-        diaElement.className = 'dia';
-
-        // Busca si hay datos guardados para este día
-        const datosDia = matrizCalendario.find(item => item.dia === dia && item.mes === mes && item.anio === anio);
-        const cantidad = datosDia ? datosDia.cantidad : '';
-
-        diaElement.innerHTML = `
-         <div class="dia-nombre">${nombreDia}</div>
-            <div class="dia-numero">${dia}</div>
-            <input type="number" id="input-${anio}-${mes}-${dia}" value="${cantidad}" readonly />
-        `;
-        diasContainer.appendChild(diaElement);
-    }
-
-    console.log('Calendario actualizado con los datos existentes.');
-}
-
-function recopilarDatos() {
-    const mesId = parseInt(mesSelector.value);
-    const anioId = parseInt(anioSelector.value);
-    const mes = parseInt(mesesMap[mesId]['Id']);
-    const anio = parseInt(aniosMap[anioId]['years']);
-    const diasEnMes = new Date(anio, mes, 0).getDate();
-
-    // Obtén el ID del cliente seleccionado
-    const clienteId = parseInt(document.getElementById('selected-client-id').value);
-    const id_calendar = parseInt(document.getElementById('selected-calendar-id').value); 
-
-    const matrizCalendario = [];
-
-    for (let dia = 1; dia <= diasEnMes; dia++) {
-        const input = document.getElementById(`input-${anio}-${mes}-${dia}`);
-        if (input && input.value) {
-            matrizCalendario.push({
-                mes: mes,
-                anio: anio,
-                dia: dia,
-                cantidad: parseInt(input.value)
-            });
-        }
-    }
-
-    return {
-        id_calendar: id_calendar,  // Incluye el id_calendar en los datos
-        id_cliente: clienteId || 23, // Usa el ID del cliente seleccionado, o 23 como valor por defecto
-        matrizCalendario: matrizCalendario,
-   
-    };
-}
-
-mesSelector.addEventListener('change', actualizarCalendario);
-anioSelector.addEventListener('change', actualizarCalendario);
- 
-
-console.log('Inicializando calendario');
-actualizarCalendario();
-
-const id_calendar = <?php echo json_encode($id_calendar); ?>;
-const id_planes_publicidad = <?php echo json_encode($id_planes_publicidad); ?>;
-console.log(id_planes_publicidad,"asdad" );
-console.log(id_calendar,"asdad2" );
-function enviarDatos() {
-    const datos = recopilarDatos();  // Asegúrate de que recopilarDatos() devuelva los datos correctos para la tabla "json"
-
-    // Usa el id_planes_publicidad ya existente
-    const id_planes_publicidad = document.getElementById('selected-plan-id').value;
-    const id_ordenes_de_comprar = document.getElementById('ordenpublicidad-id').value; // Obtén el valor del campo oculto
-    console.log(id_ordenes_de_comprar,"ordenesctm");
-    // Actualización del registro en la tabla "json"
-    fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/json?id_calendar=eq.${id_calendar}`, {
-        method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                'Prefer': 'return=representation'
-        },
-        body: JSON.stringify(datos)
-    })
-    .then(response => {
-        console.log('Respuesta completa de la actualización del calendario:', response);
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-            });
-        }
-        return response.json();  // Asumimos que la respuesta es un JSON
-    })
-    .then(data => {
-        console.log('Respuesta del servidor al actualizar calendario:', data);
-
-        // Preparar los datos para la segunda actualización
-        const datosPlan = {
-            NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
-            id_cliente: document.getElementById('selected-client-id').value,
-            id_producto: document.getElementById('selected-product-id').value,
-            id_contrato: document.getElementById('selected-contrato-id').value,
-            id_soporte: document.getElementById('selected-soporte-id').value,
-            detalle: document.getElementById('descripcion').value,
-            id_campania: document.getElementById('selected-campania-id').value,
-            id_temas: document.getElementById('selected-temas-id').value,
-            fr_factura: document.getElementById('forma-facturacion').value,
-            id_calendar: id_calendar, // Usa el id_calendar existente
-            id_planes_publicidad: id_planes_publicidad
-        };
-        console.log(datosPlan,"datosplan");
-        // Actualización del registro en la tabla "PlanesPublicidad"
-        return fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad?id_planes_publicidad=eq.${id_planes_publicidad}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-            },
-            body: JSON.stringify(datosPlan)
-        });
-    })
-    .then(response => {
-        console.log('Respuesta completa de la actualización del plan:', response);
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-            });
-        }
-        return response.text();
-    })
-    .then(data => {
-        console.log('Actualización del plan exitosa:', data);
-
-        // Preparar los datos para la tercera actualización
-        const datosOrdenpublicidad = {
-            // Agrega los campos necesarios aquí
-            // Ejemplo:
-            id_cliente: document.getElementById('selected-client-id').value,
-            num_contrato: document.getElementById('selected-contrato-id').value,
-            id_proveedor: document.getElementById('selected-proveedor-id').value,
-            id_soporte: document.getElementById('selected-soporte-id').value,
-            id_tema: document.getElementById('selected-temas-id').value,
-            id_plan: id_planes_publicidad,
-            id_calendar: id_calendar,
-            id_ordenes_de_comprar: id_ordenes_de_comprar,
-            Megatime: document.getElementById('selected-temas-codigo').value,
-            id_agencia: document.getElementById('selected-agencia-id').value,
-            id_clasificacion: document.getElementById('selected-id-clasificacion').value === "" ? null : document.getElementById('selected-id-clasificacion').value,
-            numero_orden: document.getElementById('selected-orden-id').value
-        };
-
-        // Actualización del registro en la tabla "OrdenesDePublicidad"
-        return fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?id_ordenes_de_comprar=eq.${id_ordenes_de_comprar}`, {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-                'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                'Prefer': 'return=representation'
-            },
-            body: JSON.stringify(datosOrdenpublicidad)
-        });
-    })
-    .then(response => {
-        console.log('Respuesta completa de la actualización de OrdenesDePublicidad:', response);
-        if (!response.ok) {
-            return response.text().then(text => {
-                throw new Error(`HTTP error! status: ${response.status}, message: ${text}`);
-            });
-        }
-        return response.text();
-    })
-    .then(data => {
-        console.log('Actualización de OrdenesDePublicidad exitosa:', data);
-        Swal.fire({
-            title: '¡Éxito!',
-            text: 'Los datos se han actualizado correctamente.',
-            icon: 'success',
-            confirmButtonText: 'OK'
-        }).then((result) => {
-            if (result.isConfirmed) {
-                window.location.reload(); // Recarga la página
-            }
-        });
-    })
-    .catch(error => {
-        console.error('Error al actualizar los datos:', error);
-        Swal.fire({
-            title: 'Error',
-            text: 'Error al actualizar los datos: ' + error.message,
-            icon: 'error',
-            confirmButtonText: 'OK'
-        });
-    });
-}
-
-   
-});
-</script>
