@@ -37,7 +37,7 @@
     $tiposClienteMap = array_column($tiposCliente, 'nombreTipoCliente', 'id_tyipoCliente');
     $regionesMap = array_column($regiones, 'nombreRegion', 'id');
     $comunasMap = array_column($comunas, 'nombreComuna', 'id_comuna');
-
+        $comisiones = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Comisiones?id=eq.1&select=*');
     $productos = makeRequest('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Productos?select=*');
    
 
