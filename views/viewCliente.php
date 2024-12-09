@@ -341,14 +341,7 @@ include '../componentes/sidebar.php';
                                                 <td><?php echo htmlspecialchars($fechaTermino); ?></td>
                                                 <td><input type="hidden" class="id_comision"
                                                         value="<?php echo htmlspecialchars($comision['id_comision'] ?? 'No disponible'); ?>">
-                                                        <button type="button" class="btn btn-success micono" 
-        data-bs-toggle="modal" 
-        data-bs-target="#actualizarcomisionModal"
-        data-idcomision="<?php echo htmlspecialchars($comision['id_comision']); ?>" 
-        data-toggle="tooltip" 
-        title="Editar">
-    <i class="fas fa-pencil-alt"></i>
-</button>
+                                                       
                                                     <button type="button"
                                                         class="btn btn-danger micono eliminar-comision"
                                                         data-idcomision="<?php echo htmlspecialchars($comision['id_comision'] ?? ''); ?>"
@@ -843,9 +836,7 @@ await cargarComisiones();
                 <td>${comision.finComision}</td>
                 <td>
                     <input type="hidden" class="id_comision" value="${comision.id_comision}">
-                    <button type="button" class="btn btn-success micono" data-bs-toggle="modal" data-bs-target="#actualizarcomisionModal" data-idcomision="${comision.id_comision}" data-toggle="tooltip" title="Editar">
-                        <i class="fas fa-pencil-alt"></i>
-                    </button>
+               
                     <button type="button" class="btn btn-danger micono eliminar-comision" data-idcomision="${comision.id_comision}" data-toggle="tooltip" title="Eliminar">
                         <i class="fas fa-trash-alt"></i>
                     </button>
@@ -1421,11 +1412,104 @@ emailInputs.forEach(function(input) {
         return valid;
     }
 });
+
+// Function to fetch and populate commission details
+function cargarDetallesComision(idComision) {
+    // Make an AJAX request to fetch the commission details
+    fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Comisiones?id_comision=eq.${idComision}&select=*`, {
+        method: 'GET',
+        headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+                    'Prefer': 'return=representation'
+                }
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data && data.length > 0) {
+            const comision = data[0];
+            
+            // Populate the hidden input for commission ID
+            document.getElementById('actualizar_id_comision').value = comision.id_comision;
+            
+            // Populate the currency (moneda) dropdown
+            document.getElementById('actualizar_nombreMoneda').value = comision.id_tipoMoneda;
+            
+            // Populate the format (formato) dropdown
+            document.getElementById('actualizar_nombreFormato').value = comision.id_formatoComision;
+            
+            // Populate the commission value input
+            document.getElementById('actualizar_valorComision').value = comision.valorComision;
+            
+            // Populate the start and end dates
+            document.getElementById('actualizar_inicioComision').value = comision.inicioComision;
+            document.getElementById('actualizar_finComision').value = comision.finComision;
+        }
+    })
+    .catch(error => {
+        console.error('Error fetching commission details:', error);
+    });
+}
+
+// Add event listeners to edit buttons
+document.addEventListener('DOMContentLoaded', () => {
+    const editButtons = document.querySelectorAll('.micono');
+    
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const idComision = this.getAttribute('data-idcomision');
+            cargarDetallesComision(idComision);
+        });
+    });
+});
 </script>
 
 
+<script>
+    // Esta función se ejecutará cuando se haga clic en un botón de editar
+    function loadComision(idComision) {
+        // Usamos la función `makeRequest` en PHP para obtener la comisión
+        fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Comisiones?id=eq.' + idComision + '&select=*', {
+            method: 'GET',
+            headers: {
+                'Authorization': 'Bearer <your_api_key>', // Si es necesario, agrega tu clave de API
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())  // Convertir la respuesta en JSON
+        .then(data => {
+            if (data && data.length > 0) {
+                const comision = data[0];  // Obtener la primera comisión (en caso de que sea un array)
+                
+                // Llenar los campos del formulario con los datos de la comisión
+                document.getElementById('actualizar_id_comision').value = comision.id_comision;
+                document.getElementById('actualizar_nombreMoneda').value = comision.nombreMoneda;
+                document.getElementById('actualizar_valorComision').value = comision.valorComision;
+                document.getElementById('actualizar_nombreFormato').value = comision.nombreFormato;
+                document.getElementById('actualizar_inicioComision').value = comision.inicioComision;
+                document.getElementById('actualizar_finComision').value = comision.finComision;
+            } else {
+                console.log("No se encontró la comisión con ese ID.");
+            }
+        })
+        .catch(error => {
+            console.error('Error al obtener los datos de la comisión:', error);
+        });
+    }
 
+    // Función que se ejecuta cuando se hace clic en el botón de editar
+    document.addEventListener("DOMContentLoaded", function() {
+        const botonesEditar = document.querySelectorAll('.btn.btn-success.micono');
 
+        botonesEditar.forEach(button => {
+            button.addEventListener('click', function() {
+                const idComision = this.getAttribute('data-idcomision');
+                loadComision(idComision);  // Llamamos a la función para cargar los datos de la comisión
+            });
+        });
+    });
+</script>
 
 <script src="<?php echo $ruta; ?>assets/js/updateClienteView.js"></script>
 <script src="../assets/js/deleteComision.js"></script>

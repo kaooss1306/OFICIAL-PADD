@@ -291,7 +291,7 @@ include '../componentes/sidebar.php';
                                             </div>
                                             </td>
                                             <td>
-                                                    <a class="btn btn-primary micono" href="querys/modulos/orden.php?id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>" data-toggle="tooltip" title="Ver Orden">
+                                                    <a class="btn btn-primary micono" href="../querys/modulos/orden.php?id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>" data-toggle="tooltip" title="Ver Orden">
                                                         <i class="fas fa-eye"></i>
                                                     </a>
            
