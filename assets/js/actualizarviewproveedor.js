@@ -34,65 +34,7 @@ function loadProveedorData(button) {
     }
 }
 
-function loadPrograma(button) {
-    var idPrograma = button.getAttribute('data-idprograma');
-    var idSoporte = button.getAttribute('data-id-soporte');
-    var programa = getProgramaData(idPrograma);
-    var idMedios2 = JSON.parse(button.getAttribute('data-idmedios2'));
-    // Corrigiendo el uso de console.log
-    console.log(idMedios2, "medios");
-    if (programa) {
-        document.querySelector('input[name="idProgramas"]').value = idPrograma;
-        document.querySelector('input[name="idSoporteInput"]').value = idSoporte;
-        document.querySelector('input[name="codigoPrograma"]').value = programa.codigo_programa;
-        document.querySelector('input[name="horaInicio"]').value = programa.hora_inicio;
-        document.querySelector('input[name="horaFin"]').value = programa.hora_fin;
-        document.querySelector('input[name="decripcionp"]').value = programa.descripcion;
-        document.querySelector('input[name="codigomegatimeP"]').value = programa.cod_prog_megatime;
-        if (idMedios2 && Array.isArray(idMedios2)) {
-            var idMediosString2 = idMedios2.join(',');
-            document.querySelector('input[name="idmedios2"]').value = idMediosString2;
-            updateMediosDropdown(idMedios2);
-        }
-    
-    } else {
-        console.log("No se encontró el proveedor con ID:", idPrograma);
-    }
-}
 
-
-function getFormProgra() {
-    const formData = new FormData(document.getElementById('formactualizarPrograma'));
-
-    // Convertir FormData a objeto para imprimirlo
-    const dataObject = {};
-    formData.forEach((value, key) => {
-        if (key === 'id_medios[]') {
-            if (!dataObject[key]) {
-                dataObject[key] = [];
-            }
-            dataObject[key].push(value);
-        } else {
-            dataObject[key] = value;
-        }
-    });
-
-
-    console.log(dataObject, "aqui el actualizar señores"); // Imprime el objeto con los datos del formulario
-
-    return {
-        codigo_programa: dataObject.codigoPrograma,
-        descripcion: dataObject.decripcionp,
-        hora_inicio: dataObject.horaInicio,
-        hora_fin: dataObject.horaFin,
-        cod_prog_megatime: dataObject.codigomegatimeP,
-        estado: '1',
-        id_medios: dataObject['id_medios[]'],
-        soporte_id: dataObject.idSoporteInput,
-        programaid: dataObject.idProgramas,
-        
-    };
-}
 
 
 

@@ -830,110 +830,7 @@ include '../componentes/sidebar.php';
 
     </div>
 
-      <div class="modal fade" id="actualizarPrograma" tabindex="-1" role="dialog" aria-labelledby="formModal" aria-hidden="true">
-          <div class="modal-dialog modal-lg" role="document">
-            <div class="modal-content">
-            
-              <div class="modal-body">
-                 <!-- Alerta para mostrar el resultado de la actualización -->
-                 <div id="updateAlert" class="alert" style="display:none;" role="alert"></div>
-                 <form id="formactualizarPrograma">
-                 <div>
-                 <h3 class="titulo-registro mb-3">Actualizar Programa</h3>
-                 
-                 <div class="row">
-                 <input type="text" hidden class="form-control" id="idSoporteInput" name="idSoporteInput" readonly>
-                 <input type="text" hidden class="form-control" id="idProgramas" name="idProgramas" readonly>                                       
-                            <div class="col-6">
-                                <div class="form-group">
-                                    <label class="labelforms" for="codigo">Codigo Programa</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                        </div>
-                                     <input class="form-control" placeholder="Codigo del programa" name="codigoPrograma">
-                                    </div>
-                                    <input type="hidden"  name="idmedios2">
-                                    <label class="labelforms" for="codigo">Medios</label>
-                                    <div id="dropdown4" class="dropdown-medios input-group dropdown" >
-                                        <div class="sell input-group-prepend">
-                                            <span class="input-group-text"><i class="bi bi-tags"></i></span>
-                                        </div>
-                                        <div class="selected-options" onclick="toggleDropdown()"></div>
-                                        <button type="button" class="dropdown-button" style="font-size:14px; padding: 7px 20px !important; display:none;">Select Medios</button>
-                                        <div class="dropdown-content">
-                                            <?php foreach ($medios as $medio) : ?>
-                                                <label>
-                                                    <input type="checkbox" name="id_medios[]" value="<?php echo $medio['id']; ?>">
-                                                    <?php echo $medio['NombredelMedio']; ?>
-                                                </label>
-                                            <?php endforeach; ?>
-                                        </div>
-                                    </div>
-                                    <label class="labelforms" for="horaInicio">Hora de Inicio</label>
-                                          <div class="input-group">
-                                              <div class="input-group-prepend">
-                                                  <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                              </div>
-                                              <input class="form-control" type="time" name="horaInicio" id="horaInicio" placeholder="HH:MM" required>
-                                          </div>
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group">
-
-
-                        
-                                <label class="labelforms" for="codigo">Descripción</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
-                                        </div>
-                                     <input class="form-control" placeholder="Ingresa la descripción" name="decripcionp">
-                                    </div>
-
-                              
-
-
-
-                                    <label class="labelforms" for="codigo">Codigo Megatime</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
-                                        </div>
-                                        <input class="form-control" placeholder="Codigo Megatime" name="codigomegatimeP">
-                                    </div>
-
-                                    <label class="labelforms" for="horaFin">Hora Fin</label>
-                                      <div class="input-group">
-                                          <div class="input-group-prepend">
-                                              <span class="input-group-text"><i class="bi bi-clock"></i></span>
-                                          </div>
-                                          <input class="form-control" type="time" name="horaFin" id="horaFin" placeholder="HH:MM" required>
-                                      </div>
-
-
-                              
-                                    
-                               
-                                </div>
-                            </div>
-                                            </div>
-                  </div>
-                  <div class="d-flex justify-content-end mt-3">
-                        <button class="btn btn-primary btn-lg rounded-pill" type="submit" id="agregarPrograma">
-                            <span class="btn-txt">Guardar Programa</span>
-                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
-                        </button>
-                    </div>
-                 </form>
-              </div>
-            </div>
-          </div>
-        </div>
-
-    </div>
-
+      
     
 
 
@@ -1462,6 +1359,110 @@ include '../componentes/sidebar.php';
 </div>
 
 </div>
+<div class="modal fade" id="actualizarPrograma" tabindex="-1" role="dialog" aria-labelledby="formModal" aria-hidden="true">
+          <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+            
+              <div class="modal-body">
+                 <!-- Alerta para mostrar el resultado de la actualización -->
+                 <div id="updateAlert" class="alert" style="display:none;" role="alert"></div>
+                 <form id="formactualizarPrograma">
+                 <div>
+                 <h3 class="titulo-registro mb-3">Actualizar Programa</h3>
+                 
+                 <div class="row">
+                 <input type="text" hidden class="form-control" id="idSoporteInput" name="idSoporteInput" readonly>
+                 <input type="text" hidden class="form-control" id="idProgramas" name="idProgramas" readonly>                                       
+                            <div class="col-6">
+                                <div class="form-group">
+                                    <label class="labelforms" for="codigo">Codigo Programa</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                        </div>
+                                     <input class="form-control" placeholder="Codigo del programa" name="codigoProgramax">
+                                    </div>
+                                    <input type="hidden"  name="idmedios2">
+                                    <label class="labelforms" for="codigo">Medios</label>
+                                    <div id="dropdown4" class="dropdown-medios input-group dropdown" >
+                                        <div class="sell input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-tags"></i></span>
+                                        </div>
+                                        <div class="selected-options" onclick="toggleDropdown()"></div>
+                                        <button type="button" class="dropdown-button" style="font-size:14px; padding: 7px 20px !important; display:none;">Select Medios</button>
+                                        <div class="dropdown-content">
+                                            <?php foreach ($medios as $medio) : ?>
+                                                <label>
+                                                    <input type="checkbox" name="id_medios[]" value="<?php echo $medio['id']; ?>">
+                                                    <?php echo $medio['NombredelMedio']; ?>
+                                                </label>
+                                            <?php endforeach; ?>
+                                        </div>
+                                    </div>
+                                    <label class="labelforms" for="horaInicio">Hora de Inicio</label>
+                                          <div class="input-group">
+                                              <div class="input-group-prepend">
+                                                  <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                              </div>
+                                              <input class="form-control" type="time" name="horaIniciox" id="horaInicio" placeholder="HH:MM" required>
+                                          </div>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-group">
+
+
+                        
+                                <label class="labelforms" for="codigo">Descripción</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                        </div>
+                                     <input class="form-control" placeholder="Ingresa la descripción" name="decripcionpx">
+                                    </div>
+
+                              
+
+
+
+                                    <label class="labelforms" for="codigo">Codigo Megatime</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                                        </div>
+                                        <input class="form-control" placeholder="Codigo Megatime" name="codigomegatimeP">
+                                    </div>
+
+                                    <label class="labelforms" for="horaFin">Hora Fin</label>
+                                      <div class="input-group">
+                                          <div class="input-group-prepend">
+                                              <span class="input-group-text"><i class="bi bi-clock"></i></span>
+                                          </div>
+                                          <input class="form-control" type="time" name="horaFinx" id="horaFin" placeholder="HH:MM" required>
+                                      </div>
+
+
+                              
+                                    
+                               
+                                </div>
+                            </div>
+                                            </div>
+                  </div>
+                  <div class="d-flex justify-content-end mt-3">
+                        <button class="btn btn-primary btn-lg rounded-pill" type="submit" id="actualizarPrograma">
+                            <span class="btn-txt">Guardar Programa</span>
+                            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
+                        </button>
+                    </div>
+                 </form>
+              </div>
+            </div>
+          </div>
+        </div>
+
+    </div>
+
 <script>
 
 document.addEventListener('DOMContentLoaded', function() { 
@@ -1561,16 +1562,15 @@ function loadSoporteidPrograma(button) {
     // Asignar el valor de idSoporte al input en el modal
     document.querySelector('#agregarPrograma input[name="idSoporteInput"]').value = idSoporte;
 }
-
-</script>
-<script>
 function getSoporteData(idSoporte) {
     var soportesMap = <?php echo json_encode($soportesMap); ?>;
     return soportesMap[idSoporte] || null;
 }
+
+
 </script>
       <script>
-      
+
       
       function getProveedorData(idProveedor) {
     var proveedoresMap = <?php echo json_encode($proveedoresMap); ?>;
