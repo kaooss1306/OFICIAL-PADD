@@ -403,9 +403,9 @@ function exportarExcel() {
 
     const hoja = XLSX.utils.json_to_sheet(datosExportar);
     const libro = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(libro, hoja, "Campañas");
+    XLSX.utils.book_append_sheet(libro, hoja, "Soportes");
 
-    XLSX.writeFile(libro, 'Proveedores_Exportados.xlsx');
+    XLSX.writeFile(libro, 'Soportes_Exportados.xlsx');
 }
 
 function resetFilters() {
