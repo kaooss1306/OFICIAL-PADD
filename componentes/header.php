@@ -17,6 +17,8 @@ $idPerfil = $_SESSION["user"]["id_perfil"] ?? "Usuario";
 
 $ruta = "http://t8ogs4kwgckco4wog8gw8g0s.157.173.105.97.sslip.io/";
 
+//$ruta = "https://curly-space-system-rjwpg45gg5phx99x-3000.app.github.dev/";
+
 
 
 
