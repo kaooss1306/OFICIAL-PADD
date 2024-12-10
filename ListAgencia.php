@@ -8,6 +8,8 @@ include 'querys/qagencia.php';
 include 'componentes/header.php';
 include 'componentes/sidebar.php';
 ?>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.0/xlsx.full.min.js"></script>
+<style>
 <style>
        .is-invalid {
         border-color: #dc3545 !important;
@@ -85,15 +87,47 @@ include 'componentes/sidebar.php';
                         <div class="card-header milinea">
                         <div class="titulox"><h4>Listado Agencias</h4></div>
                         <div class="agregar"><button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#agregarAgenciaModal"><i class="fas fa-plus-circle"></i> Agregar Agencia</button></div>
-                        </div>
+                        
+                    
+                    </div>
                             
                        
                         <div class="card-body">
+                      
                             <div class="table-responsive">
+                            <div class="row mb-3">
+                                    <div class="col-md-4">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-search"></i></span>
+                                            <input type="text" class="form-control" id="searchInput" placeholder="Buscar...">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                            <input type="date" class="form-control" id="dateFrom" placeholder="Fecha desde">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="fas fa-calendar"></i></span>
+                                            <input type="date" class="form-control" id="dateTo" placeholder="Fecha hasta">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button id="resetFilters" class="btn btn-secondary">
+                                            <i class="fas fa-redo"></i> 
+                                        </button>
+                                        <button id="exportarExcel" class="btn btn-success" disabled>
+                                        <i class="fas fa-file-excel"></i> 
+                                    </button>
+                                    </div>
+                                </div>
                                 <table class="table table-striped" id="tableExportadora">
                                     <thead>
                                         <tr>
                                             <th>ID</th>
+                                            <th>Fecha Ingreso</th>
                                             <th>Nombre de Agencia</th>
                                             <th>Representante</th>
                                             <th>Razón Social</th>
@@ -107,11 +141,12 @@ include 'componentes/sidebar.php';
                                     <tbody>
                                         <?php foreach ($agencias as $agencia): ?>
                                         <tr>
-                                            <td><?php echo $agencia['id']; ?></td>
-                                            <td><?php echo $agencia['NombreDeFantasia']; ?></td>
-                                            <td><?php echo $agencia['NombreRepresentanteLegal']; ?></td>
-                                            <td><?php echo $agencia['RazonSocial']; ?></td>
-                                            <td><?php echo $agencia['RutAgencia']; ?></td>
+                                            <td data-key="id_agencia"><?php echo $agencia['id']; ?></td>
+                                            <td data-key="fecha_ingreso"><?php echo date('d/m/Y', strtotime($agencia['created_at'])); ?></td>
+                                            <td data-key="nombre_fantasia"><?php echo $agencia['NombreDeFantasia']; ?></td>
+                                            <td data-key="representante"><?php echo $agencia['NombreRepresentanteLegal']; ?></td>
+                                            <td data-key="razon_social"><?php echo $agencia['RazonSocial']; ?></td>
+                                            <td data-key="rut_agencia"><?php echo $agencia['RutAgencia']; ?></td>
                                             <td>
                                                 <?php
                                                  
@@ -630,7 +665,121 @@ phoneInputs.forEach(function(input) {
 
 
 
+<script>
+function filterTable() {
+    const searchText = document.getElementById('searchInput').value.toLowerCase();
+    const dateFrom = document.getElementById('dateFrom').value;
+    const dateTo = document.getElementById('dateTo').value;
+    const rows = document.querySelectorAll('#tableExportadora tbody tr');
+    
+    let visibleRowCount = 0;
 
+    rows.forEach(row => {
+        let showRow = true;
+        const textContent = row.textContent.toLowerCase();
+        const dateCell = row.querySelector('td:nth-child(2)')?.textContent?.trim();
+        const rowDate = dateCell ? convertDateFormat(dateCell) : null;
+
+        // Text filter
+        if (searchText && !textContent.includes(searchText)) {
+            showRow = false;
+        }
+
+        // Date range filter
+        if (rowDate) {
+            if (dateFrom && dateTo) {
+                if (rowDate < dateFrom || rowDate > dateTo) {
+                    showRow = false;
+                }
+            } else if (dateFrom && rowDate < dateFrom) {
+                showRow = false;
+            } else if (dateTo && rowDate > dateTo) {
+                showRow = false;
+            }
+        } else if ((dateFrom || dateTo) && (dateFrom !== '' || dateTo !== '')) {
+            showRow = false;
+        }
+
+        row.style.display = showRow ? '' : 'none';
+        
+        if (showRow) {
+            visibleRowCount++;
+        }
+    });
+
+    // Update export button state
+    const exportButton = document.getElementById('exportarExcel');
+    exportButton.disabled = visibleRowCount === 0;
+}
+
+function convertDateFormat(dateStr) {
+    try {
+        const parts = dateStr.split('/');
+        if (parts.length === 3) {
+            return `${parts[2]}-${parts[1].padStart(2, '0')}-${parts[0].padStart(2, '0')}`;
+        }
+    } catch (error) {
+        console.error('Error converting date:', error);
+    }
+    return null;
+}
+
+function exportarExcel() {
+    const visibleRows = document.querySelectorAll('#tableExportadora tbody tr:not([style*="display: none"])');
+    
+    if (visibleRows.length === 0) {
+        Swal2.fire({
+            icon: 'warning',
+            title: 'No hay datos para exportar',
+            text: 'Aplique filtros para ver datos antes de exportar'
+        });
+        return;
+    }
+
+    const datosExportar = Array.from(visibleRows).map(fila => ({
+        'ID': fila.querySelector('[data-key="id_agencia"]').textContent,
+        'Fecha Ingreso': fila.querySelector('[data-key="fecha_ingreso"]').textContent,
+        'Nombre de Fantasia': fila.querySelector('[data-key="nombre_fantasia"]').textContent,
+        'Nombre de Representante': fila.querySelector('[data-key="representante"]').textContent,
+         'Razón Social': fila.querySelector('[data-key="razon_social"]').textContent,
+        'RUT Agencia': fila.querySelector('[data-key="rut_agencia"]').textContent
+        
+    }));
+
+    const hoja = XLSX.utils.json_to_sheet(datosExportar);
+    const libro = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(libro, hoja, "Agencias");
+
+    XLSX.writeFile(libro, 'Agencias_Exportadas.xlsx');
+}
+
+function resetFilters() {
+    document.getElementById('searchInput').value = '';
+    document.getElementById('dateFrom').value = '';
+    document.getElementById('dateTo').value = '';
+    filterTable();
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const searchInput = document.getElementById('searchInput');
+    const dateFrom = document.getElementById('dateFrom');
+    const dateTo = document.getElementById('dateTo');
+    const exportButton = document.getElementById('exportarExcel');
+    const resetButton = document.getElementById('resetFilters');
+
+    searchInput.addEventListener('input', filterTable);
+    dateFrom.addEventListener('change', filterTable);
+    dateTo.addEventListener('change', filterTable);
+    exportButton.addEventListener('click', exportarExcel);
+    
+    if (resetButton) {
+        resetButton.addEventListener('click', resetFilters);
+    }
+
+    // Initially disable export if no rows
+    exportButton.disabled = document.querySelectorAll('#tableExportadora tbody tr').length === 0;
+});
+</script>
 
 
 <script src="<?php echo $ruta; ?>assets/js/updateAgenciaUp.js"></script>
