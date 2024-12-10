@@ -69,7 +69,6 @@ function actualizarCompania() {
     const id_ProductoUpdate = formData.get('id_ProductoUpdate');
     const PresupuestoUpdate = formData.get('PresupuestoUpdate');
 
-    console.log('ID de la campaña: ' + Id_Planes_Publicidad);
 
     // Crear un objeto con los datos del formulario
     const data = {};

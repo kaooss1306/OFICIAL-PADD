@@ -1534,6 +1534,8 @@ console.log('ID Proveedor:', idProveedor);
     
 
             $('#contactoProveedor').modal('hide');
+            $('.modal-backdrop').css('display', 'none');
+            $('#contactoagregar')[0].reset();
             await Swal.fire({
                 icon: 'success',
                 title: 'Éxito',

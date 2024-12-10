@@ -43,19 +43,6 @@
             return false;
         }
 
-        const camposNumericos = ['editValorNeto', 'editValorBruto', 'editDescuento1', 'editValorTotal'];
-        for (const campo of camposNumericos) {
-            const valor = document.getElementById(campo).value;
-            if (valor !== "" && (isNaN(parseFloat(valor)) || parseFloat(valor) < 0)) {
-                Swal.fire({
-                    title: 'Error',
-                    text: `El campo ${campo.replace('edit', '')} debe ser un número positivo o estar vacío`,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                return false;
-            }
-        }
 
         return true;
     }
@@ -194,10 +181,6 @@
             document.getElementById('editIdAnio').value = contrato.id_Anio || '';
             document.getElementById('editIdTipoDePublicidad').value = contrato.IdTipoDePublicidad || '';
             document.getElementById('editIdGeneracionOrdenTipo').value = contrato.id_GeneraracionOrdenTipo || '';
-            document.getElementById('editValorNeto').value = contrato.ValorNeto || '';
-            document.getElementById('editValorBruto').value = contrato.ValorBruto || '';
-            document.getElementById('editDescuento1').value = contrato.Descuento1 || '';
-            document.getElementById('editValorTotal').value = contrato.ValorTotal || '';
             document.getElementById('editObservaciones').value = contrato.Observaciones || '';
             document.getElementById('editEstado').value = contrato.Estado ? '1' : '0';
             document.getElementById('editNumContrato').value = contrato.num_contrato || '';

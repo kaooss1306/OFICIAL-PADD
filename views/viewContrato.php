@@ -65,10 +65,10 @@ include '../componentes/sidebar.php';
                       <div class="author-box-job">
                       <?php
     // Convertir la cadena de fecha y hora a un objeto DateTime
-    $fecha = new DateTime($contrato['FechaCreacion']);
+    $fecha = new DateTime($contrato['FechaInicio']);
     
     // Formatear la fecha como deseas (en este caso, solo la fecha)
-    echo 'Fecha registro: '.$fecha->format('d-m-Y'); // Esto mostrará la fecha en formato AAAA-MM-DD
+    echo 'Fecha Inicio: '.$fecha->format('d-m-Y'); // Esto mostrará la fecha en formato AAAA-MM-DD
     ?>
                     </div>
                     </div>
@@ -90,6 +90,9 @@ include '../componentes/sidebar.php';
         echo "Estado desconocido"; // Mensaje opcional para valores inesperados
     }
 ?>
+<div>
+  <button style="margin-top:15px; border-radius: 30px;" type="button" class="btn btn-danger micono" data-bs-toggle="modal" data-bs-target="#modalEditContrato" data-contrato-id="<?php echo $contrato['id']; ?>"><i class="fas fa-pencil-alt"></i> Editar datos</button></div>
+                           
                    
                       </div>
                       
@@ -99,58 +102,7 @@ include '../componentes/sidebar.php';
                     </div>
                   </div>
                 </div>
-                <div class="card">
-                        <div class="card-header">
-                            <div class="cabeza">
-                             <h4>Detalles Valores</h4> 
-                             <button type="button" class="btn btn-danger micono" data-bs-toggle="modal" data-bs-target="#modalEditContrato" data-contrato-id="<?php echo $contrato['id']; ?>"><i class="fas fa-pencil-alt"></i> Editar datos</button>
-                            </div>
-                        </div>
-                        <div class="card-body">
-                            <div class="py-1">
-                                <p class="clearfix">
-                                    <span class="float-start">
-                                        Nombre Contrato
-                                    </span>
-                                    <span class="float-right text-muted">
-                                    <?php echo $contrato['NombreContrato']; ?></span>
-                                </p>
-                                <p class="clearfix">
-                                    <span class="float-start">
-                                        Valor Neto
-                                    </span>
-                                    <span class="float-right text-muted">
-                                    <?php echo '$' . number_format($contrato['ValorNeto'], 0, ',', '.'); ?></span>
-                                </p>
-                                <p class="clearfix">
-                                    <span class="float-start">
-                                        Valor Bruto
-                                    </span>
-                                    <span class="float-right text-muted">
-                                    <?php echo '$' . number_format($contrato['ValorBruto'], 0, ',', '.'); ?></span>
-                                </p>
-                                <p class="clearfix">
-                                    <span class="float-start">
-                                        Descuento
-                                    </span>
-                                    <span class="float-right text-muted">
-                                    <?php echo '$' . number_format($contrato['Descuento1'], 0, ',', '.'); ?></span>
-                                </p>
-                                <p class="clearfix">
-                                    <span class="float-start">
-                                        Valor Total
-                                    </span>
-                                    <span class="float-right text-muted">
-                                    <?php echo '$' . number_format($contrato['ValorTotal'], 0, ',', '.'); ?></span>
-                                </p>
-                              
-                              
-                               
-                             
-                               
-                            </div>
-                        </div>
-                    </div>
+              
                
               </div>
               <div class="col-12 col-md-12 col-lg-8">
@@ -552,19 +504,7 @@ fas fa-barcode"></i></span>
             return false;
         }
 
-        const camposNumericos = ['editValorNeto', 'editValorBruto', 'editDescuento1', 'editValorTotal'];
-        for (const campo of camposNumericos) {
-            const valor = document.getElementById(campo).value;
-            if (valor !== "" && (isNaN(parseFloat(valor)) || parseFloat(valor) < 0)) {
-                Swal.fire({
-                    title: 'Error',
-                    text: `El campo ${campo.replace('edit', '')} debe ser un número positivo o estar vacío`,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-                return false;
-            }
-        }
+        
 
         return true;
     }
@@ -666,10 +606,6 @@ fas fa-barcode"></i></span>
             document.getElementById('editIdAnio').value = contrato.id_Anio || '';
             document.getElementById('editIdTipoDePublicidad').value = contrato.IdTipoDePublicidad || '';
             document.getElementById('editIdGeneracionOrdenTipo').value = contrato.id_GeneraracionOrdenTipo || '';
-            document.getElementById('editValorNeto').value = contrato.ValorNeto || '';
-            document.getElementById('editValorBruto').value = contrato.ValorBruto || '';
-            document.getElementById('editDescuento1').value = contrato.Descuento1 || '';
-            document.getElementById('editValorTotal').value = contrato.ValorTotal || '';
             document.getElementById('editObservaciones').value = contrato.Observaciones || '';
             document.getElementById('editEstado').value = contrato.Estado ? '1' : '0';
             document.getElementById('editNumContrato').value = contrato.num_contrato || '';

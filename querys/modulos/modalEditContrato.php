@@ -150,36 +150,7 @@
               </div>
             </div>
           </div>
-          <div class="row">
-            <div class="col-md-3 mb-3">
-              <label for="editValorNeto" class="form-label">Valor Neto</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                <input type="number" class="form-control" id="editValorNeto" name="ValorNeto" required>
-              </div>
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="editValorBruto" class="form-label">Valor Bruto</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                <input type="number" class="form-control" id="editValorBruto" name="ValorBruto" required>
-              </div>
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="editDescuento1" class="form-label">Descuento</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                <input type="number" class="form-control" id="editDescuento1" name="Descuento1" value="0" required>
-              </div>
-            </div>
-            <div class="col-md-3 mb-3">
-              <label for="editValorTotal" class="form-label">Valor Total</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                <input type="number" class="form-control" id="editValorTotal" name="ValorTotal" required>
-              </div>
-            </div>
-          </div>
+
           <div class="row">
             <div class="col-md-12 mb-3">
               <label for="editObservaciones" class="form-label">Observaciones</label>
