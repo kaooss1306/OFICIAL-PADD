@@ -167,7 +167,7 @@ foreach ($productos as $producto) {
     $productosMap[] = [
         'id' => $producto['id'],
         'nombreProducto' => $producto['NombreDelProducto'],
-        'razonSocial' => $producto['razonSocial'],
+       // 'razonSocial' => $producto['razonSocial'],
         'idCliente' => $producto['Id_Cliente']
     ];
 }
