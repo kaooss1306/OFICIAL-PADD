@@ -444,7 +444,7 @@ border:1px solid #ff0000;
                 <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($mes['Nombre']); ?></option>
             <?php endforeach; ?>
         </select>
-        <div><label>
+        <div class="rellenocas"><label>
             <input type="checkbox" class="fillAllCheckbox" /> Rellenar todas las casillas
         </label>
         <input type="number" class="fillAllInput" placeholder="Valor para rellenar" disabled /></div>
