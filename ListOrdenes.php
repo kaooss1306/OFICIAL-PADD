@@ -93,13 +93,16 @@ require_once 'componentes/sidebar.php';
                                             <td><?php echo htmlspecialchars($orden['fechaCreacion'] ?? ''); ?></td>
                                             <td>
                                             <div class="alineado">
-                                            <label class="custom-switch sino" data-toggle="tooltip" 
-                                            title="<?php echo $orden['estado'] ? 'Desactivar Orden de publicidad' : 'Activar Orden depublicidad'; ?>">
-                                            <input type="checkbox" 
-                                                class="custom-switch-input estado-switch2"
-                                                data-id="<?php echo $orden['id_ordenes_de_comprar']; ?>" data-tipo="orden" <?php echo $orden['estado'] ? 'checked' : ''; ?>>
-                                            <span class="custom-switch-indicator"></span>
-                                        </label>
+                                            <label class="custom-switch sino" data-toggle="tooltip">
+    <input type="checkbox" 
+           readonly 
+           disabled
+           class="custom-switch-input estado-switch2" 
+           data-id="<?php echo $orden['id_ordenes_de_comprar']; ?>" 
+           data-tipo="orden" 
+           <?php echo $orden['estado'] ? 'checked' : ''; ?>>
+    <span class="custom-switch-indicator"></span>
+</label>
                                             </div>
                                             </td>
                                             <td>
@@ -110,9 +113,11 @@ require_once 'componentes/sidebar.php';
                                                         onclick="cargarDatosFormulario(<?php echo $orden['id_ordenes_de_comprar']; ?>);">
                                                         <i class="fas fa-pencil-alt"></i>
                                                     </a>Main Content -->
-                                                    <a class="btn btn-success micono" href="querys/modulos/editarOrden.php?id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>">
-    <i class="fas fa-pencil-alt"></i>
-</a>
+                                                    <?php if ($orden['estado']): ?>
+    <a class="btn btn-success micono" href="querys/modulos/editarOrden.php?id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>">
+        <i class="fas fa-pencil-alt"></i> 
+    </a>
+<?php endif; ?>
                                                 </td>
                                           
                                         </tr>

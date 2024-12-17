@@ -254,7 +254,7 @@
                 updateButton.className = 'btn btn-success micono';
                 updateButton.setAttribute('data-bs-toggle', 'modal');
                 updateButton.setAttribute('data-bs-target', '#modalActualizarFactura');
-                updateButton.setAttribute('onclick', `cargarDatosFormulario(${factura.id_factura});`);
+                updateButton.setAttribute('onclick', `Factoform(${factura.id_factura});`);
 
                 // Add the icon inside the button
                 const icon = document.createElement('i');

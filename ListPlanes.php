@@ -274,7 +274,7 @@ include 'componentes/sidebar.php';
                         }
                     }
                 ?>
-                <a class="btn btn-primary micono" href="querys/modulos/orden.php?id_orden=<?php echo $id_orden_de_compra; ?>" data-toggle="tooltip" title="Ver Plan">
+                <a class="btn btn-primary micono" href="querys/modulos/orden.php?id_orden=<?php echo $id_orden_de_compra; ?>" data-toggle="tooltip" title="Ver Orden">
                     <i class="fas fa-eye"></i>
                 </a>
 

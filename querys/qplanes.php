@@ -60,6 +60,9 @@ $ordenespuMap = [];
 foreach ($ordenpublicidad as $ordenpu){
     $ordenespuMap[] = [
         'id_ordenespu' => $ordenpu['id_ordenes_de_comprar'],
+        'numerodeorden' => $ordenpu['numerodeorden'],
+        'copia' => $ordenpu['copia'],
+        'numerodeordenremplaza' => $ordenpu['numerodeordenremplaza'],
         'datosrecopilados' => $ordenpu['datosRecopiladosb'],
         'idplanorden' => $ordenpu['id_plan'],
         'estadoorden' => $ordenpu['estadoorden'],

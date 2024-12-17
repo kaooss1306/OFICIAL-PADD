@@ -40,9 +40,7 @@ input[type="number"] {
 }
 .nameusu{color: #6878f2; font-weight: 700; font-size: 20px;}
 .correusu{font-size:16px; color:black;}
-  .calendario .selectores {
-    display: none; /* Oculta los selectores */
-}
+
 td.text-end.fw-bold {
     border-color: transparent !important;
     padding: 14px 10px;
@@ -195,6 +193,21 @@ border:1px solid #ff0000;
                                 <div class="form-group">
                   
                                     <!-- Selección de clientes -->
+                                  
+
+                                  
+
+                                <div class="row"> 
+
+                                    <div class="col">
+                                    <label class="labelforms" for="codigo">Numero de Orden</label>
+<div class="input-group">
+    <div class="input-group-prepend">
+        <span class="input-group-text"><i class="bi bi-123"></i></span>
+    </div>
+    <input type="number" class="form-control" id="numerodeOrden" placeholder="Numero de Orden" name="numerodeOrden" required>
+</div>
+
                                     <label class="labelforms" for="id_cliente">Clientes</label>
 <div class="custom-select-container">
     <div class="input-group">
@@ -202,7 +215,7 @@ border:1px solid #ff0000;
             <span class="input-group-text"><i class="bi bi-person"></i></span>
         </div>
         <input class="form-control" type="text" id="search-client" placeholder="Buscar cliente..." oninput="filterClients()" required>
-        <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+        <button type="button" class="clear-btnCliente" style="display:none;" onclick="clearSearchCliente()">x</button>
         <div class="invalid-feedback">
     Por favor, seleccione un cliente.
 </div>
@@ -212,18 +225,6 @@ border:1px solid #ff0000;
         <!-- Aquí se mostrarán las opciones filtradas -->
     </ul>
 </div>
-
-                                    <label class="labelforms" for="codigo">Nombre de Plan</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        </div>
-                                        <input class="form-control" placeholder="Nombre de Plan" name="nombrePlan" required>
-                                    </div>
-
-                                <div class="row"> 
-
-                                    <div class="col">
                                         <label class="labelforms" for="id_producto">Producto</label>
                                         <div class="custom-select-container">
                                             <div class="input-group">
@@ -231,7 +232,7 @@ border:1px solid #ff0000;
                                                     <span class="input-group-text"><i class="bi bi-box"></i></span>
                                                 </div>
                                                 <input class="form-control" type="text" id="search-product" placeholder="Buscar producto..." required>
-                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                <button type="button" class="clear-btnProducto" style="display:none;" onclick="clearSearchProducto()">x</button>
                                                 <input type="hidden" id="selected-product-id" name="selected-product-id">
                                             </div>
                                             <ul id="product-list" class="client-dropdown">
@@ -246,7 +247,7 @@ border:1px solid #ff0000;
                                                                     <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
                                                                 </div>
                                                                 <input class="form-control" type="text" id="search-contrato" placeholder="Buscar contrato..." required>
-                                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                                <button type="button" class="clear-btnContrato" style="display:none;" onclick="clearSearchContrato()">x</button>
                                                                 <input type="hidden"  id="selected-contrato-id" name="selected-contrato-id">
                                                                 <input type="hidden"  id="selected-proveedor-id" name="selected-proveedor-id">
                                                                 <input type="hidden"  id="selected-num-contrato" name="selected-num-contrato">
@@ -266,7 +267,7 @@ border:1px solid #ff0000;
                                                     <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
                                                 </div>
                                                 <input class="form-control" type="text" id="search-soporte" placeholder="Buscar soporte..." required>
-                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                <button type="button" class="clear-btnSoporte" style="display:none;" onclick="clearSearchSoporte()">x</button>
                                                 <input type="hidden" id="selected-soporte-id" name="selected-soporte-id" value="">
                                             </div>
                                             <ul id="soporte-list" class="client-dropdown">
@@ -281,6 +282,13 @@ border:1px solid #ff0000;
                                         </div>
 
                                         <div class="col">
+                                        <label class="labelforms" for="codigo">Nombre de Plan</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                        </div>
+                                        <input class="form-control" placeholder="Nombre de Plan" name="nombrePlan" required>
+                                    </div>
                                                     <label class="labelforms" for="id_campania">Campaña</label>
                                                         <div class="custom-select-container">
                                                             <div class="input-group">
@@ -288,7 +296,7 @@ border:1px solid #ff0000;
                                                                     <span class="input-group-text"><i class="bi bi-bullseye"></i></span>
                                                                 </div>
                                                                 <input class="form-control" type="text" id="search-campania" placeholder="Buscar campaña..." required>
-                                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                                <button type="button" class="clear-btnCampaña" style="display:none;" onclick="clearSearchCampania()">x</button>
                                                                 <input type="hidden" id="selected-campania-id" name="selected-campania-id">
                                                                 <input type="hidden" id="selected-campania-agencia" name="selected-campania-agencia">
                                                             </div>
@@ -296,7 +304,7 @@ border:1px solid #ff0000;
                                                                 <!-- Aquí se mostrarán las opciones filtradas -->
                                                             </ul>
                                                         </div>
-                                                    <label class="labelforms" for="id_orden_compra">Orden de compra</label>
+                                                    <!--<label class="labelforms" for="id_orden_compra">Orden de compra</label>
                                                         <div class="custom-select-container">
                                                             <div class="input-group">
                                                                 <div class="input-group-prepend">
@@ -307,9 +315,9 @@ border:1px solid #ff0000;
                                                                 <input  type="hidden"  id="selected-orden-id" name="selected-orden-id">
                                                             </div>
                                                             <ul id="orden-list" class="client-dropdown">
-                                                                <!-- Aquí se mostrarán las opciones filtradas -->
+                                                                 Aquí se mostrarán las opciones filtradas 
                                                             </ul>
-                                                        </div> 
+                                                        </div> -->
                                                                                 
                                                     <label for="forma-facturacion" class="labelforms">Forma de facturación</label>
                                                                                                 <div class="input-group">
@@ -346,7 +354,7 @@ border:1px solid #ff0000;
                                                                                 <span class="input-group-text"><i class="bi bi-stars"></i></span>
                                                                             </div>
                                                                             <input class="form-control search-temas" type="text" id="search-temas" placeholder="Buscar temas..." required>
-                                                                            <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                                            
                                                                             <input type="hidden" class="selected-temas-id" id="selected-temas-id" name="selected-temas-id" required>
                                                                             <input type="hidden" id="selected-temas-codigo" name="selected-temas-codigo">
                                                                             <input type="hidden" id="selected-id-medio" name="selected-id-medio">
@@ -376,7 +384,7 @@ border:1px solid #ff0000;
                                                     <span class="input-group-text"><i class="bi bi-box"></i></span>
                                                 </div>
                                                 <input class="form-control" type="text" id="search-clasificacion" placeholder="Buscar Clasificación..." required>
-                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                
                                                 <input type="hidden" class="selected-clasi" id="selected-clasi" name="selected-clasi">
                                             </div>
                                             <ul id="clasificacion-list" class="client-dropdown">
@@ -395,7 +403,7 @@ border:1px solid #ff0000;
                                                                                                                         <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
                                                                                                                     </div>
                                                                                                                     <input class="form-control search-programa" type="text" id="search-programa" placeholder="Buscar programa..." required>
-                                                                                                                    <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                                                                                    
                                                                                                                     <input type="hidden" class="selected-programa-id" id="selected-programa-id" name="selected-programa-id" value="">
                                                                                                                     </div>
                                                                                                                     <ul id="programa-list" class="programa-list client-dropdown">
@@ -428,25 +436,21 @@ border:1px solid #ff0000;
                                                     </div>
 
                             <div >
-                                                                        <div class="calendario">
-                                                                                                <div class="selectores">
-                                                                                                                    <select type="hidden" class="mesSelector"  id="mesSelector" >
-                                                                                                                <option value="" disabled selected>Selecciona un mes</option>
-                                                                                                                <?php foreach ($mesesMap as $id => $mes): ?>
-                                                                                                                    <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($mes['Nombre']); ?></option>
-                                                                                                                <?php endforeach; ?>
-                                                                                                            </select>
-
-                                                                                                            <select type="hidden"  class="anioSelector" id="anioSelector" >
-                                                                                                                <option value="" disabled selected>Selecciona un año</option>
-                                                                                                                <?php foreach ($aniosMap as $id => $anio): ?>
-                                                                                                                    <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($anio['years']); ?></option>
-                                                                                                                <?php endforeach; ?>
-                                                                                                            </select>
-                                                                                                </div>
-                                                                                            <div id="diasContainer" class="diasContainer dias"></div>
-                                                                            
-                                                                            </div>
+                            <div class="calendario">
+    <div class="selectores">
+        <select class="mesSelector" id="mesSelector">
+            <option value="" disabled selected>Selecciona un mes</option>
+            <?php foreach ($mesesMap as $id => $mes): ?>
+                <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($mes['Nombre']); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <div><label>
+            <input type="checkbox" class="fillAllCheckbox" /> Rellenar todas las casillas
+        </label>
+        <input type="number" class="fillAllInput" placeholder="Valor para rellenar" disabled /></div>
+    </div>
+    <div class="diasContainer dias"></div>
+</div>
                                                     </div>
                                                     <div class="row">
             <div class="col-md-3 mb-3">
@@ -460,7 +464,7 @@ border:1px solid #ff0000;
               <label for="estado" class="form-label">Valor Bruto</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                <input type="number" class="selected-valorbruto form-control" id="ValorBruto" name="ValorBruto" required>
+                <input type="number" class="selected-valorbruto form-control" id="ValorBruto" name="ValorBruto" readonly>
               </div>
             </div>
             <div class="col-md-3 mb-3">
@@ -475,7 +479,7 @@ border:1px solid #ff0000;
               <label for="estado" class="form-label">Valor Total</label>
               <div class="input-group">
                 <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
-                <input type="number" class="selected-valortotal form-control" id="ValorTotal" name="ValorTotal" required>
+                <input type="number" class="selected-valortotal form-control" id="ValorTotal" name="ValorTotal" readonly>
               </div>
             </div>
         </div>                                                                                          
@@ -542,22 +546,9 @@ border:1px solid #ff0000;
                 </div>
     </section>
 </div>
+ 
 
 <script>
-// Obtiene el checkbox y el contenedor del código
-const checkbox = document.getElementById('mostrarDescuento');
-const container = document.getElementById('descuento-container');
-
-// Agrega un evento de cambio al checkbox
-checkbox.addEventListener('change', () => {
-  // Si el checkbox está seleccionado, muestra el contenedor del código
-  if (checkbox.checked) {
-    container.style.display = 'block';
-  } else {
-    // Si el checkbox no está seleccionado, oculta el contenedor del código
-    container.style.display = 'none';
-  }
-});
 
 function validateForm() {
     var form = document.getElementById('formularioPlan');
@@ -574,16 +565,11 @@ function validateForm() {
         }
     });
 
-    // Habilitar o deshabilitar el botón de envío
-    var submitButton = document.getElementById('submitButton');
-    submitButton.disabled = !valid;
+
 
     return valid; // Asegúrate de devolver el valor booleano
 }
 
-// Escuchar eventos de entrada y cambio para validar el formulario
-document.getElementById('formularioPlan').addEventListener('input', validateForm);
-document.getElementById('formularioPlan').addEventListener('change', validateForm);
 
 // Validar el formulario cuando se intente enviar
 document.getElementById('formularioPlan').addEventListener('submit', function(event) {
@@ -591,9 +577,7 @@ document.getElementById('formularioPlan').addEventListener('submit', function(ev
         event.preventDefault();  // Evita el envío si el formulario no es válido
     }
 });
-</script>
 
-<script>
 
 function validateDynamicField(fieldId) {
     var field = document.getElementById(fieldId);
@@ -620,20 +604,33 @@ document.getElementById('formularioPlan').addEventListener('submit', function(ev
         }
     });
 
-    // Validar campos dinámicos (ejemplo de validación adicional)
-    valid = valid && validateDynamicField('selected-client-id');
-    valid = valid && validateDynamicField('selected-product-id');
+   
+});
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('formularioPlan');
+    const submitButton = document.getElementById('submitButton');
 
-    if (!valid) {
-        event.preventDefault();
-        alert('Por favor, complete todos los campos obligatorios.');
-    }
+    // Prevenir el envío tradicional del formulario
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Esto es crucial para evitar el refresh
+        
+        if (!validateForm()) {
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor, completa todos los campos requeridos.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
+            return;
+        }
+        
+        enviarDatos();
+    });
 });
 
 
-
-// Asignar clientes desde PHP al script
 const clientes = <?php echo json_encode($clientesMap); ?>;
+
 
 // Función para mostrar todas las opciones cuando se hace clic en el input
 function showAllClients() {
@@ -684,24 +681,51 @@ function filterClients() {
     }
 
     // Mostrar el botón de limpiar si hay algo en el input
-    document.querySelector(".clear-btn").style.display = searchInput ? 'inline' : 'none';
+    document.querySelector(".clear-btnCliente").style.display = searchInput ? 'inline' : 'none';
 }
 
-// Función para seleccionar un cliente de la lista
-function selectClient(id, nombreCliente) {
-    document.getElementById("search-client").value = nombreCliente;
-    document.getElementById("selected-client-id").value = id;
 
-    // Limpiar la lista de opciones una vez seleccionado
+function selectClient(id, nombreCliente) {
+    // Obtener los elementos
+    const searchClientInput = document.getElementById("search-client");
+    const selectedClientIdInput = document.getElementById("selected-client-id");
+
+    // Establecer el nombre del cliente en el input
+    searchClientInput.value = nombreCliente;
+
+    // Establecer el ID del cliente seleccionado
+    selectedClientIdInput.value = id;
+
+    // Ocultar la lista de clientes
     document.getElementById("client-list").style.display = "none";
+
+    // Mostrar botón de limpiar
+    document.querySelector(".clear-btnCliente").style.display = 'block';
+
+    // Establecer como solo lectura
+    searchClientInput.setAttribute('readonly', true);
+
+    // Disparar eventos para forzar la validación
+    searchClientInput.dispatchEvent(new Event('input', { bubbles: true }));
+    searchClientInput.dispatchEvent(new Event('change', { bubbles: true }));
+    
+    // Remover clase de error si existe
+    searchClientInput.classList.remove('is-invalid');
+    selectedClientIdInput.classList.remove('is-invalid');
 }
 
 // Función para limpiar la búsqueda
-function clearSearch() {
-    document.getElementById("search-client").value = '';
-    document.getElementById("selected-client-id").value = '';
+function clearSearchCliente() {
+    // Limpiar el input de búsqueda
+    document.getElementById("search-client").value = "";
+    // Limpiar el ID de cliente seleccionado
+    document.getElementById("selected-client-id").value = "";
+    
+    // Ocultar la lista de clientes
     document.getElementById("client-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
+    
+    // Ocultar el botón de limpiar
+    document.querySelector(".clear-btnCliente").style.display = 'none';
 }
 
 // Función para cerrar el dropdown si se hace clic fuera
@@ -793,11 +817,27 @@ function filterProducts() {
 
 // Función para seleccionar un producto de la lista
 function selectProduct(id, nombreProducto) {
-    document.getElementById("search-product").value = nombreProducto;
-    document.getElementById("selected-product-id").value = id;
+    // Obtener los elementos
+    const searchProductInput = document.getElementById("search-product");
+    const selectedProductIdInput = document.getElementById("selected-product-id");
+
+    // Establecer el nombre del producto en el input
+    searchProductInput.value = nombreProducto;
+
+    // Establecer el ID del producto seleccionado
+    selectedProductIdInput.value = id;
 
     // Limpiar la lista de opciones una vez seleccionado
+    document.querySelector(".clear-btnProducto").style.display = 'block';
     document.getElementById("product-list").style.display = "none";
+
+    // Disparar eventos para forzar la validación
+    searchProductInput.dispatchEvent(new Event('input', { bubbles: true }));
+    searchProductInput.dispatchEvent(new Event('change', { bubbles: true }));
+    
+    // Remover clase de error si existe
+    searchProductInput.classList.remove('is-invalid');
+    selectedProductIdInput.classList.remove('is-invalid');
 }
 
 // Función para cerrar el dropdown si se hace clic fuera (aplicable para productos también)
@@ -820,13 +860,15 @@ document.getElementById("search-product").addEventListener('click', function() {
         showProductsForClient();
     }
 });
-function clearSearchProduct() {
+function clearSearchProducto() {
     document.getElementById("search-product").value = '';
+    document.getElementById("search-product").setAttribute('readonly', false);
     document.getElementById("selected-product-id").value = '';
     document.getElementById("product-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
+    document.querySelector(".clear-btnProducto").style.display = 'none';
 }
 
+// Asignar contratos desde PHP al script
 // Asignar contratos desde PHP al script
 const contratos = <?php echo json_encode($contratosMap); ?>;
 
@@ -900,7 +942,8 @@ function filterContracts() {
     // Mostrar el botón de limpiar si hay algo en el input
     document.querySelector(".clear-btn").style.display = searchInput ? 'inline' : 'none';
 }
-
+const mesesMap = <?php echo json_encode($mesesMap); ?>;
+const aniosMap = <?php echo json_encode($aniosMap); ?>;
 // Modificamos la función selectContract para mostrar año y mes
 function selectContract(contrato) {
     // Código existente de selección de contrato
@@ -925,6 +968,8 @@ function selectContract(contrato) {
 
     // Limpiar la lista de opciones una vez seleccionado
     document.getElementById("contrato-list").style.display = "none";
+    document.querySelector(".clear-btnContrato").style.display = 'block';
+    document.getElementById("search-contrato").setAttribute('readonly', true);
     actualizarCalendarioDesdeContrato();
 }
 
@@ -955,7 +1000,8 @@ function clearSearchContrato() {
     document.getElementById("selected-anio").value = '';
     document.getElementById("selected-mes").value = '';
     document.getElementById("contrato-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
+    document.querySelector(".clear-btnContrato").style.display = 'none';
+    
 
     // Limpiar los spans de año y mes
     const yearSpan = document.getElementById("selected-year-span");
@@ -1018,7 +1064,7 @@ function renderSoporteDropdown(soportes) {
 
         soporteList.appendChild(li);
     });
-
+    document.querySelector(".clear-btnSoporte").style.display = 'block';
     soporteList.style.display = 'block';
 }
 
@@ -1030,10 +1076,11 @@ document.addEventListener('click', function (event) {
 });
 
 // Función para limpiar la búsqueda
-function clearSearch() {
+function clearSearchSoporte() {
     searchSoporteInput.value = '';
     selectedSoporteIdInput.value = '';
     soporteList.style.display = 'none';
+    document.querySelector(".clear-btnSoporte").style.display = 'none';
 }
 
 
@@ -1274,90 +1321,6 @@ function initializeClasificacionSearch(groupElement) {
         }
     });
 }
-
-
-
-function initializeValoresCalculator(group) {
-    const inputValorNeto = group.querySelector('.selected-valorneto');
-    const inputValorBruto = group.querySelector('.selected-valorbruto');
-    const inputDescuento = group.querySelector('.selected-descuentov');
-    const inputValorTotal = group.querySelector('.selected-valortotal');
-
-    if (!inputValorNeto || !inputValorBruto || !inputDescuento || !inputValorTotal) {
-        console.error("Error: No se pudieron encontrar todos los inputs necesarios en el grupo");
-        return;
-    }
-
-    const calcularValores = () => {
-        const valorNeto = parseFloat(inputValorNeto.value) || 0;
-        const valorBruto = Math.round(valorNeto * 1.19);
-        const descuento = parseFloat(inputDescuento.value) || 0;
-        const valorTotal = Math.max(0, valorBruto - descuento);
-
-        inputValorBruto.value = valorBruto;
-        inputValorTotal.value = valorTotal;
-
-        // Actualizar totales globales
-        updateTotalesGlobales();
-    };
-
-    // Agregar event listeners
-    inputValorNeto.addEventListener('input', calcularValores);
-    inputDescuento.addEventListener('input', calcularValores);
-}
-
-function updateTotalesGlobales() {
-    const grupos = document.querySelectorAll('.programas-temas-group');
-    const divTotales = document.querySelector('.totalestotales');
-    
-    if (!divTotales) {
-        console.error("No se encontró el div con clase 'totalestotales'");
-        return;
-    }
-
-    let totalValorNeto = 0;
-    let totalValorBruto = 0;
-    let totalDescuento = 0;
-    let totalValorTotal = 0;
-
-    // Calcular totales 
-    grupos.forEach((grupo, index) => {
-        const valorNeto = parseFloat(grupo.querySelector('.selected-valorneto').value) || 0;
-        const valorBruto = parseFloat(grupo.querySelector('.selected-valorbruto').value) || 0;
-        const descuento = parseFloat(grupo.querySelector('.selected-descuentov').value) || 0;
-        const valorTotal = parseFloat(grupo.querySelector('.selected-valortotal').value) || 0;
-
-        totalValorNeto += valorNeto;
-        totalValorBruto += valorBruto;
-        totalDescuento += descuento;
-        totalValorTotal += valorTotal;
-    });
-
-    // Mostrar totales globales en tabla
-    divTotales.innerHTML = `
-        <table class="finishtab table table-bordered" style="width: auto; margin-left: auto;">
-            <tbody>
-                <tr>
-                    <td class="fw-bold">Valor Neto Total:</td>
-                    <td class="text-end">$${totalValorNeto.toLocaleString()}</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold">Valor Bruto Total:</td>
-                    <td class="text-end">$${totalValorBruto.toLocaleString()}</td>
-                </tr>
-                <tr>
-                    <td class="fw-bold">Descuento Total:</td>
-                    <td class="text-end">$${totalDescuento.toLocaleString()}</td>
-                </tr>
-                <tr class="table-active">
-                    <td class="fw-bold">Valor Total General:</td>
-                    <td class="text-end fw-bold">$${totalValorTotal.toLocaleString()}</td>
-                </tr>
-            </tbody>
-        </table>
-    `;
-}
-
 // Función para renderizar el dropdown de programas (mejorada)
 function renderProgramaDropdown(programas, programaList, searchInput, selectedProgramaIdInput) {
     programaList.innerHTML = '';
@@ -1422,17 +1385,14 @@ document.addEventListener('click', function (event) {
 
 
 // Función para limpiar la búsqueda de programas
-function clearSearch(button) {
-    const container = button.closest('.programas-temas-group');
-    const searchInput = container.querySelector('.search-programa');
-    const selectedProgramaIdInput = container.querySelector('.selected-programa-id');
-    const programaList = container.querySelector('.programa-list');
-
-    searchInput.value = '';
-    selectedProgramaIdInput.value = '';
-    programaList.style.display = 'none';
+function clearSearchProgramas() {
+    document.getElementById("selected-programa-id").value = '';
+    document.getElementById("search-programa").value = '';
+    document.getElementById("hora-inicio").value = ''; 
+    document.getElementById("hora-fin").value = '';
+    document.getElementById("programa-list").style.display = "none";            
+    document.querySelector(".clear-btn").style.display = 'none';
 }
-
 
 
 
@@ -1508,6 +1468,7 @@ function selectCampaign(campaign) {
     document.getElementById("selected-campania-agencia").value = campaign.IdAgencias; 
     // Limpiar la lista de opciones una vez seleccionado
     document.getElementById("campania-list").style.display = "none";
+    document.querySelector(".clear-btnCampaña").style.display = 'block';
 }
 
 // Mostrar campañas del cliente cuando el input es clickeado
@@ -1535,117 +1496,19 @@ document.addEventListener('click', function(event) {
 function clearSearchCampania() {
     document.getElementById("search-campania").value = '';
     document.getElementById("selected-campania-id").value = '';
+    document.getElementById("selected-campania-agencia").value = '';
     document.getElementById("campania-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
+    document.querySelector(".clear-btnCampaña").style.display = 'none';
 }
 
-const ordenes = <?php echo json_encode($ordenMap); ?>;
-// Función para mostrar las órdenes asociadas a la campaña seleccionada
-function showOrdenesForCampania() {
-    const campaniaId = document.getElementById("selected-campania-id").value;
-    const ordenList = document.getElementById("orden-list");
 
-    // Limpiar la lista antes de mostrar las órdenes
-    ordenList.innerHTML = '';
-
-    // Filtrar órdenes según la campaña seleccionada
-    const filteredOrdenes = ordenes.filter(orden => orden.id_campania === parseInt(campaniaId));
-
-    if (filteredOrdenes.length === 0) {
-        ordenList.style.display = "none";
-    } else {
-        ordenList.style.display = "block";
-        filteredOrdenes.forEach(orden => {
-            const li = document.createElement("li");
-            li.textContent = orden.NombreOrden;
-            li.setAttribute("data-id", orden.id_orden_compra);
-            li.classList.add("orden-item");
-            li.onclick = function() {
-                selectOrden(orden);
-            };
-            ordenList.appendChild(li);
-        });
-    }
-}
-
-// Función para filtrar órdenes por búsqueda y campaña seleccionada
-function filterOrdenes() {
-    const searchInput = document.getElementById("search-orden").value.toLowerCase();
-    const campaniaId = document.getElementById("selected-campania-id").value;
-    const ordenList = document.getElementById("orden-list");
-
-    // Limpiar la lista antes de mostrar resultados
-    ordenList.innerHTML = '';
-
-    // Filtrar órdenes según el valor del input y la campaña seleccionada
-    const filteredOrdenes = ordenes.filter(orden =>
-        orden.id_campania === parseInt(campaniaId) &&
-        orden.NombreOrden.toLowerCase().includes(searchInput)
-    );
-
-    if (filteredOrdenes.length === 0) {
-        ordenList.style.display = "none";
-    } else {
-        ordenList.style.display = "block";
-        filteredOrdenes.forEach(orden => {
-            const li = document.createElement("li");
-            li.textContent = orden.NombreOrden;
-            li.setAttribute("data-id", orden.id_orden_compra);
-            li.classList.add("orden-item");
-            li.onclick = function() {
-                selectOrden(orden);
-            };
-            ordenList.appendChild(li);
-        });
-    }
-
-    // Mostrar el botón de limpiar si hay algo en el input
-    document.querySelector(".clear-btn").style.display = searchInput ? 'inline' : 'none';
-}
-
-// Función para seleccionar una orden de la lista
-function selectOrden(orden) {
-    document.getElementById("search-orden").value = orden.NombreOrden;
-    document.getElementById("selected-orden-id").value = orden.id_orden_compra;
-
-    // Limpiar la lista de opciones una vez seleccionada
-    document.getElementById("orden-list").style.display = "none";
-}
-
-// Mostrar órdenes de la campaña cuando el input es clickeado
-document.getElementById("search-orden").addEventListener('click', function() {
-    const campaniaId = document.getElementById("selected-campania-id").value;
-
-    // Si hay una campaña seleccionada, mostrar sus órdenes
-    if (campaniaId) {
-        showOrdenesForCampania();
-    }
-});
-
-// Función para cerrar el dropdown si se hace clic fuera
-document.addEventListener('click', function(event) {
-    const searchInputOrden = document.getElementById('search-orden');
-    const ordenList = document.getElementById('orden-list');
-    
-    // Si el clic está fuera del campo de búsqueda y de la lista de órdenes
-    if (!searchInputOrden.contains(event.target) && !ordenList.contains(event.target)) {
-        ordenList.style.display = 'none';
-    }
-});
-
-// Función para limpiar la búsqueda de órdenes
-function clearSearch() {
-    document.getElementById("search-orden").value = '';
-    document.getElementById("selected-orden-id").value = '';
-    document.getElementById("orden-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
-}
 
             const campaniaTemasMap = <?php echo json_encode($campaniaTemasMap); ?>;
             const temasMap = <?php echo json_encode($temasMap); ?>;
 
             // Función para inicializar la búsqueda de temas en un grupo específico
-function initializeTemasSearch(group) {
+            // Función para inicializar la búsqueda de temas en un grupo específico
+            function initializeTemasSearch(group) {
     const searchTemasInput = group.querySelector('.search-temas');
     const temasList = group.querySelector('.temas-list');
     const selectedTemasIdInput = group.querySelector('.selected-temas-id');
@@ -1818,110 +1681,155 @@ function initializeTemasSearch(group) {
             });
 
             // Función para limpiar la búsqueda de temas
-            function clearSearch() {
+            function clearSearchTemas() {
                 document.getElementById("search-temas").value = '';
-                document.getElementById("selected-temas-id").value = '';
+                document.getElementById("selected-temas-id").value = ''; 
                 document.getElementById("selected-temas-codigo").value = '';
-                document.getElementById("selected-segundos").style.display = '';
+                document.getElementById("selected-segundos").value = '';
+                document.getElementById("selected-id-medio").value = '';
+                document.getElementById("selected-id-clasificacion").style.display = '';
                 document.getElementById("temas-list").style.display = "none";            
                 document.querySelector(".clear-btn").style.display = 'none';
             }
-            const mesesMap = <?php echo json_encode($mesesMap); ?>;
-            const aniosMap = <?php echo json_encode($aniosMap); ?>;
-// Función para inicializar el calendario usando solo valores del contrato
-function initializeCalendar(group) {
+
+            function initializeCalendar(group) {
+    const mesSelector = group.querySelector('.mesSelector');
     const diasContainer = group.querySelector('.diasContainer');
-    const mesId = parseInt(document.getElementById('selected-mes').value);
-    const anioId = parseInt(document.getElementById('selected-anio').value);
+    const fillAllCheckbox = group.querySelector('.fillAllCheckbox');
+    const fillAllInput = group.querySelector('.fillAllInput');
 
-
-    const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
-
-    if (!mesId || !anioId) {
-        console.warn("No hay valores de mes o año disponibles en el contrato");
-        return;
+    // Función para actualizar todas las casillas
+    function fillAllDays() {
+        const value = fillAllInput.value;
+        if (value !== '') {
+            diasContainer.querySelectorAll('.dia-input').forEach(input => {
+                input.value = value;
+            });
+        }
     }
 
-    // Obtener el mes y año directamente de los mapas
-    const mes = parseInt(mesesMap[mesId]['Id']);
-    const anio = parseInt(aniosMap[anioId]['years']);
+    // Habilitar/deshabilitar la casilla de valor global
+    fillAllCheckbox.addEventListener('change', (e) => {
+        fillAllInput.disabled = !e.target.checked;
+        if (!e.target.checked) {
+            fillAllInput.value = '';
+        }
+    });
 
-    // Calcular días en el mes
-    const diasEnMes = new Date(anio, mes, 0).getDate();
-    diasContainer.innerHTML = '';
+    // Escuchar cambios en la casilla global y rellenar todas las casillas
+    fillAllInput.addEventListener('input', fillAllDays);
 
-    // Generar el calendario
-    for (let dia = 1; dia <= diasEnMes; dia++) {
-        const fecha = new Date(anio, mes - 1, dia);
-        const nombreDia = diasSemana[fecha.getDay()];
+    // Función para inicializar el calendario
+    function updateCalendar() {
+        const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
 
-        const diaElement = document.createElement('div');
-        diaElement.className = 'dia';
-        diaElement.innerHTML = `
-            <div class="dia-nombre">${nombreDia}</div>
-            <div class="dia-numero">${dia}</div>
-            <input type="number" class="dia-input" data-dia="${dia}" data-mes="${mesId}" data-anio="${anioId}" />
-        `;
-        diasContainer.appendChild(diaElement);
+        // Obtener el año y mes seleccionados
+        const anioId = parseInt(document.getElementById('selected-anio').value);
+        const mesId = parseInt(mesSelector.value);
+
+        if (!mesId || !anioId) {
+            console.warn("No hay valores de mes o año disponibles");
+            return;
+        }
+
+        const mes = parseInt(mesesMap[mesId]['Id']);
+        const anio = parseInt(aniosMap[anioId]['years']);
+
+        const diasEnMes = new Date(anio, mes, 0).getDate();
+        diasContainer.innerHTML = '';
+
+        for (let dia = 1; dia <= diasEnMes; dia++) {
+            const fecha = new Date(anio, mes - 1, dia);
+            const nombreDia = diasSemana[fecha.getDay()];
+
+            const diaElement = document.createElement('div');
+            diaElement.className = 'dia';
+            diaElement.innerHTML = `
+                <div class="dia-nombre">${nombreDia}</div>
+                <div class="dia-numero">${dia}</div>
+                <input type="number" class="dia-input" data-dia="${dia}" data-mes="${mesId}" data-anio="${anioId}" />
+            `;
+            diasContainer.appendChild(diaElement);
+        }
+
+        // Si el checkbox está activo, rellenar todas las casillas con el valor actual
+        if (fillAllCheckbox.checked && fillAllInput.value !== '') {
+            fillAllDays();
+        }
     }
+
+    mesSelector.addEventListener('change', () => {
+        fillAllInput.value = '';
+        updateCalendar();
+    });
+
+    updateCalendar();
 }
 
 // Función para actualizar todos los calendarios cuando se selecciona un contrato
 function actualizarCalendarioDesdeContrato() {
-    const mesId = document.getElementById('selected-mes').value;
-    const anioId = document.getElementById('selected-anio').value;
-    
-    if (mesId && anioId) {
-        // Actualizar todos los calendarios existentes
-        const calendarios = document.querySelectorAll('.calendario');
-        calendarios.forEach(calendario => {
+    const calendarios = document.querySelectorAll('.calendario');
+    calendarios.forEach(calendario => {
+        // Añadir event listener al mesSelector de cada calendario
+        const mesSelector = calendario.querySelector('.mesSelector');
+        mesSelector.addEventListener('change', () => {
             initializeCalendar(calendario);
         });
-    }
-}
-
-// Modificar la función addProgramasTemasGroup para inicializar la búsqueda de temas
-function addProgramasTemasGroup() {
-    const container = document.getElementById('programasTemasContainer');
-    const newGroup = container.querySelector('.programas-temas-group').cloneNode(true);
-    const groupCount = container.querySelectorAll('.programas-temas-group').length;
-
-    // Asignar un ID único al grupo
-    newGroup.dataset.groupId = `group-${groupCount + 1}`;
-
-    // Limpiar los valores en los inputs del nuevo grupo
-    newGroup.querySelectorAll('input').forEach(input => {
-        input.value = '';
+        
+        // Inicializar el calendario con el año del contrato
+        initializeCalendar(calendario);
     });
-
-    // Mostrar el botón de eliminar solo en el nuevo grupo
-    const removeButton = newGroup.querySelector('.remove-group-btn');
-    if (removeButton) {
-        removeButton.style.display = 'inline-block';
-    }
-
-    // Ocultar el botón de eliminar en el primer grupo
-    const firstGroup = container.querySelector('.programas-temas-group');
-    const firstGroupRemoveButton = firstGroup.querySelector('.remove-group-btn');
-    if (firstGroupRemoveButton) {
-        firstGroupRemoveButton.style.display = 'none';
-    }
-
-       // Initialize classification search for the new group
-       initializeClasificacionSearch(newGroup);
-// Inicializar todas las funcionalidades en el nuevo grupo
-    initializeSearch(newGroup);
-    initializeTemasSearch(newGroup);
-    initializeCalendar(newGroup);
-    // Inicializar todas las funcionalidades en el nuevo grupo
-    initializeValoresCalculator(newGroup);
-
-    // Insertar el nuevo grupo en el contenedor
-    container.appendChild(newGroup);
-
-    // Actualizar totales globales
-    updateTotalesGlobales();
 }
+
+    // Modificar la función addProgramasTemasGroup para inicializar la búsqueda de temas
+    function addProgramasTemasGroup() {
+        const container = document.getElementById('programasTemasContainer');
+        const newGroup = container.querySelector('.programas-temas-group').cloneNode(true);
+        const groupCount = container.querySelectorAll('.programas-temas-group').length;
+
+        // Asignar un ID único al grupo
+        newGroup.dataset.groupId = `group-${groupCount + 1}`;
+
+        // Limpiar los valores en los inputs del nuevo grupo
+        newGroup.querySelectorAll('input').forEach(input => {
+            input.value = '';
+        });
+
+        // Resetear el selector de mes
+        const mesSelector = newGroup.querySelector('.mesSelector');
+        if (mesSelector) {
+            mesSelector.selectedIndex = 0; // Volver a la opción por defecto
+        }
+
+        // Mostrar el botón de eliminar solo en el nuevo grupo
+        const removeButton = newGroup.querySelector('.remove-group-btn');
+        if (removeButton) {
+            removeButton.style.display = 'inline-block';
+        }
+
+        // Ocultar el botón de eliminar en el primer grupo
+        const firstGroup = container.querySelector('.programas-temas-group');
+        const firstGroupRemoveButton = firstGroup.querySelector('.remove-group-btn');
+        if (firstGroupRemoveButton) {
+            firstGroupRemoveButton.style.display = 'none';
+        }
+
+        // Inicializar funcionalidades en el nuevo grupo
+        initializeClasificacionSearch(newGroup);
+        initializeSearch(newGroup);
+        initializeTemasSearch(newGroup);
+        
+        // Inicializar calendario con eventos de selector de mes
+        initializeCalendar(newGroup);
+        
+        initializeValoresCalculator(newGroup);
+
+        // Insertar el nuevo grupo en el contenedor
+        container.appendChild(newGroup);
+
+        // Actualizar totales globales
+        updateTotalesGlobales();
+    }
 
 
 // Inicializar el calculador en el grupo inicial cuando se carga la página
@@ -1931,7 +1839,99 @@ document.addEventListener('DOMContentLoaded', () => {
         initializeValoresCalculator(initialGroup);
         updateTotalesGlobales();
     }
+    document.getElementById("search-client").setAttribute('readonly', true);
+    
+    document.getElementById("search-product").setAttribute('readonly', true);
+   
+    document.getElementById("search-contrato").setAttribute('readonly', true);
+   
+    document.getElementById("search-soporte").setAttribute('readonly', true);
+    
+    document.getElementById("search-campania").setAttribute('readonly', true);
+
+    document.getElementById("search-temas").setAttribute('readonly', true);
+    document.getElementById("search-programa").setAttribute('readonly', true);
+ 
 });
+function initializeValoresCalculator(group) {
+    const inputValorNeto = group.querySelector('.selected-valorneto');
+    const inputValorBruto = group.querySelector('.selected-valorbruto');
+    const inputDescuento = group.querySelector('.selected-descuentov');
+    const inputValorTotal = group.querySelector('.selected-valortotal');
+
+    if (!inputValorNeto || !inputValorBruto || !inputDescuento || !inputValorTotal) {
+        console.error("Error: No se pudieron encontrar todos los inputs necesarios en el grupo");
+        return;
+    }
+
+    const calcularValores = () => {
+        const valorNeto = parseFloat(inputValorNeto.value) || 0;
+        const valorBruto = Math.round(valorNeto * 1.19);
+        const descuento = parseFloat(inputDescuento.value) || 0;
+        const valorTotal = Math.max(0, valorBruto - descuento);
+
+        inputValorBruto.value = valorBruto;
+        inputValorTotal.value = valorTotal;
+
+        // Actualizar totales globales
+        updateTotalesGlobales();
+    };
+
+    // Agregar event listeners
+    inputValorNeto.addEventListener('input', calcularValores);
+    inputDescuento.addEventListener('input', calcularValores);
+}
+function updateTotalesGlobales() {
+    const grupos = document.querySelectorAll('.programas-temas-group');
+    const divTotales = document.querySelector('.totalestotales');
+    
+    if (!divTotales) {
+        console.error("No se encontró el div con clase 'totalestotales'");
+        return;
+    }
+
+    let totalValorNeto = 0;
+    let totalValorBruto = 0;
+    let totalDescuento = 0;
+    let totalValorTotal = 0;
+
+    // Calcular totales 
+    grupos.forEach((grupo, index) => {
+        const valorNeto = parseFloat(grupo.querySelector('.selected-valorneto').value) || 0;
+        const valorBruto = parseFloat(grupo.querySelector('.selected-valorbruto').value) || 0;
+        const descuento = parseFloat(grupo.querySelector('.selected-descuentov').value) || 0;
+        const valorTotal = parseFloat(grupo.querySelector('.selected-valortotal').value) || 0;
+
+        totalValorNeto += valorNeto;
+        totalValorBruto += valorBruto;
+        totalDescuento += descuento;
+        totalValorTotal += valorTotal;
+    });
+
+    // Mostrar totales globales en tabla
+    divTotales.innerHTML = `
+        <table class="finishtab table table-bordered" style="width: auto; margin-left: auto;">
+            <tbody>
+                <tr>
+                    <td class="fw-bold">Valor Neto Total:</td>
+                    <td class="text-end">$${totalValorNeto.toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Valor Bruto Total:</td>
+                    <td class="text-end">$${totalValorBruto.toLocaleString()}</td>
+                </tr>
+                <tr>
+                    <td class="fw-bold">Descuento Total:</td>
+                    <td class="text-end">$${totalDescuento.toLocaleString()}</td>
+                </tr>
+                <tr class="table-active">
+                    <td class="fw-bold">Valor Total General:</td>
+                    <td class="text-end fw-bold">$${totalValorTotal.toLocaleString()}</td>
+                </tr>
+            </tbody>
+        </table>
+    `;
+}
 function removeProgramasTemasGroup(button) {
     const container = document.getElementById('programasTemasContainer');
     const groups = container.querySelectorAll('.programas-temas-group');
@@ -1969,26 +1969,117 @@ document.addEventListener('DOMContentLoaded', function () {
 
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const form = document.getElementById('formularioPlan');
-    const submitButton = document.getElementById('submitButton');
+    async function enviarDatos() {
+        try {
+            // Mostrar loading en el botón
+            const btnText = submitButton.querySelector('.btn-txt');
+            const spinner = submitButton.querySelector('.spinner-border');
+            btnText.style.display = 'none';
+            spinner.style.display = 'inline-block';
+            submitButton.disabled = true;
 
-    // Prevenir el envío tradicional del formulario
-    form.addEventListener('submit', function(event) {
-        event.preventDefault(); // Esto es crucial para evitar el refresh
-        
-        if (!validateForm()) {
-            Swal.fire({
+            const datos = recopilarDatos();
+            const userdatos = recopilarUsuario();
+       
+            const datosPlan = {
+                NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
+                id_cliente: document.getElementById('selected-client-id').value,
+                id_producto: document.getElementById('selected-product-id').value,
+                id_contrato: document.getElementById('selected-contrato-id').value,
+                id_soporte: document.getElementById('selected-soporte-id').value,
+                detalle: document.getElementById('descripcion').value,
+                id_campania: document.getElementById('selected-campania-id').value,
+                id_temas: document.getElementById('selected-temas-id').value,
+                tipo_item: document.getElementById('selected-tipo').value,                
+                fr_factura: document.getElementById('forma-facturacion').value,
+                numerodeorden: parseInt(document.getElementById('numerodeOrden').value),  
+                estado: '1',
+                usuarioregistro: userdatos,
+                datosRecopilados: datos
+            };
+            console.log(datosPlan,"volaita");
+            // Primera inserción - PlanesPublicidad
+            const responsePlan = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+                    'Prefer': 'return=representation'
+                },
+                body: JSON.stringify(datosPlan)
+            });
+
+            if (!responsePlan.ok) {
+                throw new Error(`Error en PlanesPublicidad: ${responsePlan.status}`);
+            }
+
+            const planData = await responsePlan.json();
+            const id_planes_publicidad = planData[0].id_planes_publicidad;
+
+            // Segunda inserción - OrdenesDePublicidad
+            const datosOrden = {
+                id_cliente: document.getElementById('selected-client-id').value ?? null,
+                num_contrato: document.getElementById('selected-contrato-id').value ?? null,
+                id_proveedor: document.getElementById('selected-proveedor-id').value ?? null,
+                id_soporte: document.getElementById('selected-soporte-id').value ?? null,
+                id_tema: document.getElementById('selected-temas-id').value ?? null,
+                id_plan: id_planes_publicidad,
+                id_contrato: document.getElementById('selected-contrato-id').value,
+                id_campania: document.getElementById('selected-campania-id').value,
+                detalle: document.getElementById('descripcion').value ?? null,
+                usuarioregistro: userdatos,
+                datosRecopiladosb: datos,
+                tipo_item: document.getElementById('selected-tipo').value ?? null,
+                Megatime: document.getElementById('selected-temas-codigo').value ?? null,
+                id_agencia: document.getElementById('selected-campania-agencia').value ?? null,
+                id_clasificacion: document.getElementById('selected-id-clasificacion').value || null,
+                numerodeordenremplaza: '0',  
+                numerodeorden: parseInt(document.getElementById('numerodeOrden').value),   
+                estado: '1'
+            };
+
+            const responseOrden = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
+                },
+                body: JSON.stringify(datosOrden)
+            });
+
+            if (!responseOrden.ok) {
+                throw new Error(`Error en OrdenesDePublicidad: ${responseOrden.status}`);
+            }
+
+            // Éxito
+            await Swal.fire({
+                title: '¡Éxito!',
+                text: 'Los datos se han guardado correctamente.',
+                icon: 'success',
+                confirmButtonText: 'OK'
+            });
+
+            window.location.href = '/ListPlanes.php';
+
+        } catch (error) {
+            console.error('Error al guardar los datos:', error);
+            await Swal.fire({
                 title: 'Error',
-                text: 'Por favor, completa todos los campos requeridos.',
+                text: 'Error al guardar los datos: ' + error.message,
                 icon: 'error',
                 confirmButtonText: 'OK'
             });
-            return;
+        } finally {
+            // Restaurar el botón
+            const btnText = submitButton.querySelector('.btn-txt');
+            const spinner = submitButton.querySelector('.spinner-border');
+            btnText.style.display = 'inline-block';
+            spinner.style.display = 'none';
+            submitButton.disabled = false;
         }
-        
-        enviarDatos();
-    });
+    }
 
 // Función para recopilar datos
 function recopilarUsuario() {
@@ -2004,20 +2095,20 @@ function recopilarUsuario() {
 
 
 function recopilarDatos() {
+    
     const grupos = document.querySelectorAll('.programas-temas-group');
     const datosRecopilados = [];
-    
-    // Obtener los valores del contrato
-    const mesId = parseInt(document.getElementById('selected-mes').value);
     const anioId = parseInt(document.getElementById('selected-anio').value);
-    
-    // Variables para calcular totales
+    // Obtener los valores del contrato
+        // Variables para calcular totales
     let valorBrutoTotal = 0;
     let valorNetoTotal = 0;
     let descuentoTotal = 0;
     let valorTotalTotal = 0;
     
     grupos.forEach(grupo => {
+
+        const mesId = grupo.querySelector('.mesSelector')?.value || null;
         const segund = grupo.querySelector('.selected-segundos')?.value || null;
         const idclasi = grupo.querySelector('.selected-clasi')?.value || null;
         const programaId = grupo.querySelector('.selected-programa-id')?.value || null;
@@ -2081,113 +2172,7 @@ function recopilarDatos() {
     };
 }
 
-    async function enviarDatos() {
-        try {
-            // Mostrar loading en el botón
-            const btnText = submitButton.querySelector('.btn-txt');
-            const spinner = submitButton.querySelector('.spinner-border');
-            btnText.style.display = 'none';
-            spinner.style.display = 'inline-block';
-            submitButton.disabled = true;
 
-            const datos = recopilarDatos();
-            const userdatos = recopilarUsuario();
-            const datosPlan = {
-                NombrePlan: document.querySelector('input[name="nombrePlan"]').value,
-                id_cliente: document.getElementById('selected-client-id').value,
-                id_producto: document.getElementById('selected-product-id').value,
-                id_contrato: document.getElementById('selected-contrato-id').value,
-                id_soporte: document.getElementById('selected-soporte-id').value,
-                detalle: document.getElementById('descripcion').value,
-                id_campania: document.getElementById('selected-campania-id').value,
-                id_temas: document.getElementById('selected-temas-id').value,
-                tipo_item: document.getElementById('selected-tipo').value,                
-                fr_factura: document.getElementById('forma-facturacion').value,
-                estado: '1',
-                usuarioregistro: userdatos,
-                datosRecopilados: datos
-            };
-
-            // Primera inserción - PlanesPublicidad
-            const responsePlan = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/PlanesPublicidad', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                    'Prefer': 'return=representation'
-                },
-                body: JSON.stringify(datosPlan)
-            });
-
-            if (!responsePlan.ok) {
-                throw new Error(`Error en PlanesPublicidad: ${responsePlan.status}`);
-            }
-
-            const planData = await responsePlan.json();
-            const id_planes_publicidad = planData[0].id_planes_publicidad;
-
-            // Segunda inserción - OrdenesDePublicidad
-            const datosOrden = {
-                id_cliente: document.getElementById('selected-client-id').value ?? null,
-                num_contrato: document.getElementById('selected-contrato-id').value ?? null,
-                id_proveedor: document.getElementById('selected-proveedor-id').value ?? null,
-                id_soporte: document.getElementById('selected-soporte-id').value ?? null,
-                id_tema: document.getElementById('selected-temas-id').value ?? null,
-                id_plan: id_planes_publicidad,
-                detalle: document.getElementById('descripcion').value ?? null,
-                usuarioregistro: userdatos,
-                datosRecopiladosb: datos,
-                tipo_item: document.getElementById('selected-tipo').value ?? null,
-                Megatime: document.getElementById('selected-temas-codigo').value ?? null,
-                id_agencia: document.getElementById('selected-campania-agencia').value ?? null,
-                id_clasificacion: document.getElementById('selected-id-clasificacion').value || null,
-                numero_orden: document.getElementById('selected-orden-id').value ?? null,
-                estado: '1'
-            };
-
-            const responseOrden = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                    'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVreWp4emp3aHhvdHBkZnpjcGZxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjAyNzEwOTMsImV4cCI6MjAzNTg0NzA5M30.Vh4XAp1X6eJlEtqNNzYIoIuTPEweat14VQc9-InHhXc',
-                },
-                body: JSON.stringify(datosOrden)
-            });
-
-            if (!responseOrden.ok) {
-                throw new Error(`Error en OrdenesDePublicidad: ${responseOrden.status}`);
-            }
-
-            // Éxito
-            await Swal.fire({
-                title: '¡Éxito!',
-                text: 'Los datos se han guardado correctamente.',
-                icon: 'success',
-                confirmButtonText: 'OK'
-            });
-
-            window.location.href = '/ListPlanes.php';
-
-        } catch (error) {
-            console.error('Error al guardar los datos:', error);
-            await Swal.fire({
-                title: 'Error',
-                text: 'Error al guardar los datos: ' + error.message,
-                icon: 'error',
-                confirmButtonText: 'OK'
-            });
-        } finally {
-            // Restaurar el botón
-            const btnText = submitButton.querySelector('.btn-txt');
-            const spinner = submitButton.querySelector('.spinner-border');
-            btnText.style.display = 'inline-block';
-            spinner.style.display = 'none';
-            submitButton.disabled = false;
-        }
-    }
-});
 
 
 

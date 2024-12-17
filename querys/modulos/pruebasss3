@@ -1,90 +1,345 @@
-<div class="modal fade" id="actualizarcomisionModal" tabindex="-1" role="dialog" aria-labelledby="actualizarComisionModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="actualizarComisionModalLabel">ACTUALIZAR COMISIÓN</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form id="actualizarComisionForm">
+<form id="formularioPlan">
+        <input type="hidden" value="<?php echo $id_orden_de_compra;?>">
+                    <!-- Campos del formulario -->
+                    <div><div class="fountun"><div><h3 class="titulo-registro mb-3">Editar Plan</h3> </div><div class="sau titulot2"><span id="selected-month-span"></span><span id="selected-year-span"></span></div></div>
+                        
+                        <div class="row">
+                            <div class="col">
+                        
+                                <div class="form-group">
+                  
+                                    <!-- Selección de clientes -->
+                                   
+                                   
+                                <div class="row"> 
 
-                    <input type="hidden" id="actualizar_id_comision" name="id_comision">
-                    <input type="hidden" name="id_cliente" value="<?php echo $idCliente; ?>">
-                    <div class="form-group">
-                        <label for="actualizar_nombreMoneda">Comisión</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-money-bill-alt"></i></span>
-                            </div>
-                            <select class="form-control" id="actualizar_nombreMoneda" name="nombreMoneda">
-                                <?php foreach ($monedas as $moneda): ?>
-                                <option value="<?php echo htmlspecialchars($moneda['id_moneda']); ?>">
-                                    <?php echo htmlspecialchars($moneda['nombreMoneda']); ?>
-                                </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="actualizar_valorComision">Valor</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-dollar-sign"></i></span>
-                            </div>
-                            <input type="text" class="form-control" id="actualizar_valorComision" name="valorComision">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="actualizar_nombreFormato">Formato</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-percent"></i></span>
-                            </div>
-                            <select class="form-control" id="actualizar_nombreFormato" name="nombreFormato">
-                                <?php foreach ($formatos as $formato): ?>
-                                <option value="<?php echo htmlspecialchars($formato['id_formatoComision']); ?>">
-                                    <?php echo htmlspecialchars($formato['nombreFormato']); ?>
-                                </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="actualizar_inicioComision">Fecha Inicio</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                            </div>
-                            <input type="date" class="form-control" id="actualizar_inicioComision" name="inicioComision">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="actualizar_finComision">Fecha Término</label>
-                        <div class="input-group">
-                            <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-calendar-alt"></i></span>
-                            </div>
-                            <input type="date" class="form-control" id="actualizar_finComision" name="finComision">
-                        </div>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Actualizar Comisión</button>
-                </form>
+        
+                                                                                    <label class="labelforms" for="id_cliente">Clientes</label>
+                                                <div class="custom-select-container">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                                        </div>
+                                                        <input class="form-control" type="text"  value="<?php echo htmlspecialchars($nombreCliente); ?>" id="search-client" placeholder="Buscar cliente..." oninput="filterClients()" required>
+                                                        <button type="button" class="clear-btnCliente" style="display:none;" onclick="clearSearchCliente()">x</button>
+                                                        <div class="invalid-feedback">
+                                                    Por favor, seleccione un cliente.
+                                                </div>
+                                                        <input  type="hidden"  id="selected-client-id" value="<?php echo $id_cliente; ?>" name="selected-client-id" >
+                                                                                            <input type="hidden" id="selected-plan-id" value="<?php echo $id_planes_publicidad; ?>" name="selected-plan-id" >
+                                                                                            <input   type="hidden" id="ordenpublicidad-id" value="<?php echo htmlspecialchars($id_ordenes_de_comprar); ?>" name="ordenpublicidad-id" >
+                                                    </div>
+                                                    <ul id="client-list" class="client-dropdown">
+                                                        <!-- Aquí se mostrarán las opciones filtradas -->
+                                                    </ul>
+                                                </div>
+
+                                        <label class="labelforms" for="id_producto">Producto</label>
+                                        <div class="custom-select-container">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-box"></i></span>
+                                                </div>
+                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreProducto); ?>" id="search-product" placeholder="Buscar producto..." required>
+                                                <button type="button" class="clear-btnProducto" style="display:none;" onclick="clearSearchProducto()">x</button>
+                                                <input type="hidden" id="selected-product-id" value="<?php echo $plan['id_producto']; ?>" name="selected-product-id">
+                                            </div>
+                                            <ul id="product-list" class="client-dropdown">
+                                                <!-- Aquí se mostrarán las opciones filtradas -->
+                                            </ul>
+                                        </div>
+                            
+                                        <label class="labelforms" for="id_contrato">Contrato</label>
+                                                        <div class="custom-select-container">
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
+                                                                </div>
+                                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreContrato); ?>" id="search-contrato" placeholder="Buscar contrato..." required>
+                                                                <button type="button" class="clear-btnContrato" style="display:none;" onclick="clearSearchContrato()">x</button>
+                                                                <input type="hidden"  id="selected-contrato-id" value="<?php echo htmlspecialchars($id_contrato); ?>" name="selected-contrato-id">
+                                                                <input type="hidden"  id="selected-proveedor-id" value="<?php echo htmlspecialchars($idProveedor); ?>" name="selected-proveedor-id">
+                                                                <input type="hidden"  id="selected-num-contrato" value="<?php echo htmlspecialchars($numContrato); ?>" name="selected-num-contrato">
+                                                                <input type="hidden" class="selected-anio" value="<?php echo htmlspecialchars($idAnio); ?>" id="selected-anio" name="selected-anio">
+                                                                <input type="hidden" class="selected-mes" value="<?php echo htmlspecialchars($idMes); ?>" id="selected-mes" name="selected-mes">
+                                                                                                            </div>
+                                                            <ul id="contrato-list" class="client-dropdown">
+                                                                <!-- Aquí se mostrarán las opciones filtradas -->
+                                                            </ul>
+                                                        </div>
+
+
+                                        <label class="labelforms" for="id_contrato">Soportes</label>
+                                        <div class="custom-select-container">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                                                </div>
+                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreSoporte); ?>" id="search-soporte" placeholder="Buscar soporte..." required>
+                                                <button type="button" class="clear-btnSoporte" style="display:none;" onclick="clearSearchSoporte()">x</button>
+                                                <input type="hidden" id="selected-soporte-id" value="<?php echo $plan['id_soporte']; ?>" name="selected-soporte-id" value="">
+                                            </div>
+                                            <ul id="soporte-list" class="client-dropdown">
+                                                <!-- Aquí se mostrarán las opciones filtradas -->
+                                            </ul>
+                                        </div>
+
+                                       
+
+
+                                       
+                                        </div>
+
+                                        <div class="col">
+                                        <label class="labelforms" for="codigo">Nombre de Plan</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                        </div>
+                                        <input class="form-control" placeholder="Nombre de Plan" value="<?php echo $plan['NombrePlan']; ?>" name="nombrePlan" required>
+                                    </div>
+
+                                                    <label class="labelforms" for="id_campania">Campaña</label>
+                                                        <div class="custom-select-container">
+                                                            <div class="input-group">
+                                                                <div class="input-group-prepend">
+                                                                    <span class="input-group-text"><i class="bi bi-bullseye"></i></span>
+                                                                </div>
+                                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreCampania); ?>" id="search-campania" placeholder="Buscar campaña..." required>
+                                                                <button type="button" class="clear-btnCampaña" style="display:none;" onclick="clearSearchCampania()">x</button>
+                                                                <input  type="hidden"  id="selected-campania-id" name="selected-campania-id" value="<?php echo $plan['id_campania']; ?>">
+                                                                <input type="hidden"  id="selected-campania-agencia" name="selected-campania-agencia" value="<?php echo htmlspecialchars($id_ordenes_de_comprar2); ?>">
+                                                            </div>
+                                                            <ul id="campania-list" class="client-dropdown">
+                                                                <!-- Aquí se mostrarán las opciones filtradas -->
+                                                            </ul>
+                                                        </div>
+                                                   
+                                                                                
+                                                    <label for="forma-facturacion" class="labelforms">Forma de facturación</label>
+                                                                                                <div class="input-group">
+                                                                                                    <div class="input-group-prepend">
+                                                                                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                                                                                        </div>
+                                                                                                        <select id="forma-facturacion" name="forma-facturacion" class="form-control">
+    <option value="" disabled <?php echo ($selectedFrFactura === '') ? 'selected' : ''; ?>>Selecciona una opción</option>
+    <option value="afecta" <?php echo ($selectedFrFactura === 'afecta') ? 'selected' : ''; ?>>Afecta</option>
+    <option value="exenta" <?php echo ($selectedFrFactura === 'exenta') ? 'selected' : ''; ?>>Exenta</option>
+    <option value="exportacion" <?php echo ($selectedFrFactura === 'exportacion') ? 'selected' : ''; ?>>Exportación</option>
+</select>
+                                                                                                </div>
+
+                                                     
+                                                                
+                                                                            
+                                        </div>
+                                              <!-- Final ROw -->
+                                    </div>
+                                    <div id="programasTemasContainer">
+                                        
+                                        <div class="programas-temas-group">
+                                            <div class="contenedor-nuo">
+                                        <button type="button" class="add-group-btn" onclick="addProgramasTemasGroup()">+</button>
+                                        <button type="button" class="remove-group-btn" onclick="removeProgramasTemasGroup(this)" style="display:none;">-</button>
+                                        <p class="titfun">Agregar / Eliminar nuevo bloque.</p></div>
+                                                <div class="row">
+                                                    <div class="col-6"> <!-- Columna para el primer conjunto de label + input -->
+                                                                    <label class="labelforms" for="id_campania">Temas</label>
+                                                                    <div class="custom-select-container">
+                                                                        <div class="input-group">
+                                                                            <div class="input-group-prepend">
+                                                                                <span class="input-group-text"><i class="bi bi-stars"></i></span>
+                                                                            </div>
+                                                                            <input class="form-control search-temas" type="text" id="search-temas" placeholder="Buscar temas..." required>
+                                                                            
+                                                                            <input type="hidden" class="selected-temas-id" id="selected-temas-id" name="selected-temas-id" required>
+                                                                            <input type="hidden" id="selected-temas-codigo" name="selected-temas-codigo">
+                                                                            <input type="hidden" id="selected-id-medio" name="selected-id-medio">
+                                                                            <input type="hidden" id="selected-id-clasificacion" name="selected-id-clasificacion">
+                                                                        </div>
+                                                                        <ul id="temas-list" class="client-dropdown temas-list">
+                                                                            <!-- Aquí se mostrarán las opciones filtradas -->
+                                                                        </ul>
+                                                                    </div>
+                                                                </div>
+    
+                                                                <div class="col-3"> <!-- Columna para el segundo conjunto de label + input -->
+                                                                    <label class="labelforms" for="codigo">Segundos</label>
+                                                                    <div class="input-group">
+                                                                        <div class="input-group-prepend">
+                                                                            <span class="input-group-text"><i class="bi bi-clock"></i></span> <!-- Cambio de ícono a reloj -->
+                                                                        </div>
+                                                                        <input id="selected-segundos" class="form-control selected-segundos" name="selected-segundos" readonly>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="col-3"> <!-- Columna para el segundo conjunto de label + input -->
+
+                                                                <label class="labelforms" for="id_producto">Clasificación</label>
+                                        <div class="custom-select-container">
+                                            <div class="input-group">
+                                                <div class="input-group-prepend">
+                                                    <span class="input-group-text"><i class="bi bi-box"></i></span>
+                                                </div>
+                                                <input class="form-control" type="text" id="search-clasificacion" placeholder="Buscar Clasificación..." required>
+                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                <input type="hidden" class="selected-clasi" id="selected-clasi" name="selected-clasi">
+                                            </div>
+                                            <ul id="clasificacion-list" class="client-dropdown">
+                                                <!-- Aquí se mostrarán las opciones filtradas -->
+                                            </ul>
+                                        </div>
+                                                                </div>
+                                                                                                                       
+                                                    </div>
+                                                    <div class="row"> <!-- Usamos row para hacer un contenedor de las columnas -->
+                                                                <div class="col-6"> <!-- Columna para el primer conjunto de label + input -->
+                                                                <label class="labelforms" for="id_programa">Programas</label>
+                                                                                                                    <div class="custom-select-container">
+                                                                                                                    <div class="input-group">
+                                                                                                                    <div class="input-group-prepend">
+                                                                                                                        <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
+                                                                                                                    </div>
+                                                                                                                    <input class="form-control search-programa" type="text" id="search-programa" placeholder="Buscar programa..." required>
+                                                                                                                    
+                                                                                                                    <input type="hidden" class="selected-programa-id" id="selected-programa-id" name="selected-programa-id" value="">
+                                                                                                                    </div>
+                                                                                                                    <ul id="programa-list" class="programa-list client-dropdown">
+                                                                                                                        <!-- Aquí se mostrarán las opciones filtradas -->
+                                                                                                                    </ul>
+                                                                                                                    </div>
+                                                                </div>
+
+                                                                                                                <div class="col-3">
+                                                                                                                    <label class="labelforms" for="hora-inicio">Hora inicio</label>
+                                                                                                                    <div class="input-group">
+                                                                                                                        <div class="input-group-prepend">
+                                                                                                                            <span class="input-group-text"><i class="bi bi-hourglass"></i></span> <!-- Ícono de reloj de arena -->
+                                                                                                                        </div>
+                                                                                                                        <input id="hora-inicio" class="form-control hora-inicio" name="hora-inicio" readonly>
+                                                                                                                    </div>
+                                                                                                                </div>
+
+                                                                                                                <!-- Columna para la Hora de Fin -->
+                                                                                                                <div class="col-3">
+                                                                                                                    <label class="labelforms" for="hora-fin">Hora Fin</label>
+                                                                                                                    <div class="input-group">
+                                                                                                                        <div class="input-group-prepend">
+                                                                                                                            <span class="input-group-text"><i class="bi bi-stopwatch"></i></span> <!-- Ícono de cronómetro -->
+                                                                                                                        </div>
+                                                                                                                        <input id="hora-fin" class="form-control hora-fin" name="hora-fin" readonly>
+                                                                                                                    </div>
+                                                                                                                </div>
+                                               
+                                                    </div>
+
+                            <div >
+                                                                        <div class="calendario">
+                                                                        <div class="selectores">
+                                                                                                                    <select  class="mesSelector"  id="mesSelector" >
+                                                                                                                <option value="" disabled selected>Selecciona un mes</option>
+                                                                                                                <?php foreach ($mesesMap as $id => $mes): ?>
+                                                                                                                    <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($mes['Nombre']); ?></option>
+                                                                                                                <?php endforeach; ?>
+                                                                                                            </select>
+
+                                                                                                          
+                                                                                                </div>
+                                                                                            <div id="diasContainer" class="diasContainer dias"></div>
+                                                                            
+                                                                            </div>
+                                                    </div>
+                                                    <div class="row">
+            <div class="col-md-3 mb-3">
+              <label for="estado" class="form-label">Valor Neto</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                <input type="number" class="selected-valorneto form-control" id="ValorNeto" name="ValorNeto" required>
+              </div>
             </div>
+            <div class="col-md-3 mb-3">
+              <label for="estado" class="form-label">Valor Bruto</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                <input type="number" class="selected-valorbruto form-control" id="ValorBruto" name="ValorBruto" required>
+              </div>
+            </div>
+            <div class="col-md-3 mb-3">
+                      <label for="estado" class="form-label">Descuento</label>
+                      <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                        <input type="number" class="selected-descuentov form-control" id="Descuento1" name="Descuento1" value="0" required>
+                      </div>
+                    </div>
+            
+            <div class="col-md-3 mb-3">
+              <label for="estado" class="form-label">Valor Total</label>
+              <div class="input-group">
+                <span class="input-group-text"><i class="bi bi-currency-dollar"></i></span>
+                <input type="number" class="selected-valortotal form-control" id="ValorTotal" name="ValorTotal" required>
+              </div>
+            </div>
+        </div>                                                                                          
+    </div>
+</div>
+
+                                    <!-- Final ROw --> 
+                                    <div class="row">
+    <div class="col-6">
+        <label class="labelforms" for="codigo">Tipo de item</label>
+        <div class="input-group">
+            <div class="input-group-prepend">
+                <span class="input-group-text"><i class="bi bi-chevron-down"></i></span> <!-- Ícono de lista desplegable -->
+            </div>
+            <!-- Aquí se reemplaza el input por un select -->
+            <select id="selected-tipo" class="form-control selected-tipo" name="selected-tipo">
+                <option value="<?php echo $plan['tipo_item']; ?>" disabled selected><?php echo $plan['tipo_item']; ?></option>
+                <option value="AUSPICIO">AUSPICIO</option>
+                <option value="PAUTA LIBRE">PAUTA LIBRE</option>
+                <option value="VPS">VPS</option>
+                <option value="CPR">CPR</option>
+                <option value="CPM">CPM</option>
+                <option value="CPC">CPC</option>
+                <option value="BONIF.">BONIF.</option>
+                <option value="CANJE">CANJE</option>
+            </select>
         </div>
     </div>
 </div>
 
-<html>
 
-<button type="button" class="btn btn-success micono" 
-        data-bs-toggle="modal" 
-        data-bs-target="#actualizarcomisionModal"
-        data-idcomision="<?php echo htmlspecialchars($comision['id_comision']); ?>" 
-        data-toggle="tooltip" 
-        title="Editar">
-    <i class="fas fa-pencil-alt"></i>
-</button>
+                                     <div class="row">
+                                     <div class="col">
+                                            <label for="descripcion" class="labelforms">Detalle</label>
+                                            <div class="custom-textarea-container">
+                                                <textarea id="descripcion" name="descripcion" class="form-control" rows="4" placeholder="Introduce la detalle aquí..."><?php echo $plan['detalle']; ?></textarea>
+                                            </div>
+                                            
+                                     </div>
+                                     </div> 
+                                     <div class="totalestotales"></div>
+                                     <div style="margin-top:30px; display: flex; justify-content: flex-end; text-align: center; width: 100%;">
+    <div>
+        <input class="nombreuser" hidden value="<?php echo $nombre_usuario ?>">
+        <input class="correouser" hidden value="<?php echo $correoUsuario ?>">
+        <span class="nameusu"><?php echo $nombre_usuario ?></span><br>
+        <span class="correusu"><?php echo $correoUsuario ?></span>
+    </div>
+</div>                 
+                                                            
 
-</html>
+
+                                                                    
+                                                                    </div>
+                                                                    </div>
+                                                        
+                                                            </div>
+                                                        </div>
+                <!-- PRUEBASS -->
+                                                   
+                <div class="d-flex justify-content-end mt-3">
+        <button id="submitButton" class="btn btn-primary btn-lg rounded-pill" type="submit">
+            <span class="btn-txt">Guardar Plan</span>
+            <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true" style="display:none;"></span>
+        </button>
+    </div>
+                </form>

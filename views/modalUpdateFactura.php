@@ -88,7 +88,7 @@
 </div>
 
 <script>
-    function cargarDatosFormulario(idFactura) {
+    function Factoform(idFactura) {
     fetch(`https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Facturas?id_factura=eq.${idFactura}`, {
         method: 'GET',
         headers: {
@@ -165,8 +165,9 @@
                     timer: 1500
                 });
                 obtenerFacturaYOrden(id_campania);
-                const modal = bootstrap.Modal.getInstance(document.getElementById('modalActualizarFactura'));
-                modal.hide();
+                $('#modalActualizarFactura').modal('hide');
+            $('.modal-backdrop').css('display', 'none');
+            $('#formularioActualizarFactura')[0].reset();
             } else {
                 return response.json().then(errorData => {
                     console.error('Error al actualizar la factura:', errorData);
@@ -258,7 +259,7 @@
                 updateButton.className = 'btn btn-success micono';
                 updateButton.setAttribute('data-bs-toggle', 'modal');
                 updateButton.setAttribute('data-bs-target', '#modalActualizarFactura');
-                updateButton.setAttribute('onclick', `cargarDatosFormulario(${factura.id_factura});`);
+                updateButton.setAttribute('onclick', `Factoform(${factura.id_factura});`);
 
                 // Add the icon inside the button
                 const icon = document.createElement('i');

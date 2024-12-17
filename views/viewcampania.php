@@ -5,7 +5,12 @@ include '../querys/qcampaign.php';
 // Obtener el ID del cliente de la URL
 $idCampania = isset($_GET['id_campania']) ? $_GET['id_campania'] : null;
 
+$endpoint = 'https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad?select=*';
+if ($idCampania !== null) {
+    $endpoint .= '&id_campania=eq.' . $idCampania;
+}
 
+$ordenesPublicidad = makeRequest($endpoint);
 
 $url = "https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/Campania?id_campania=eq.$idCampania&select=*";
 $campania = makeRequest($url);
@@ -161,9 +166,10 @@ include '../componentes/sidebar.php';
                                 <li class="nav-item">
                                     <a class="nav-link active" id="temastab" data-bs-toggle="tab" href="#temas" role="tab" aria-selected="true">Temas</a>
                                 </li>
-                                <li class="nav-item">
-                                    <a class="nav-link" id="odctab" data-bs-toggle="tab" href="#odc" role="tab" aria-selected="true">Orden de compra</a>
-                                </li>
+                                <li class="nav-item"> 
+                        <a class="nav-link" id="home-tab3" data-bs-toggle="tab" href="#ordenc" role="tab"
+                          aria-selected="true">Ordenes de Contrato</a>
+                      </li>
                                 <li class="nav-item">
                                     <a class="nav-link" id="facturatab" data-bs-toggle="tab" href="#factura" role="tab" aria-selected="true">Factura</a>
                                 </li>
@@ -201,39 +207,64 @@ include '../componentes/sidebar.php';
                                         </div>
                                     </div>
                                 </div>
-                                <div class="tab-pane fade" id="odc" role="tabpanel" aria-labelledby="odctab">
-                                    <div class="row">
-                                        <div class="col-md-12 col-12">
-                                            <div class="row">
-                                                <div class="col-md-12 col-12">
-
-                                                    <div class="card">
-                                                        <div class="card-header milinea">
-                                                            <div class="titulox">
-                                                                <h4>Listado de OC</h4>
-                                                            </div>
-                                                            <div class="agregar">
-                                                                <a type="button" class="btn btn-primary micono" data-bs-toggle="modal" data-bs-target="#modalAgregarOC"><i class="fas fa-plus-circle"></i> Agregar OC</a>
-                                                            </div>
-                                                        </div>
-
-                                                        <div class="table-responsive">
-                                                            <table class="table table-striped text-center" id="tableOC">
-                                                                <thead>
-
-                                                                </thead>
-                                                                <tbody>
-
-                                                                </tbody>
-                                                            </table>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
+                                <div class="tab-pane fade " id="ordenc" role="tabpanel" aria-labelledby="home-tab3">
+                      <div style="padding:0px;" class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-striped" id="tableExportadora">
+                                    <thead>
+                                        <tr>
+                                            <th>N° Orden</th>
+                                            <th>Proveedor</th>
+                                            <th>Cod Megatime</th>
+                                            <th>Tema</th>
+                                            <th>Soporte</th>
+                      
+                                            <th>Estado</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($ordenesPublicidad as $orden): ?>
+                                        <tr>
+                                            <td><?php echo htmlspecialchars($orden['id_ordenes_de_comprar']); ?></td>
+                                            <td><?php echo htmlspecialchars($proveedoresMap[$orden['id_proveedor']]['nombreProveedor'] ?? ''); ?></td>
+                                            <td><?php echo htmlspecialchars($orden['Megatime']); ?></td>
+                                            <td><?php echo htmlspecialchars($temasMap[$orden['id_tema']]['NombreTema'] ?? ''); ?></td>
+                                            <td><?php echo htmlspecialchars($soportesMap[$orden['id_soporte']]['nombreIdentficiador'] ?? ''); ?></td>
+                  
+                                            <td>
+                                            <div class="alineado">
+                                            <label class="custom-switch sino" data-toggle="tooltip">
+    <input type="checkbox" 
+           readonly 
+           disabled
+           class="custom-switch-input estado-switch2" 
+           data-id="<?php echo $orden['id_ordenes_de_comprar']; ?>" 
+           data-tipo="orden" 
+           <?php echo $orden['estado'] ? 'checked' : ''; ?>>
+    <span class="custom-switch-indicator"></span>
+</label>
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
+                                            </td>
+                                            <td>
+                                                    <a class="btn btn-primary micono" href="../querys/modulos/orden.php?id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>" data-toggle="tooltip" title="Ver Orden">
+                                                        <i class="fas fa-eye"></i>
+                                                    </a>
+                                                    <?php if ($orden['estado']): ?>
+    <a class="btn btn-success micono" href="../querys/modulos/editarOrden.php?id_orden=<?php echo $orden['id_ordenes_de_comprar']; ?>">
+        <i class="fas fa-pencil-alt"></i> 
+    </a>
+<?php endif; ?>
+                                                    
+                                                </td>
+                                          
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
                                 <div class="tab-pane fade" id="factura" role="tabpanel" aria-labelledby="facturatab">
                                     <div class="row">
                                         <div class="col-md-12 col-12">

@@ -47,11 +47,15 @@ if ($_SERVER["REQUEST_METHOD"] == "GET" && isset($_GET['id_planes_publicidad']))
     echo "ID del plan no proporcionado.";
 }
 $id_orden_de_compra = null;
-
+$copia = null;
+$numerodeorden = null;
 foreach ($ordenespuMap as $ordenpu) {
     if ($ordenpu['idplanorden'] == $id_planes_publicidad && 
         (empty($ordenpu['estadoorden']) || is_null($ordenpu['estadoorden']))) {
         $id_orden_de_compra = $ordenpu['id_ordenespu'];
+        $numerodeorden = $ordenpu['numerodeorden'];
+        $copia = $ordenpu['numerodeordenremplaza'];
+        
         break;
     }
 }
@@ -163,9 +167,7 @@ input[type="number"] {
     -moz-appearance: textfield;
 }
 
-  .calendario .selectores {
-    display: none; /* Oculta los selectores */
-}
+
 td.text-end.fw-bold {
     border-color: transparent !important;
     padding: 14px 10px;
@@ -314,7 +316,7 @@ border:1px solid #ff0000;
     <form id="formularioPlan">
         <input type="hidden" value="<?php echo $id_orden_de_compra;?>">
                     <!-- Campos del formulario -->
-                    <div><div class="fountun"><div><h3 class="titulo-registro mb-3">Editar Plan</h3> </div><div class="sau titulot2"><span id="selected-month-span"></span><span id="selected-year-span"></span></div></div>
+                    <div><div class="fountun"><div><h3 class="titulo-registro mb-3">Editar Plan</h3> </div><div class="sau titulot2"><span>AÑO /</span><span id="selected-year-span"></span></div></div>
                         
                         <div class="row">
                             <div class="col">
@@ -322,38 +324,39 @@ border:1px solid #ff0000;
                                 <div class="form-group">
                   
                                     <!-- Selección de clientes -->
-                                    <label class="labelforms" for="id_cliente">Clientes</label>
-<div class="custom-select-container">
-    <div class="input-group">
-        <div class="input-group-prepend">
-            <span class="input-group-text"><i class="bi bi-person"></i></span>
-        </div>
-        <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreCliente); ?>" id="search-client" placeholder="Buscar cliente..." oninput="filterClients()" required>
-        <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
-        <div class="invalid-feedback">
-    Por favor, seleccione un cliente.
-</div>
-        <input  type="hidden"  id="selected-client-id" value="<?php echo $id_cliente; ?>" name="selected-client-id" >
-                                            <input type="hidden"  id="selected-calendar-id" value="<?php echo $plan['id_calendar']; ?>" name="selected-calendar-id" >
-                                            <input type="hidden" id="selected-plan-id" value="<?php echo $id_planes_publicidad; ?>" name="selected-plan-id" >
-                                            <input   type="hidden" id="ordenpublicidad-id" value="<?php echo htmlspecialchars($id_ordenes_de_comprar); ?>" name="ordenpublicidad-id" >
-    </div>
-    <ul id="client-list" class="client-dropdown">
-        <!-- Aquí se mostrarán las opciones filtradas -->
-    </ul>
-</div>
-
-                                    <label class="labelforms" for="codigo">Nombre de Plan</label>
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
-                                        </div>
-                                        <input class="form-control" placeholder="Nombre de Plan" value="<?php echo $plan['NombrePlan']; ?>" name="nombrePlan" required>
-                                    </div>
-
+                                   
+                                   
                                 <div class="row"> 
 
                                     <div class="col">
+                                    <label class="labelforms" for="codigo">Numero de Orden</label>
+<div class="input-group">
+    <div class="input-group-prepend">
+        <span class="input-group-text"><i class="bi bi-123"></i></span>
+    </div>
+    <input type="number" class="form-control" id="numerodeOrden" value="<?php echo $plan['numerodeorden']; ?>" placeholder="Numero de Orden" name="numerodeOrden" readonly required>
+ 
+</div>
+                                                                                    <label class="labelforms" for="id_cliente">Clientes</label>
+                                                <div class="custom-select-container">
+                                                    <div class="input-group">
+                                                        <div class="input-group-prepend">
+                                                            <span class="input-group-text"><i class="bi bi-person"></i></span>
+                                                        </div>
+                                                        <input class="form-control" type="text"  value="<?php echo htmlspecialchars($nombreCliente); ?>" id="search-client" placeholder="Buscar cliente..." oninput="filterClients()" required>
+                                                        <button type="button" class="clear-btnCliente" style="display:none;" onclick="clearSearchCliente()">x</button>
+                                                        <div class="invalid-feedback">
+                                                    Por favor, seleccione un cliente.
+                                                </div>
+                                                        <input  type="hidden"  id="selected-client-id" value="<?php echo $id_cliente; ?>" name="selected-client-id" >
+                                                                                            <input type="hidden" id="selected-plan-id" value="<?php echo $id_planes_publicidad; ?>" name="selected-plan-id" >
+                                                                                            <input   type="hidden" id="ordenpublicidad-id" value="<?php echo htmlspecialchars($id_ordenes_de_comprar); ?>" name="ordenpublicidad-id" >
+                                                    </div>
+                                                    <ul id="client-list" class="client-dropdown">
+                                                        <!-- Aquí se mostrarán las opciones filtradas -->
+                                                    </ul>
+                                                </div>
+
                                         <label class="labelforms" for="id_producto">Producto</label>
                                         <div class="custom-select-container">
                                             <div class="input-group">
@@ -361,7 +364,10 @@ border:1px solid #ff0000;
                                                     <span class="input-group-text"><i class="bi bi-box"></i></span>
                                                 </div>
                                                 <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreProducto); ?>" id="search-product" placeholder="Buscar producto..." required>
-                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                <button type="button" class="clear-btnProducto" style="display:none;" onclick="clearSearchProducto()">x</button>
+                                                <div class="invalid-feedback">
+                                                    Por favor, seleccione un Producto.
+                                                </div>
                                                 <input type="hidden" id="selected-product-id" value="<?php echo $plan['id_producto']; ?>" name="selected-product-id">
                                             </div>
                                             <ul id="product-list" class="client-dropdown">
@@ -376,7 +382,10 @@ border:1px solid #ff0000;
                                                                     <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
                                                                 </div>
                                                                 <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreContrato); ?>" id="search-contrato" placeholder="Buscar contrato..." required>
-                                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                                <button type="button" class="clear-btnContrato" style="display:none;" onclick="clearSearchContrato()">x</button>
+                                                                <div class="invalid-feedback">
+                                                    Por favor, seleccione un Contrato y recuerda actualizar tu calendario.
+                                                </div>
                                                                 <input type="hidden"  id="selected-contrato-id" value="<?php echo htmlspecialchars($id_contrato); ?>" name="selected-contrato-id">
                                                                 <input type="hidden"  id="selected-proveedor-id" value="<?php echo htmlspecialchars($idProveedor); ?>" name="selected-proveedor-id">
                                                                 <input type="hidden"  id="selected-num-contrato" value="<?php echo htmlspecialchars($numContrato); ?>" name="selected-num-contrato">
@@ -396,7 +405,7 @@ border:1px solid #ff0000;
                                                     <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
                                                 </div>
                                                 <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreSoporte); ?>" id="search-soporte" placeholder="Buscar soporte..." required>
-                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                <button type="button" class="clear-btnSoporte" style="display:none;" onclick="clearSearchSoporte()">x</button>
                                                 <input type="hidden" id="selected-soporte-id" value="<?php echo $plan['id_soporte']; ?>" name="selected-soporte-id" value="">
                                             </div>
                                             <ul id="soporte-list" class="client-dropdown">
@@ -411,6 +420,14 @@ border:1px solid #ff0000;
                                         </div>
 
                                         <div class="col">
+                                        <label class="labelforms" for="codigo">Nombre de Plan</label>
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text"><i class="bi bi-tag"></i></span>
+                                        </div>
+                                        <input class="form-control" placeholder="Nombre de Plan" value="<?php echo $plan['NombrePlan']; ?>" name="nombrePlan" required>
+                                    </div>
+
                                                     <label class="labelforms" for="id_campania">Campaña</label>
                                                         <div class="custom-select-container">
                                                             <div class="input-group">
@@ -418,7 +435,7 @@ border:1px solid #ff0000;
                                                                     <span class="input-group-text"><i class="bi bi-bullseye"></i></span>
                                                                 </div>
                                                                 <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreCampania); ?>" id="search-campania" placeholder="Buscar campaña..." required>
-                                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                                <button type="button" class="clear-btnCampaña" style="display:none;" onclick="clearSearchCampania()">x</button>
                                                                 <input  type="hidden"  id="selected-campania-id" name="selected-campania-id" value="<?php echo $plan['id_campania']; ?>">
                                                                 <input type="hidden"  id="selected-campania-agencia" name="selected-campania-agencia" value="<?php echo htmlspecialchars($id_ordenes_de_comprar2); ?>">
                                                             </div>
@@ -426,20 +443,7 @@ border:1px solid #ff0000;
                                                                 <!-- Aquí se mostrarán las opciones filtradas -->
                                                             </ul>
                                                         </div>
-                                                    <label class="labelforms" for="id_orden_compra">Orden de compra</label>
-                                                        <div class="custom-select-container">
-                                                            <div class="input-group">
-                                                                <div class="input-group-prepend">
-                                                                    <span class="input-group-text"><i class="bi bi-file-earmark-text"></i></span>
-                                                                </div>
-                                                                <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreOrdenx); ?>" id="search-orden" placeholder="Buscar Orden..." required>
-                                                                <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
-                                                                <input  type="hidden"  id="selected-orden-id" value="<?php echo htmlspecialchars($id_ordenes_de_comprar7); ?>" name="selected-orden-id">
-                                                            </div>
-                                                            <ul id="orden-list" class="client-dropdown">
-                                                                <!-- Aquí se mostrarán las opciones filtradas -->
-                                                            </ul>
-                                                        </div> 
+                                                   
                                                                                 
                                                     <label for="forma-facturacion" class="labelforms">Forma de facturación</label>
                                                                                                 <div class="input-group">
@@ -476,7 +480,7 @@ border:1px solid #ff0000;
                                                                                 <span class="input-group-text"><i class="bi bi-stars"></i></span>
                                                                             </div>
                                                                             <input class="form-control search-temas" type="text" id="search-temas" placeholder="Buscar temas..." required>
-                                                                            <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                                            
                                                                             <input type="hidden" class="selected-temas-id" id="selected-temas-id" name="selected-temas-id" required>
                                                                             <input type="hidden" id="selected-temas-codigo" name="selected-temas-codigo">
                                                                             <input type="hidden" id="selected-id-medio" name="selected-id-medio">
@@ -525,7 +529,7 @@ border:1px solid #ff0000;
                                                                                                                         <span class="input-group-text"><i class="bi bi-briefcase"></i></span>
                                                                                                                     </div>
                                                                                                                     <input class="form-control search-programa" type="text" id="search-programa" placeholder="Buscar programa..." required>
-                                                                                                                    <button type="button" class="clear-btn" style="display:none;" onclick="clearSearch()">x</button>
+                                                                                                                    
                                                                                                                     <input type="hidden" class="selected-programa-id" id="selected-programa-id" name="selected-programa-id" value="">
                                                                                                                     </div>
                                                                                                                     <ul id="programa-list" class="programa-list client-dropdown">
@@ -558,25 +562,21 @@ border:1px solid #ff0000;
                                                     </div>
 
                             <div >
-                                                                        <div class="calendario">
-                                                                                                <div class="selectores">
-                                                                                                                    <select type="hidden" class="mesSelector"  id="mesSelector" >
-                                                                                                                <option value="" disabled selected>Selecciona un mes</option>
-                                                                                                                <?php foreach ($mesesMap as $id => $mes): ?>
-                                                                                                                    <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($mes['Nombre']); ?></option>
-                                                                                                                <?php endforeach; ?>
-                                                                                                            </select>
-
-                                                                                                            <select type="hidden"  class="anioSelector" id="anioSelector" >
-                                                                                                                <option value="" disabled selected>Selecciona un año</option>
-                                                                                                                <?php foreach ($aniosMap as $id => $anio): ?>
-                                                                                                                    <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($anio['years']); ?></option>
-                                                                                                                <?php endforeach; ?>
-                                                                                                            </select>
-                                                                                                </div>
-                                                                                            <div id="diasContainer" class="diasContainer dias"></div>
-                                                                            
-                                                                            </div>
+                            <div class="calendario">
+    <div class="selectores">
+        <select class="mesSelector" id="mesSelector">
+            <option value="" disabled selected>Selecciona un mes</option>
+            <?php foreach ($mesesMap as $id => $mes): ?>
+                <option value="<?php echo $id; ?>"><?php echo htmlspecialchars($mes['Nombre']); ?></option>
+            <?php endforeach; ?>
+        </select>
+        <div><label>
+            <input type="checkbox" class="fillAllCheckbox" /> Rellenar todas las casillas
+        </label>
+        <input type="number" class="fillAllInput" placeholder="Valor para rellenar" disabled /></div>
+    </div>
+    <div class="diasContainer dias"></div>
+</div>
                                                     </div>
                                                     <div class="row">
             <div class="col-md-3 mb-3">
@@ -678,101 +678,84 @@ border:1px solid #ff0000;
 </div>
 
 <script>
+
+function validateForm() {
+    var form = document.getElementById('formularioPlan');
+    var valid = true;
+
+    // Validar campos requeridos
+    var requiredFields = form.querySelectorAll('[required]');
+    requiredFields.forEach(function(field) {
+        if (!field.value.trim()) {
+            valid = false;
+            field.classList.add('is-invalid');
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+
+
+
+    return valid; // Asegúrate de devolver el valor booleano
+}
+
+
+// Validar el formulario cuando se intente enviar
+document.getElementById('formularioPlan').addEventListener('submit', function(event) {
+    if (!validateForm()) {
+        event.preventDefault();  // Evita el envío si el formulario no es válido
+    }
+});
+
+
+function validateDynamicField(fieldId) {
+    var field = document.getElementById(fieldId);
+    if (!field.value.trim()) {
+        field.classList.add('is-invalid');
+        return false;
+    } else {
+        field.classList.remove('is-invalid');
+        return true;
+    }
+}
+
+document.getElementById('formularioPlan').addEventListener('submit', function(event) {
+    var valid = true;
+
+    // Validar campos estáticos con required
+    var requiredFields = document.querySelectorAll('[required]');
+    requiredFields.forEach(function(field) {
+        if (!field.value.trim()) {
+            valid = false;
+            field.classList.add('is-invalid');
+        } else {
+            field.classList.remove('is-invalid');
+        }
+    });
+
+   
+});
 document.addEventListener('DOMContentLoaded', function() {
     const form = document.getElementById('formularioPlan');
     const submitButton = document.getElementById('submitButton');
-    const submitButtonText = form.querySelector('.btn-txt');
-    const submitButtonSpinner = form.querySelector('.spinner-border');
 
-    if (!form) {
-        console.error('Form not found! Check the form ID.');
-        return;
-    }
-
-    // Validate function
-    function validateForm() {
-        var valid = true;
-
-        // Validar campos requeridos
-        var requiredFields = form.querySelectorAll('[required]');
-        requiredFields.forEach(function(field) {
-            if (!field.value.trim()) {
-                valid = false;
-                field.classList.add('is-invalid');
-                console.warn('Invalid field:', field);
-            } else {
-                field.classList.remove('is-invalid');
-            }
-        });
-
-        // Habilitar o deshabilitar el botón de envío
-        if (submitButton) {
-            submitButton.disabled = !valid;
-        }
-
-        return valid;
-    }
-
-    // Add input and change listeners for real-time validation
-    form.addEventListener('input', validateForm);
-    form.addEventListener('change', validateForm);
-
-    // Form submission handler
-    form.addEventListener('submit', async function(event) {
-        event.preventDefault();
-        event.stopPropagation();
-
-        // Validate form
+    // Prevenir el envío tradicional del formulario
+    form.addEventListener('submit', function(event) {
+        event.preventDefault(); // Esto es crucial para evitar el refresh
+        
         if (!validateForm()) {
-            // If using SweetAlert
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Por favor, completa todos los campos requeridos.',
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            } else {
-                alert('Por favor, completa todos los campos requeridos.');
-            }
+            Swal.fire({
+                title: 'Error',
+                text: 'Por favor, completa todos los campos requeridos.',
+                icon: 'error',
+                confirmButtonText: 'OK'
+            });
             return;
         }
-
-        // Disable submit button and show spinner
-        if (submitButton) {
-            submitButton.disabled = true;
-            if (submitButtonText) submitButtonText.style.display = 'none';
-            if (submitButtonSpinner) submitButtonSpinner.style.display = 'inline-block';
-        }
-
-        try {
-            // Call enviarDatos function
-            await enviarDatos();
-        } catch (error) {
-            console.error('Submission error:', error);
-            
-            // Show error message
-            if (typeof Swal !== 'undefined') {
-                Swal.fire({
-                    title: 'Error',
-                    text: 'Ocurrió un error al enviar los datos: ' + error.message,
-                    icon: 'error',
-                    confirmButtonText: 'OK'
-                });
-            } else {
-                alert('Ocurrió un error al enviar los datos: ' + error.message);
-            }
-        } finally {
-            // Re-enable submit button and hide spinner
-            if (submitButton) {
-                submitButton.disabled = false;
-                if (submitButtonText) submitButtonText.style.display = 'inline';
-                if (submitButtonSpinner) submitButtonSpinner.style.display = 'none';
-            }
-        }
+        
+        enviarDatos();
     });
 });
-
 // Función para recopilar datos
 function recopilarUsuario() {
     const nombreusers = document.querySelector('.nombreuser')?.value || null;
@@ -786,20 +769,20 @@ function recopilarUsuario() {
 
 // Función para recopilar datos
 function recopilarDatos() {
+    
     const grupos = document.querySelectorAll('.programas-temas-group');
     const datosRecopilados = [];
-    
-    // Obtener los valores del contrato
-    const mesId = parseInt(document.getElementById('selected-mes').value);
     const anioId = parseInt(document.getElementById('selected-anio').value);
-    
-    // Variables para calcular totales
+    // Obtener los valores del contrato
+        // Variables para calcular totales
     let valorBrutoTotal = 0;
     let valorNetoTotal = 0;
     let descuentoTotal = 0;
     let valorTotalTotal = 0;
     
     grupos.forEach(grupo => {
+
+        const mesId = grupo.querySelector('.mesSelector')?.value || null;
         const segund = grupo.querySelector('.selected-segundos')?.value || null;
         const idclasi = grupo.querySelector('.selected-clasi')?.value || null;
         const programaId = grupo.querySelector('.selected-programa-id')?.value || null;
@@ -873,11 +856,11 @@ async function enviarDatos() {
         // Usa el id_planes_publicidad ya existente
         const id_planes_publicidad = <?php echo json_encode($id_planes_publicidad); ?>;
         const id_ordenes_de_comprar = <?php echo json_encode($id_orden_de_compra); ?>;
+        const numerodeorden = <?php echo json_encode($numerodeorden); ?>;
+        const copia = <?php echo json_encode($copia !== null && is_numeric($copia) ? (int)$copia : 0); ?>;
+       
         
-        
-        console.log(id_ordenes_de_comprar, "ORDENES");
-        console.log(id_planes_publicidad, "Planes");
-        
+  
         // Preparar los datos para la actualización de PlanesPublicidad
         const datosPlan = {
             id_planes_publicidad: id_planes_publicidad,
@@ -918,7 +901,6 @@ async function enviarDatos() {
         }
 
         console.log('Actualización del plan exitosa');
-
         // Preparar los datos para la actualización de OrdenesDePublicidad (primera parte)
         const datosOrdenpublicidad = {
             estado: '0',
@@ -943,27 +925,32 @@ async function enviarDatos() {
         }
 
         console.log('Actualización de OrdenesDePublicidad exitosa');
-
+        const copiaIncrementada = copia + 1;
         // Preparar los datos para la nueva orden de publicidad
         const datosOrdenpublicidad2 = {
 
-            id_cliente: document.getElementById('selected-client-id').value ?? null,
+                id_cliente: document.getElementById('selected-client-id').value ?? null,
                 num_contrato: document.getElementById('selected-contrato-id').value ?? null,
                 id_proveedor: document.getElementById('selected-proveedor-id').value ?? null,
                 id_soporte: document.getElementById('selected-soporte-id').value ?? null,
                 id_tema: document.getElementById('selected-temas-id').value ?? null,
                 id_plan: id_planes_publicidad,
+                id_contrato: document.getElementById('selected-contrato-id').value,
                 detalle: document.getElementById('descripcion').value ?? null,
                 datosRecopiladosb: datos,
+                id_campania: document.getElementById('selected-campania-id').value,
                 usuarioregistro: usuariodato,
                 tipo_item: document.getElementById('selected-tipo').value ?? null,
                 Megatime: document.getElementById('selected-temas-codigo').value ?? null,
                 id_agencia: document.getElementById('selected-campania-agencia').value ?? null,
                 id_clasificacion: document.getElementById('selected-id-clasificacion').value || null,
-                numero_orden: document.getElementById('selected-orden-id').value ?? null,
                 estado: '1',
+                copia: copia,
+                numerodeorden: numerodeorden,
+                numerodeordenremplaza: copiaIncrementada,
                 remplaza: id_ordenes_de_comprar
         };
+        console.log(datosOrdenpublicidad2, "error");
 
         // Tercera solicitud: Crear nueva orden de publicidad
         const responseNuevaOrden = await fetch('https://ekyjxzjwhxotpdfzcpfq.supabase.co/rest/v1/OrdenesDePublicidad', {
@@ -1045,45 +1032,71 @@ function loadCalendarData(group, calendarioData) {
         console.log('No hay datos de calendario para cargar');
         return;
     }
-    
-    // Obtener mes y año predefinidos de los campos ocultos
-    const mesId = document.getElementById('selected-mes').value;
-    const anioId = document.getElementById('selected-anio').value;
-        
-    // Establecer mes y año en los selectores (si es necesario)
+
+    const anioSelector = document.getElementById('selected-anio');
     const mesSelector = group.querySelector('.mesSelector');
-    const anioSelector = group.querySelector('.anioSelector');
-    
-    if (mesSelector && anioSelector) {
-        mesSelector.value = mesId;
-        anioSelector.value = anioId;
+    const diasContainer = group.querySelector('.diasContainer');
+
+    function updateCalendar() {
+        const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
         
-        // Disparar eventos change para generar el calendario
-        mesSelector.dispatchEvent(new Event('change'));
-        anioSelector.dispatchEvent(new Event('change'));
+        // Obtener el año del contrato
+        const anioId = parseInt(document.getElementById('selected-anio').value);
+        
+        // Obtener el mes seleccionado
+        const mesId = parseInt(mesSelector.value);
+
+        if (!mesId || !anioId) {
+            console.warn("No hay valores de mes o año disponibles");
+            return;
+        }
+
+        // Obtener el mes y año directamente de los mapas
+        const mes = parseInt(mesesMap[mesId]['Id']);
+        const anio = parseInt(aniosMap[anioId]['years']);
+
+        // Calcular días en el mes
+        const diasEnMes = new Date(anio, mes, 0).getDate();
+        diasContainer.innerHTML = '';
+
+        // Generar el calendario
+        for (let dia = 1; dia <= diasEnMes; dia++) {
+            const fecha = new Date(anio, mes - 1, dia);
+            const nombreDia = diasSemana[fecha.getDay()];
+
+            const diaElement = document.createElement('div');
+            diaElement.className = 'dia';
+            diaElement.innerHTML = `
+                <div class="dia-nombre">${nombreDia}</div>
+                <div class="dia-numero">${dia}</div>
+                <input type="number" class="dia-input" data-dia="${dia}" data-mes="${mesId}" data-anio="${anioId}" />
+            `;
+            diasContainer.appendChild(diaElement);
+        }
     }
-       // Poblar los datos del calendario con un pequeño retraso
-    setTimeout(() => {
-        calendarioData.forEach(registro => {
-            // Verificar que el mes del registro coincida con el mes seleccionado
-            if (registro.mes.toString() === mesId) {
-                // Selector para encontrar el input del día específico
-                const selector = `.dia-input[data-dia="${registro.dia}"][data-mes="${mesId}"][data-anio="${anioId}"]`;
-                const diaInput = group.querySelector(selector);
-                
-                if (diaInput) {
-                    diaInput.value = registro.cantidad;
-                    // Disparar evento input para activar cualquier listener
-                    diaInput.dispatchEvent(new Event('input', { bubbles: true }));
-                    console.log(`Llenando día ${registro.dia} con cantidad ${registro.cantidad}`);
-                } else {
-                    console.warn('No se encontró input para:', { selector, registro });
-                }
-            } else {
-                console.log(`Registro de día ${registro.dia} no coincide con mes actual (${mesId})`);
-            }
-        });
-    }, 500);
+    // Verificar y establecer el año si es necesario
+    if (calendarioData[0].anio && anioSelector) {
+        anioSelector.value = calendarioData[0].anio;
+    }
+
+    // Verificar y establecer el mes si es necesario
+    if (calendarioData[0].mes && mesSelector) {
+        mesSelector.value = calendarioData[0].mes;
+        
+        // Llamar a updateCalendar para regenerar los días del mes
+        updateCalendar();
+    }
+
+    // Cargar los valores en los inputs correspondientes
+    calendarioData.forEach(item => {
+        const diaInput = diasContainer.querySelector(
+            `.dia-input[data-dia="${item.dia}"][data-mes="${item.mes}"][data-anio="${item.anio}"]`
+        );
+
+        if (diaInput) {
+            diaInput.value = item.cantidad;
+        }
+    });
 }
 
 function initializeValoresCalculator(group) {
@@ -1195,6 +1208,9 @@ function loadInitialData(programasTemasData) {
             selectedProgramaIdInput.value = programa.id;
             currentGroup.querySelector('#hora-inicio').value = programa['hora_inicio'];
             currentGroup.querySelector('#hora-fin').value = programa['hora_fin'];
+            const searchProgramaElement = currentGroup.querySelector("#search-programa");
+            searchProgramaElement.setAttribute('readonly', true);
+            
         }
 
           // Cargar datos de clasificación
@@ -1216,6 +1232,8 @@ function loadInitialData(programasTemasData) {
             currentGroup.querySelector('#selected-temas-codigo').value = tema.CodigoMegatime;
             currentGroup.querySelector('#selected-id-medio').value = tema.id_medio;
             currentGroup.querySelector('#selected-segundos').value = tema.Duracion;
+            const searchTema = currentGroup.querySelector("#search-temas");
+            searchTema.setAttribute('readonly', true);
 
         }
 
@@ -1226,7 +1244,7 @@ function loadInitialData(programasTemasData) {
         currentGroup.querySelector('.selected-valorbruto').value = data.valor_bruto || '';
         currentGroup.querySelector('.selected-descuentov').value = data.descuento || '0';
         currentGroup.querySelector('.selected-valortotal').value = data.valor_total || '';
-        
+        console.log(data.calendario, "acaviejita");
         // Cargar datos del calendario de manera asíncrona
         setTimeout(() => {
             loadCalendarData(currentGroup, data.calendario);
@@ -1239,8 +1257,20 @@ function loadInitialData(programasTemasData) {
 // Inicialización de los datos
 function initializeFormData(programasTemasData) {
     if (document.readyState === 'loading') {
+   
         document.addEventListener('DOMContentLoaded', () => {
             loadInitialData(programasTemasData);
+            document.querySelector(".clear-btnCliente").style.display = 'block';
+    document.getElementById("search-client").setAttribute('readonly', true);
+    document.querySelector(".clear-btnProducto").style.display = 'block';
+    document.getElementById("search-product").setAttribute('readonly', true);
+    document.querySelector(".clear-btnContrato").style.display = 'block';
+    document.getElementById("search-contrato").setAttribute('readonly', true);
+    document.querySelector(".clear-btnSoporte").style.display = 'block';
+    document.getElementById("search-soporte").setAttribute('readonly', true);
+    document.querySelector(".clear-btnCampaña").style.display = 'block';
+    document.getElementById("search-campania").setAttribute('readonly', true);
+            
         });
     } else {
         loadInitialData(programasTemasData);
@@ -1303,24 +1333,51 @@ function filterClients() {
     }
 
     // Mostrar el botón de limpiar si hay algo en el input
-    document.querySelector(".clear-btn").style.display = searchInput ? 'inline' : 'none';
+    document.querySelector(".clear-btnCliente").style.display = searchInput ? 'inline' : 'none';
 }
 
-// Función para seleccionar un cliente de la lista
-function selectClient(id, nombreCliente) {
-    document.getElementById("search-client").value = nombreCliente;
-    document.getElementById("selected-client-id").value = id;
 
-    // Limpiar la lista de opciones una vez seleccionado
+function selectClient(id, nombreCliente) {
+    // Obtener los elementos
+    const searchClientInput = document.getElementById("search-client");
+    const selectedClientIdInput = document.getElementById("selected-client-id");
+
+    // Establecer el nombre del cliente en el input
+    searchClientInput.value = nombreCliente;
+
+    // Establecer el ID del cliente seleccionado
+    selectedClientIdInput.value = id;
+
+    // Ocultar la lista de clientes
     document.getElementById("client-list").style.display = "none";
+
+    // Mostrar botón de limpiar
+    document.querySelector(".clear-btnCliente").style.display = 'block';
+
+    // Establecer como solo lectura
+    searchClientInput.setAttribute('readonly', true);
+
+    // Disparar eventos para forzar la validación
+    searchClientInput.dispatchEvent(new Event('input', { bubbles: true }));
+    searchClientInput.dispatchEvent(new Event('change', { bubbles: true }));
+    
+    // Remover clase de error si existe
+    searchClientInput.classList.remove('is-invalid');
+    selectedClientIdInput.classList.remove('is-invalid');
 }
 
 // Función para limpiar la búsqueda
-function clearSearch() {
-    document.getElementById("search-client").value = '';
-    document.getElementById("selected-client-id").value = '';
+function clearSearchCliente() {
+    // Limpiar el input de búsqueda
+    document.getElementById("search-client").value = "";
+    // Limpiar el ID de cliente seleccionado
+    document.getElementById("selected-client-id").value = "";
+    
+    // Ocultar la lista de clientes
     document.getElementById("client-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
+    
+    // Ocultar el botón de limpiar
+    document.querySelector(".clear-btnCliente").style.display = 'none';
 }
 
 // Función para cerrar el dropdown si se hace clic fuera
@@ -1412,11 +1469,27 @@ function filterProducts() {
 
 // Función para seleccionar un producto de la lista
 function selectProduct(id, nombreProducto) {
-    document.getElementById("search-product").value = nombreProducto;
-    document.getElementById("selected-product-id").value = id;
+    // Obtener los elementos
+    const searchProductInput = document.getElementById("search-product");
+    const selectedProductIdInput = document.getElementById("selected-product-id");
+
+    // Establecer el nombre del producto en el input
+    searchProductInput.value = nombreProducto;
+
+    // Establecer el ID del producto seleccionado
+    selectedProductIdInput.value = id;
 
     // Limpiar la lista de opciones una vez seleccionado
+    document.querySelector(".clear-btnProducto").style.display = 'block';
     document.getElementById("product-list").style.display = "none";
+
+    // Disparar eventos para forzar la validación
+    searchProductInput.dispatchEvent(new Event('input', { bubbles: true }));
+    searchProductInput.dispatchEvent(new Event('change', { bubbles: true }));
+    
+    // Remover clase de error si existe
+    searchProductInput.classList.remove('is-invalid');
+    selectedProductIdInput.classList.remove('is-invalid');
 }
 
 // Función para cerrar el dropdown si se hace clic fuera (aplicable para productos también)
@@ -1439,11 +1512,12 @@ document.getElementById("search-product").addEventListener('click', function() {
         showProductsForClient();
     }
 });
-function clearSearchProduct() {
+function clearSearchProducto() {
     document.getElementById("search-product").value = '';
+    document.getElementById("search-product").setAttribute('readonly', false);
     document.getElementById("selected-product-id").value = '';
     document.getElementById("product-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
+    document.querySelector(".clear-btnProducto").style.display = 'none';
 }
 
 // Asignar contratos desde PHP al script
@@ -1545,6 +1619,8 @@ function selectContract(contrato) {
 
     // Limpiar la lista de opciones una vez seleccionado
     document.getElementById("contrato-list").style.display = "none";
+    document.querySelector(".clear-btnContrato").style.display = 'block';
+    document.getElementById("search-contrato").setAttribute('readonly', true);
     actualizarCalendarioDesdeContrato();
 }
 
@@ -1575,7 +1651,8 @@ function clearSearchContrato() {
     document.getElementById("selected-anio").value = '';
     document.getElementById("selected-mes").value = '';
     document.getElementById("contrato-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
+    document.querySelector(".clear-btnContrato").style.display = 'none';
+    
 
     // Limpiar los spans de año y mes
     const yearSpan = document.getElementById("selected-year-span");
@@ -1638,7 +1715,7 @@ function renderSoporteDropdown(soportes) {
 
         soporteList.appendChild(li);
     });
-
+    document.querySelector(".clear-btnSoporte").style.display = 'block';
     soporteList.style.display = 'block';
 }
 
@@ -1650,10 +1727,11 @@ document.addEventListener('click', function (event) {
 });
 
 // Función para limpiar la búsqueda
-function clearSearch() {
+function clearSearchSoporte() {
     searchSoporteInput.value = '';
     selectedSoporteIdInput.value = '';
     soporteList.style.display = 'none';
+    document.querySelector(".clear-btnSoporte").style.display = 'none';
 }
 
 
@@ -1958,15 +2036,13 @@ document.addEventListener('click', function (event) {
 
 
 // Función para limpiar la búsqueda de programas
-function clearSearch(button) {
-    const container = button.closest('.programas-temas-group');
-    const searchInput = container.querySelector('.search-programa');
-    const selectedProgramaIdInput = container.querySelector('.selected-programa-id');
-    const programaList = container.querySelector('.programa-list');
-
-    searchInput.value = '';
-    selectedProgramaIdInput.value = '';
-    programaList.style.display = 'none';
+function clearSearchProgramas() {
+    document.getElementById("selected-programa-id").value = '';
+    document.getElementById("search-programa").value = '';
+    document.getElementById("hora-inicio").value = ''; 
+    document.getElementById("hora-fin").value = '';
+    document.getElementById("programa-list").style.display = "none";            
+    document.querySelector(".clear-btn").style.display = 'none';
 }
 
 
@@ -2043,6 +2119,7 @@ function selectCampaign(campaign) {
     document.getElementById("selected-campania-agencia").value = campaign.IdAgencias; 
     // Limpiar la lista de opciones una vez seleccionado
     document.getElementById("campania-list").style.display = "none";
+    document.querySelector(".clear-btnCampaña").style.display = 'block';
 }
 
 // Mostrar campañas del cliente cuando el input es clickeado
@@ -2070,111 +2147,12 @@ document.addEventListener('click', function(event) {
 function clearSearchCampania() {
     document.getElementById("search-campania").value = '';
     document.getElementById("selected-campania-id").value = '';
+    document.getElementById("selected-campania-agencia").value = '';
     document.getElementById("campania-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
+    document.querySelector(".clear-btnCampaña").style.display = 'none';
 }
 
-const ordenes = <?php echo json_encode($ordenMap); ?>;
-// Función para mostrar las órdenes asociadas a la campaña seleccionada
-function showOrdenesForCampania() {
-    const campaniaId = document.getElementById("selected-campania-id").value;
-    const ordenList = document.getElementById("orden-list");
 
-    // Limpiar la lista antes de mostrar las órdenes
-    ordenList.innerHTML = '';
-
-    // Filtrar órdenes según la campaña seleccionada
-    const filteredOrdenes = ordenes.filter(orden => orden.id_campania === parseInt(campaniaId));
-
-    if (filteredOrdenes.length === 0) {
-        ordenList.style.display = "none";
-    } else {
-        ordenList.style.display = "block";
-        filteredOrdenes.forEach(orden => {
-            const li = document.createElement("li");
-            li.textContent = orden.NombreOrden;
-            li.setAttribute("data-id", orden.id_orden_compra);
-            li.classList.add("orden-item");
-            li.onclick = function() {
-                selectOrden(orden);
-            };
-            ordenList.appendChild(li);
-        });
-    }
-}
-
-// Función para filtrar órdenes por búsqueda y campaña seleccionada
-function filterOrdenes() {
-    const searchInput = document.getElementById("search-orden").value.toLowerCase();
-    const campaniaId = document.getElementById("selected-campania-id").value;
-    const ordenList = document.getElementById("orden-list");
-
-    // Limpiar la lista antes de mostrar resultados
-    ordenList.innerHTML = '';
-
-    // Filtrar órdenes según el valor del input y la campaña seleccionada
-    const filteredOrdenes = ordenes.filter(orden =>
-        orden.id_campania === parseInt(campaniaId) &&
-        orden.NombreOrden.toLowerCase().includes(searchInput)
-    );
-
-    if (filteredOrdenes.length === 0) {
-        ordenList.style.display = "none";
-    } else {
-        ordenList.style.display = "block";
-        filteredOrdenes.forEach(orden => {
-            const li = document.createElement("li");
-            li.textContent = orden.NombreOrden;
-            li.setAttribute("data-id", orden.id_orden_compra);
-            li.classList.add("orden-item");
-            li.onclick = function() {
-                selectOrden(orden);
-            };
-            ordenList.appendChild(li);
-        });
-    }
-
-    // Mostrar el botón de limpiar si hay algo en el input
-    document.querySelector(".clear-btn").style.display = searchInput ? 'inline' : 'none';
-}
-
-// Función para seleccionar una orden de la lista
-function selectOrden(orden) {
-    document.getElementById("search-orden").value = orden.NombreOrden;
-    document.getElementById("selected-orden-id").value = orden.id_orden_compra;
-
-    // Limpiar la lista de opciones una vez seleccionada
-    document.getElementById("orden-list").style.display = "none";
-}
-
-// Mostrar órdenes de la campaña cuando el input es clickeado
-document.getElementById("search-orden").addEventListener('click', function() {
-    const campaniaId = document.getElementById("selected-campania-id").value;
-
-    // Si hay una campaña seleccionada, mostrar sus órdenes
-    if (campaniaId) {
-        showOrdenesForCampania();
-    }
-});
-
-// Función para cerrar el dropdown si se hace clic fuera
-document.addEventListener('click', function(event) {
-    const searchInputOrden = document.getElementById('search-orden');
-    const ordenList = document.getElementById('orden-list');
-    
-    // Si el clic está fuera del campo de búsqueda y de la lista de órdenes
-    if (!searchInputOrden.contains(event.target) && !ordenList.contains(event.target)) {
-        ordenList.style.display = 'none';
-    }
-});
-
-// Función para limpiar la búsqueda de órdenes
-function clearSearch() {
-    document.getElementById("search-orden").value = '';
-    document.getElementById("selected-orden-id").value = '';
-    document.getElementById("orden-list").style.display = "none";
-    document.querySelector(".clear-btn").style.display = 'none';
-}
 
             const campaniaTemasMap = <?php echo json_encode($campaniaTemasMap); ?>;
             const temasMap = <?php echo json_encode($temasMap); ?>;
@@ -2354,65 +2332,104 @@ function clearSearch() {
             });
 
             // Función para limpiar la búsqueda de temas
-            function clearSearch() {
+            function clearSearchTemas() {
                 document.getElementById("search-temas").value = '';
-                document.getElementById("selected-temas-id").value = '';
+                document.getElementById("selected-temas-id").value = ''; 
                 document.getElementById("selected-temas-codigo").value = '';
-                document.getElementById("selected-segundos").style.display = '';
+                document.getElementById("selected-segundos").value = '';
+                document.getElementById("selected-id-medio").value = '';
+                document.getElementById("selected-id-clasificacion").style.display = '';
                 document.getElementById("temas-list").style.display = "none";            
                 document.querySelector(".clear-btn").style.display = 'none';
             }
 
-// Función para inicializar el calendario usando solo valores del contrato
-function initializeCalendar(group) {
+            function initializeCalendar(group) {
+    const mesSelector = group.querySelector('.mesSelector');
     const diasContainer = group.querySelector('.diasContainer');
-    const mesId = parseInt(document.getElementById('selected-mes').value);
-    const anioId = parseInt(document.getElementById('selected-anio').value);
+    const fillAllCheckbox = group.querySelector('.fillAllCheckbox');
+    const fillAllInput = group.querySelector('.fillAllInput');
 
-
-    const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
-
-    if (!mesId || !anioId) {
-        console.warn("No hay valores de mes o año disponibles en el contrato");
-        return;
+    // Función para actualizar todas las casillas
+    function fillAllDays() {
+        const value = fillAllInput.value;
+        if (value !== '') {
+            diasContainer.querySelectorAll('.dia-input').forEach(input => {
+                input.value = value;
+            });
+        }
     }
 
-    // Obtener el mes y año directamente de los mapas
-    const mes = parseInt(mesesMap[mesId]['Id']);
-    const anio = parseInt(aniosMap[anioId]['years']);
+    // Habilitar/deshabilitar la casilla de valor global
+    fillAllCheckbox.addEventListener('change', (e) => {
+        fillAllInput.disabled = !e.target.checked;
+        if (!e.target.checked) {
+            fillAllInput.value = '';
+        }
+    });
 
-    // Calcular días en el mes
-    const diasEnMes = new Date(anio, mes, 0).getDate();
-    diasContainer.innerHTML = '';
+    // Escuchar cambios en la casilla global y rellenar todas las casillas
+    fillAllInput.addEventListener('input', fillAllDays);
 
-    // Generar el calendario
-    for (let dia = 1; dia <= diasEnMes; dia++) {
-        const fecha = new Date(anio, mes - 1, dia);
-        const nombreDia = diasSemana[fecha.getDay()];
+    // Función para inicializar el calendario
+    function updateCalendar() {
+        const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
 
-        const diaElement = document.createElement('div');
-        diaElement.className = 'dia';
-        diaElement.innerHTML = `
-            <div class="dia-nombre">${nombreDia}</div>
-            <div class="dia-numero">${dia}</div>
-            <input type="number" class="dia-input" data-dia="${dia}" data-mes="${mesId}" data-anio="${anioId}" />
-        `;
-        diasContainer.appendChild(diaElement);
+        // Obtener el año y mes seleccionados
+        const anioId = parseInt(document.getElementById('selected-anio').value);
+        const mesId = parseInt(mesSelector.value);
+
+        if (!mesId || !anioId) {
+            console.warn("No hay valores de mes o año disponibles");
+            return;
+        }
+
+        const mes = parseInt(mesesMap[mesId]['Id']);
+        const anio = parseInt(aniosMap[anioId]['years']);
+
+        const diasEnMes = new Date(anio, mes, 0).getDate();
+        diasContainer.innerHTML = '';
+
+        for (let dia = 1; dia <= diasEnMes; dia++) {
+            const fecha = new Date(anio, mes - 1, dia);
+            const nombreDia = diasSemana[fecha.getDay()];
+
+            const diaElement = document.createElement('div');
+            diaElement.className = 'dia';
+            diaElement.innerHTML = `
+                <div class="dia-nombre">${nombreDia}</div>
+                <div class="dia-numero">${dia}</div>
+                <input type="number" class="dia-input" data-dia="${dia}" data-mes="${mesId}" data-anio="${anioId}" />
+            `;
+            diasContainer.appendChild(diaElement);
+        }
+
+        // Si el checkbox está activo, rellenar todas las casillas con el valor actual
+        if (fillAllCheckbox.checked && fillAllInput.value !== '') {
+            fillAllDays();
+        }
     }
+
+    mesSelector.addEventListener('change', () => {
+        fillAllInput.value = '';
+        updateCalendar();
+    });
+
+    updateCalendar();
 }
 
 // Función para actualizar todos los calendarios cuando se selecciona un contrato
 function actualizarCalendarioDesdeContrato() {
-    const mesId = document.getElementById('selected-mes').value;
-    const anioId = document.getElementById('selected-anio').value;
-    
-    if (mesId && anioId) {
-        // Actualizar todos los calendarios existentes
-        const calendarios = document.querySelectorAll('.calendario');
-        calendarios.forEach(calendario => {
+    const calendarios = document.querySelectorAll('.calendario');
+    calendarios.forEach(calendario => {
+        // Añadir event listener al mesSelector de cada calendario
+        const mesSelector = calendario.querySelector('.mesSelector');
+        mesSelector.addEventListener('change', () => {
             initializeCalendar(calendario);
         });
-    }
+        
+        // Inicializar el calendario con el año del contrato
+        initializeCalendar(calendario);
+    });
 }
 
 // Modificar la función addProgramasTemasGroup para inicializar la búsqueda de temas
@@ -2460,11 +2477,7 @@ function addProgramasTemasGroup() {
 
 // Inicializar el calculador en el grupo inicial cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
-    const initialGroup = document.querySelector('.programas-temas-group');
-    if (initialGroup) {
-        initializeValoresCalculator(initialGroup);
-        updateTotalesGlobales();
-    }
+    
 });
 
 function removeProgramasTemasGroup(button) {
