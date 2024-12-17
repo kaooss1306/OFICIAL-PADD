@@ -17,6 +17,8 @@ $idPerfil = $_SESSION["user"]["id_perfil"] ?? "Usuario";
 
 $ruta = "https://laughing-trout-rw96xxv6957hx7xg-3000.app.github.dev/";
 
+//$ruta = "https://curly-space-system-rjwpg45gg5phx99x-3000.app.github.dev/";
+
 
 
 
