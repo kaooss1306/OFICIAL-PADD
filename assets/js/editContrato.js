@@ -14,7 +14,7 @@
         formData.forEach((value, key) => {
             if (key === 'Estado') {
                 dataObject[key] = value === "1";
-            } else if (['id', 'IdCliente', 'IdProveedor', 'id_FormadePago', 'IdMedios', 'id_Mes', 'id_Anio', 'IdTipoDePublicidad', 'id_GeneraracionOrdenTipo', 'num_contrato'].includes(key)) {
+            } else if (['id', 'IdCliente', 'IdProveedor', 'id_FormadePago','id_Anio', 'IdTipoDePublicidad', 'id_GeneraracionOrdenTipo', 'num_contrato'].includes(key)) {
                 dataObject[key] = value !== "" ? parseInt(value, 10) : null;
             } else if (['ValorNeto', 'ValorBruto', 'Descuento1', 'ValorTotal'].includes(key)) {
                 dataObject[key] = value !== "" ? parseFloat(value) : null;
@@ -177,8 +177,6 @@
             document.getElementById('editIdFormaDePago').value = contrato.id_FormadePago || '';
             document.getElementById('editFechaInicio').value = contrato.FechaInicio || '';
             document.getElementById('editFechaTermino').value = contrato.FechaTermino || '';
-            document.getElementById('editIdMes').value = contrato.id_Mes || '';
-            document.getElementById('editIdAnio').value = contrato.id_Anio || '';
             document.getElementById('editIdTipoDePublicidad').value = contrato.IdTipoDePublicidad || '';
             document.getElementById('editIdGeneracionOrdenTipo').value = contrato.id_GeneraracionOrdenTipo || '';
             document.getElementById('editObservaciones').value = contrato.Observaciones || '';
