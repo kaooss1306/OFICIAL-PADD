@@ -44,15 +44,8 @@ require_once 'componentes/sidebar.php';
                               <div class="acciones-contenedor">
                               <label for="acciones" class="placeholder"> </label>
                               <div class="btn-group">
-                                        <button id="filtrarFechas" class="btn btn-primary mr-2">
-                                            <i class="fas fa-filter"></i> 
-                                        </button>
-                                        <button id="limpiarFiltros" class="btn btn-secondary mr-2">
-                                            <i class="fas fa-times"></i> 
-                                        </button>
-                                        <button id="exportarExcel" class="btn btn-success">
-                                            <i class="fas fa-file-excel"></i> 
-                                        </button>
+                              <button style="width:114px;" type="button" class="btn btn-success micono" data-bs-toggle="modal" data-bs-target="#irinforme"><i class="fas fa-file-excel"></i> Ver reportes</button>
+
                                     </div>
                               </div>
                                   
@@ -334,3 +327,4 @@ document.addEventListener('DOMContentLoaded', () => {
 require_once 'componentes/settings.php';
 require_once 'componentes/footer.php';
 ?>
+<?php include 'informe.php'; ?>

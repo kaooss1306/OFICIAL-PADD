@@ -89,12 +89,10 @@ include 'componentes/sidebar.php';
                                         </div>
                                     </div>
                                     <div class="col-md-2">
-                                        <button id="resetFilters" class="btn btn-secondary">
-                                            <i class="fas fa-redo"></i> 
-                                        </button>
-                                        <button id="exportarExcel" class="btn btn-success" disabled>
-                                        <i class="fas fa-file-excel"></i> 
-                                    </button>
+                                     <div class="btn-report">   
+                                    <button type="button" class="btn btn-success micono" data-bs-toggle="modal" data-bs-target="#irinforme"><i class="fas fa-file-excel"></i> Ver reportes</button>
+</div>
+                                   
                                     </div>
                                 </div>
                                 <table class="table table-striped" id="tableExportadora">
@@ -154,6 +152,14 @@ include 'componentes/sidebar.php';
         </div>
     </section>
 </div>
+
+
+
+
+
+
+
+
 
 <!-- Modal para Agregar Cliente -->
 <div class="modal fade" id="addClienteModal" tabindex="-1" aria-labelledby="addClienteModalLabel" aria-hidden="true">
@@ -1054,3 +1060,4 @@ document.addEventListener('DOMContentLoaded', () => {
 <script src="assets/js/toggleClientes.js"></script>
 <script src="assets/js/deleteCliente.js"></script>
 <?php include 'componentes/footer.php'; ?>
+<?php include 'informe.php'; ?>

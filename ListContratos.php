@@ -53,12 +53,8 @@ include "componentes/sidebar.php";
                                         </div>
                                     </div>
                                     <div class="col-md-2">
-                                        <button id="resetFilters" class="btn btn-secondary">
-                                            <i class="fas fa-redo"></i> 
-                                        </button>
-                                        <button id="exportarExcel" class="btn btn-success" disabled>
-                                        <i class="fas fa-file-excel"></i> 
-                                    </button>
+                                    <button type="button" class="btn btn-success micono" data-bs-toggle="modal" data-bs-target="#irinforme"><i class="fas fa-file-excel"></i> Ver reportes</button>
+
                                     </div>
                                 </div>
                       <table class="table table-striped" id="tableExportadora">
@@ -309,3 +305,4 @@ document.addEventListener('DOMContentLoaded', () => {
       <?php include "querys/modulos/modalAddContrato.php"; ?>
       <?php include "querys/modulos/modalEditContrato.php"; ?>
       <?php include "componentes/footer.php"; ?>
+      <?php include 'informe.php'; ?>

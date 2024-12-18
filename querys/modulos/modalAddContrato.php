@@ -92,31 +92,7 @@
               </div>
             </div>
           </div>
-          <div class="row">
-           <div class="col-md-6 mb-3">
-              <label for="FechaInicio" class="form-label">Mes</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-calendar-week"></i></span>
-                <select class="form-select" id="id_Mes" name="id_Mes" required>
-    <?php foreach ($mesesMap as $id => $mes): ?>
-        <option value="<?php echo $id; ?>"><?php echo $mes['Nombre']; ?></option>
-    <?php endforeach; ?>
-</select>
 
-              </div>
-            </div>
-            <div class="col-md-6 mb-3">
-              <label for="FechaTermino" class="form-label">Año</label>
-              <div class="input-group">
-                <span class="input-group-text"><i class="bi bi-calendar-week"></i></span>
-                <select class="form-select" id="id_Anio" name="id_Anio" required>
-    <?php foreach ($aniosMap as $id => $anio): ?>
-        <option value="<?php echo $id; ?>"><?php echo $anio['years']; ?></option>
-    <?php endforeach; ?>
-</select>
-              </div>
-            </div>
-          </div>
           <div class="row otros">
             <div class="col-md-4 mb-3">
               <label for="estado" class="form-label">Tipo de Publicidad</label>
