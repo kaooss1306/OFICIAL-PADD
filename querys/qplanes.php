@@ -151,6 +151,8 @@ foreach ($contratos as $contrato) {
         'idProveedor' => $contrato['IdProveedor'], 
         'num_contrato' => $contrato['num_contrato'],
         'id_Anio' => $contrato['id_Anio'], 
+        'FechaTermino' => $contrato['FechaTermino'], 
+        'FechaInicio' => $contrato['FechaInicio'], 
         'id_Mes' => $contrato['id_Mes']    
     ];
 }  

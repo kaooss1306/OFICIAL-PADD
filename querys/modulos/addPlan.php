@@ -252,6 +252,8 @@ border:1px solid #ff0000;
                                                                 <input type="hidden"  id="selected-proveedor-id" name="selected-proveedor-id">
                                                                 <input type="hidden"  id="selected-num-contrato" name="selected-num-contrato">
                                                                 <input type="hidden" class="selected-anio" id="selected-anio" name="selected-anio">
+                                                                <input type="hidden" class="FechaInicio" id="FechaInicio" name="FechaInicio">
+                                                                <input type="hidden" class="FechaTermino" id="FechaTermino" name="FechaTermino">
                                                                 <input type="hidden" class="selected-mes" id="selected-mes" name="selected-mes">
                                                                                                             </div>
                                                             <ul id="contrato-list" class="client-dropdown">
@@ -894,6 +896,8 @@ function showContractsForClient() {
             li.setAttribute("data-proveedor-id", contrato.idProveedor);
             li.setAttribute("data-num-contrato", contrato.num_contrato);
             li.setAttribute("data-anio", contrato.id_Anio);
+            li.setAttribute("data-FechaTermino", contrato.FechaTermino);
+            li.setAttribute("data-FechaInicio", contrato.FechaInicio);
             li.setAttribute("data-mes", contrato.id_Mes);
             li.classList.add("contract-item");
             li.onclick = function() {
@@ -931,6 +935,8 @@ function filterContracts() {
             li.setAttribute("data-num-contrato", contrato.num_contrato);
             li.setAttribute("data-anio", contrato.id_Anio);
             li.setAttribute("data-mes", contrato.id_Mes);
+            li.setAttribute("data-FechaTermino", contrato.FechaTermino);
+            li.setAttribute("data-FechaInicio", contrato.FechaInicio);
             li.classList.add("contract-item");
             li.onclick = function() {
                 selectContract(contrato);
@@ -951,6 +957,8 @@ function selectContract(contrato) {
     document.getElementById("selected-contrato-id").value = contrato.id;
     document.getElementById("selected-proveedor-id").value = contrato.idProveedor;
     document.getElementById("selected-num-contrato").value = contrato.num_contrato;
+    document.getElementById("FechaTermino").value = contrato.FechaTermino;
+    document.getElementById("FechaInicio").value = contrato.FechaInicio;
     document.getElementById("selected-anio").value = contrato.id_Anio;
     document.getElementById("selected-mes").value = contrato.id_Mes;
 
@@ -1691,18 +1699,24 @@ function clearSearchCampania() {
                 document.getElementById("temas-list").style.display = "none";            
                 document.querySelector(".clear-btn").style.display = 'none';
             }
-
             function initializeCalendar(group) {
     const mesSelector = group.querySelector('.mesSelector');
     const diasContainer = group.querySelector('.diasContainer');
     const fillAllCheckbox = group.querySelector('.fillAllCheckbox');
     const fillAllInput = group.querySelector('.fillAllInput');
+    
+    // Obtener fechas desde elementos globales
+    const fechaInicio = document.getElementById('FechaInicio').value;
+    const fechaTermino = document.getElementById('FechaTermino').value;
+
+    console.log('Fecha Inicio:', fechaInicio);
+    console.log('Fecha Término:', fechaTermino);
 
     // Función para actualizar todas las casillas
     function fillAllDays() {
         const value = fillAllInput.value;
         if (value !== '') {
-            diasContainer.querySelectorAll('.dia-input').forEach(input => {
+            diasContainer.querySelectorAll('.dia-input:not([disabled])').forEach(input => {
                 input.value = value;
             });
         }
@@ -1723,46 +1737,89 @@ function clearSearchCampania() {
     function updateCalendar() {
         const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
 
-        // Obtener el año y mes seleccionados
-        const anioId = parseInt(document.getElementById('selected-anio').value);
-        const mesId = parseInt(mesSelector.value);
+        // Parsear fechas de inicio y término
+        const inicioDate = new Date(fechaInicio);
+        const terminoDate = new Date(fechaTermino);
 
-        if (!mesId || !anioId) {
-            console.warn("No hay valores de mes o año disponibles");
-            return;
+        console.log('Fecha Inicio Date:', inicioDate);
+        console.log('Fecha Término Date:', terminoDate);
+
+        // Obtener año del contrato
+        const anio = inicioDate.getFullYear();
+        console.log('Año del Contrato:', anio);
+
+        // Determinar el rango de meses
+        let iniciaMes = inicioDate.getMonth() + 1;
+        let terminaMes = terminoDate.getMonth() + 1;
+
+        console.log('Rango de Meses:', iniciaMes, '-', terminaMes);
+
+        // Limpiar y repoblar el selector de meses
+        mesSelector.innerHTML = '';
+        for (let m = iniciaMes; m <= terminaMes; m++) {
+            const option = document.createElement('option');
+            option.value = m;
+            option.text = mesesMap[m]['Nombre'];
+            mesSelector.appendChild(option);
         }
 
-        const mes = parseInt(mesesMap[mesId]['Id']);
-        const anio = parseInt(aniosMap[anioId]['years']);
+        // Seleccionar el primer mes del rango
+        mesSelector.value = iniciaMes;
 
-        const diasEnMes = new Date(anio, mes, 0).getDate();
-        diasContainer.innerHTML = '';
+        // Función para desplegar el calendario de un mes
+        function mostrarCalendarioMes() {
+            const mesId = parseInt(mesSelector.value);
+            if (!mesId) return;
 
-        for (let dia = 1; dia <= diasEnMes; dia++) {
-            const fecha = new Date(anio, mes - 1, dia);
-            const nombreDia = diasSemana[fecha.getDay()];
+            const mes = parseInt(mesesMap[mesId]['Id']);
+            console.log('Mes Seleccionado:', mesId);
+            console.log('Mes Mapeado:', mes);
 
-            const diaElement = document.createElement('div');
-            diaElement.className = 'dia';
-            diaElement.innerHTML = `
-                <div class="dia-nombre">${nombreDia}</div>
-                <div class="dia-numero">${dia}</div>
-                <input type="number" class="dia-input" data-dia="${dia}" data-mes="${mesId}" data-anio="${anioId}" />
-            `;
-            diasContainer.appendChild(diaElement);
+            const diasEnMes = new Date(anio, mes, 0).getDate();
+            diasContainer.innerHTML = '';
+
+            for (let dia = 1; dia <= diasEnMes; dia++) {
+                const fecha = new Date(anio, mes - 1, dia);
+                const nombreDia = diasSemana[fecha.getDay()];
+
+                const diaElement = document.createElement('div');
+                diaElement.className = 'dia';
+                
+                const inputElement = document.createElement('input');
+                inputElement.type = 'number';
+                inputElement.className = 'dia-input';
+                inputElement.dataset.dia = dia;
+                inputElement.dataset.mes = mesId;
+                inputElement.dataset.anio = anio;
+
+                // Verificar si la fecha está dentro del rango de inicio y término
+                if (fecha >= inicioDate && fecha <= terminoDate) {
+                    inputElement.disabled = false;
+                } else {
+                    inputElement.disabled = true;
+                    diaElement.classList.add('dia-disabled');
+                }
+
+                diaElement.innerHTML = `
+                    <div class="dia-nombre">${nombreDia}</div>
+                    <div class="dia-numero">${dia}</div>
+                `;
+                diaElement.appendChild(inputElement);
+                diasContainer.appendChild(diaElement);
+            }
+
+            // Limpiar valor global si está activo
+            fillAllInput.value = '';
         }
 
-        // Si el checkbox está activo, rellenar todas las casillas con el valor actual
-        if (fillAllCheckbox.checked && fillAllInput.value !== '') {
-            fillAllDays();
-        }
+        // Añadir listener para cambios en el selector de mes
+        mesSelector.addEventListener('change', mostrarCalendarioMes);
+
+        // Mostrar el calendario del primer mes automáticamente
+        mostrarCalendarioMes();
     }
 
-    mesSelector.addEventListener('change', () => {
-        fillAllInput.value = '';
-        updateCalendar();
-    });
-
+    // Inicializar la configuración de meses
     updateCalendar();
 }
 
@@ -1770,13 +1827,7 @@ function clearSearchCampania() {
 function actualizarCalendarioDesdeContrato() {
     const calendarios = document.querySelectorAll('.calendario');
     calendarios.forEach(calendario => {
-        // Añadir event listener al mesSelector de cada calendario
-        const mesSelector = calendario.querySelector('.mesSelector');
-        mesSelector.addEventListener('change', () => {
-            initializeCalendar(calendario);
-        });
-        
-        // Inicializar el calendario con el año del contrato
+        // Inicializar el calendario con el rango de meses del contrato
         initializeCalendar(calendario);
     });
 }
@@ -1831,6 +1882,14 @@ function actualizarCalendarioDesdeContrato() {
         updateTotalesGlobales();
     }
 
+    document.addEventListener('DOMContentLoaded', function () {
+    const firstGroup = document.querySelector('.programas-temas-group');
+    initializeCalendar(firstGroup);
+    initializeClasificacionSearch(firstGroup);
+    // Asegúrate de ocultar el botón de eliminar en el primer grupo
+    const removeButton = firstGroup.querySelector('.remove-group-btn');
+    if (removeButton) removeButton.style.display = 'none';
+});
 
 // Inicializar el calculador en el grupo inicial cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
@@ -1958,14 +2017,6 @@ document.querySelectorAll('.programas-temas-group').forEach(group => {
 });
 
 
-document.addEventListener('DOMContentLoaded', function () {
-    const firstGroup = document.querySelector('.programas-temas-group');
-    initializeCalendar(firstGroup);
-    initializeClasificacionSearch(firstGroup);
-    // Asegúrate de ocultar el botón de eliminar en el primer grupo
-    const removeButton = firstGroup.querySelector('.remove-group-btn');
-    if (removeButton) removeButton.style.display = 'none';
-});
 
 </script>
 <script>

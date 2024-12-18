@@ -306,7 +306,11 @@ th.text-center.calendario-header {
     <td class="azul" width="25%">RUT <?php $rutOrden = $clientesMap[$datosPublicidad['id_cliente'] ?? '']['RUT'];
                                         echo $rutOrden;
     ?></td>
-    <td class="titulot" width="50%"><div align="center"><span class="normal">ORDEN DE PUBLICIDAD  <?php echo $numordenn; if (!empty($remplaza)) { echo "   -  " . $remplazado;}?></span> <br>  <span class="anulacion"><?php if (!empty($remplaza)) {echo "ANULA Y REMPLAZA ORDEN N° " . $numordenn . " / " . $copias;} ?></span></div></td>
+    <td class="titulot" width="50%"><div align="center"><span class="normal">ORDEN DE PUBLICIDAD  <?php echo $numordenn; if (!empty($remplaza) && $remplazado > 1) { echo "   -  " . $remplazado;}?></span> <br>  <?php if (!empty($remplaza) && $copias > 0) { ?>
+    <span class="anulacion">
+        <?php echo "ANULA Y REMPLAZA ORDEN N° " . $numordenn . " / " . $copias; ?>
+    </span>
+<?php } ?></div></td>
     <td class="titulot2" width="25%">AÑO /<?php echo htmlspecialchars($nombreAnio); ?> </td>
   </tr>
   <tr>
@@ -580,7 +584,7 @@ foreach ($datosAgrupadosPorMes as $mesClave => $datosPorMes) {
     ];
     $nombreMes = isset($meses[(int)$mes]) ? $meses[(int)$mes] : "Mes desconocido";
     
-    echo "<h3 class='text-center'>Calendario: $nombreMes</h3>";
+    echo "<h5 class='text-center'>Calendario: $nombreMes</h3>";
     echo "<table class='table table-bordered fainlu'>";
     echo "<thead>";
     echo "<tr>";

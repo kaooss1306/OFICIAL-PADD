@@ -119,6 +119,8 @@ if ($contratoSeleccionado) {
     $idCliente = $contratoSeleccionado['idCliente'];
     $idAnio = $contratoSeleccionado['id_Anio'];
     $idMes = $contratoSeleccionado['id_Mes'];
+    $idinif = $contratoSeleccionado['FechaInicio'];
+    $idinit = $contratoSeleccionado['FechaTermino'];
 }
 
 
@@ -390,9 +392,11 @@ border:1px solid #ff0000;
                                                                 <input class="form-control" type="text" value="<?php echo htmlspecialchars($nombreContrato); ?>" id="search-contrato" placeholder="Buscar contrato..." required>
                                                                 <button type="button" class="clear-btnContrato" style="display:none;" onclick="clearSearchContrato()">x</button>
                                                                 <div class="invalid-feedback">
-                                                    Por favor, seleccione un Contrato y recuerda actualizar tu calendario!.
+                                                    Por favor, seleccione un Contrato y recuerda actualizar tu calendario.
                                                 </div>
-                                                                <input type="hidden"  id="selected-contrato-id" value="<?php echo htmlspecialchars($id_contrato); ?>" name="selected-contrato-id">
+                                                <input type="hidden" class="FechaInicio" id="FechaInicio" name="FechaInicio" value="<?php echo htmlspecialchars($idinit); ?>">
+                                                                <input type="hidden" class="FechaTermino" id="FechaTermino" name="FechaTermino" value="<?php echo htmlspecialchars($idinif); ?>">                
+                                                <input type="hidden"  id="selected-contrato-id" value="<?php echo htmlspecialchars($id_contrato); ?>" name="selected-contrato-id">
                                                                 <input type="hidden"  id="selected-proveedor-id" value="<?php echo htmlspecialchars($idProveedor); ?>" name="selected-proveedor-id">
                                                                 <input type="hidden"  id="selected-num-contrato" value="<?php echo htmlspecialchars($numContrato); ?>" name="selected-num-contrato">
                                                                 <input type="hidden" class="selected-anio" value="<?php echo htmlspecialchars($idAnio); ?>" id="selected-anio" name="selected-anio">
@@ -799,77 +803,165 @@ document.addEventListener('DOMContentLoaded', function() {
 });
 
 function loadCalendarData(group, calendarioData) {
-    if (!calendarioData || calendarioData.length === 0) {
-        console.log('No hay datos de calendario para cargar');
-        return;
-    }
+    const fechaInicio = document.getElementById('FechaInicio').value;
+    const fechaTermino = document.getElementById('FechaTermino').value;
 
-    const anioSelector = document.getElementById('selected-anio');
+    const inicioDate = new Date(fechaInicio);
+    const terminoDate = new Date(fechaTermino);
+    const startDate = inicioDate <= terminoDate ? inicioDate : terminoDate;
+    const endDate = inicioDate <= terminoDate ? terminoDate : inicioDate;
+
     const mesSelector = group.querySelector('.mesSelector');
     const diasContainer = group.querySelector('.diasContainer');
+    const fillAllCheckbox = group.querySelector('.fillAllCheckbox');
+    const fillAllInput = group.querySelector('.fillAllInput');
+
+    // Función para actualizar todas las casillas (igual que en initializeCalendar)
+    function fillAllDays() {
+        const value = fillAllInput.value;
+        if (value !== '') {
+            diasContainer.querySelectorAll('.dia-input:not([disabled])').forEach(input => {
+                input.value = value;
+            });
+        }
+    }
+
+    // Configurar los event listeners igual que en initializeCalendar
+    fillAllCheckbox.addEventListener('change', (e) => {
+        fillAllInput.disabled = !e.target.checked;
+        if (!e.target.checked) {
+            fillAllInput.value = '';
+        }
+    });
+
+    fillAllInput.addEventListener('input', fillAllDays);
+
+    // Agregar botón de limpiar si no existe
+    const selectoresDiv = group.querySelector('.selectores');
+    const existingButton = selectoresDiv.querySelector('.clean-button-container');
+    
+    if (!existingButton) {
+        const cleanButtonContainer = document.createElement('div');
+        cleanButtonContainer.className = 'clean-button-container';
+        cleanButtonContainer.style.marginLeft = '10px';
+        
+        const cleanButton = document.createElement('button');
+        cleanButton.type = 'button';
+        cleanButton.className = 'btn btn-outline-danger btn-sm';
+        cleanButton.innerHTML = '<i class="bi bi-trash"></i> Limpiar días';
+        
+        cleanButton.addEventListener('click', () => {
+            diasContainer.querySelectorAll('.dia-input:not([disabled])').forEach(input => {
+                input.value = '';
+            });
+            fillAllInput.value = '';
+            fillAllCheckbox.checked = false;
+            fillAllInput.disabled = true;
+        });
+        
+        cleanButtonContainer.appendChild(cleanButton);
+        selectoresDiv.appendChild(cleanButtonContainer);
+    }
 
     function updateCalendar() {
         const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
-        
-        // Obtener el año del contrato
-        const anioId = parseInt(document.getElementById('selected-anio').value);
-        
-        // Obtener el mes seleccionado
-        const mesId = parseInt(mesSelector.value);
+        const anio = startDate.getFullYear();
+        let iniciaMes = startDate.getMonth() + 1;
+        let terminaMes = endDate.getMonth() + 1;
 
-        if (!mesId || !anioId) {
-            console.warn("No hay valores de mes o año disponibles");
-            return;
+        if (iniciaMes > terminaMes) {
+            terminaMes += 12;
         }
 
-        // Obtener el mes y año directamente de los mapas
-        const mes = parseInt(mesesMap[mesId]['Id']);
-        const anio = parseInt(aniosMap[anioId]['years']);
-
-        // Calcular días en el mes
-        const diasEnMes = new Date(anio, mes, 0).getDate();
-        diasContainer.innerHTML = '';
-
-        // Generar el calendario
-        for (let dia = 1; dia <= diasEnMes; dia++) {
-            const fecha = new Date(anio, mes - 1, dia);
-            const nombreDia = diasSemana[fecha.getDay()];
-
-            const diaElement = document.createElement('div');
-            diaElement.className = 'dia';
-            diaElement.innerHTML = `
-                <div class="dia-nombre">${nombreDia}</div>
-                <div class="dia-numero">${dia}</div>
-                <input type="number" class="dia-input" data-dia="${dia}" data-mes="${mesId}" data-anio="${anioId}" />
-            `;
-            diasContainer.appendChild(diaElement);
+        mesSelector.innerHTML = '';
+        for (let m = iniciaMes; m <= terminaMes; m++) {
+            const mesReal = m > 12 ? m - 12 : m;
+            const option = document.createElement('option');
+            option.value = mesReal;
+            option.text = mesesMap[mesReal]['Nombre'];
+            mesSelector.appendChild(option);
         }
-    }
-    // Verificar y establecer el año si es necesario
-    if (calendarioData[0].anio && anioSelector) {
-        anioSelector.value = calendarioData[0].anio;
-    }
 
-    // Verificar y establecer el mes si es necesario
-    if (calendarioData[0].mes && mesSelector) {
-        mesSelector.value = calendarioData[0].mes;
-        
-        // Llamar a updateCalendar para regenerar los días del mes
-        updateCalendar();
-    }
+        function mostrarCalendarioMes() {
+            const mesId = parseInt(mesSelector.value);
+            if (!mesId) return;
 
-    // Cargar los valores en los inputs correspondientes
-    calendarioData.forEach(item => {
-        const diaInput = diasContainer.querySelector(
-            `.dia-input[data-dia="${item.dia}"][data-mes="${item.mes}"][data-anio="${item.anio}"]`
-        );
+            const mes = parseInt(mesesMap[mesId]['Id']);
+            const diasEnMes = new Date(anio, mes, 0).getDate();
+            
+            diasContainer.innerHTML = '';
 
-        if (diaInput) {
-            diaInput.value = item.cantidad;
+            for (let dia = 1; dia <= diasEnMes; dia++) {
+                const fecha = new Date(anio, mes - 1, dia);
+                const nombreDia = diasSemana[fecha.getDay()];
+
+                const diaElement = document.createElement('div');
+                diaElement.className = 'dia';
+                
+                const inputElement = document.createElement('input');
+                inputElement.type = 'number';
+                inputElement.className = 'dia-input';
+                inputElement.dataset.dia = dia;
+                inputElement.dataset.mes = mesId;
+                inputElement.dataset.anio = anio;
+                inputElement.value = '';
+
+                if (fecha >= startDate && fecha <= endDate) {
+                    inputElement.disabled = false;
+                } else {
+                    inputElement.disabled = true;
+                    diaElement.classList.add('dia-disabled');
+                }
+
+                diaElement.innerHTML = `
+                    <div class="dia-nombre">${nombreDia}</div>
+                    <div class="dia-numero">${dia}</div>
+                `;
+                diaElement.appendChild(inputElement);
+                diasContainer.appendChild(diaElement);
+            }
+
+            // Cargar datos del calendario solo para el mes actual
+            if (calendarioData && calendarioData.length > 0) {
+                calendarioData.forEach(item => {
+                    if (parseInt(item.mes) === mesId) {
+                        const diaInput = diasContainer.querySelector(
+                            `.dia-input[data-dia="${item.dia}"][data-mes="${mesId}"][data-anio="${anio}"]`
+                        );
+                        
+                        if (diaInput && !diaInput.disabled) {
+                            diaInput.value = item.cantidad;
+                        }
+                    }
+                });
+            }
+
+            // Limpiar valor global
+            fillAllInput.value = '';
         }
-    });
+
+        mesSelector.removeEventListener('change', mostrarCalendarioMes);
+        mesSelector.addEventListener('change', mostrarCalendarioMes);
+
+        if (calendarioData && calendarioData.length > 0) {
+            const primerItemMes = parseInt(calendarioData[0].mes);
+            
+            if (primerItemMes && 
+                primerItemMes >= iniciaMes && 
+                primerItemMes <= terminaMes) {
+                mesSelector.value = primerItemMes;
+            } else {
+                mesSelector.value = iniciaMes > 12 ? iniciaMes - 12 : iniciaMes;
+            }
+        } else {
+            mesSelector.value = iniciaMes > 12 ? iniciaMes - 12 : iniciaMes;
+        }
+
+        mostrarCalendarioMes();
+    }
+
+    updateCalendar();
 }
-
 function initializeValoresCalculator(group) {
     const inputValorNeto = group.querySelector('.selected-valorneto');
     const inputValorBruto = group.querySelector('.selected-valorbruto');
@@ -952,24 +1044,31 @@ function updateTotalesGlobales() {
 
 function loadInitialData(programasTemasData) {
     const container = document.getElementById('programasTemasContainer');
-    
+
     // Eliminar todos los grupos existentes excepto el primero
     const groups = container.querySelectorAll('.programas-temas-group');
     for (let i = 1; i < groups.length; i++) {
         groups[i].remove();
     }
-    
+
+    // Primero, remover cualquier botón de limpiar existente en el primer grupo
+    const firstGroup = container.querySelector('.programas-temas-group');
+    const existingCleanButton = firstGroup.querySelector('.clean-button-container');
+    if (existingCleanButton) {
+        existingCleanButton.remove();
+    }
+
     // Cargar cada conjunto de datos
     programasTemasData.forEach((data, index) => {
         // Si no es el primer conjunto, crear un nuevo grupo
         if (index > 0) {
             addProgramasTemasGroup();
         }
-        
+
         // Obtener el grupo actual
         const groups = container.querySelectorAll('.programas-temas-group');
         const currentGroup = groups[index];
-        
+
         // Cargar datos del programa
         const searchProgramaInput = currentGroup.querySelector('.search-programa');
         const selectedProgramaIdInput = currentGroup.querySelector('.selected-programa-id');
@@ -979,19 +1078,18 @@ function loadInitialData(programasTemasData) {
             selectedProgramaIdInput.value = programa.id;
             currentGroup.querySelector('#hora-inicio').value = programa['hora_inicio'];
             currentGroup.querySelector('#hora-fin').value = programa['hora_fin'];
-            const searchProgramaElement = currentGroup.querySelector("#search-programa");
-            searchProgramaElement.setAttribute('readonly', true);
+            searchProgramaInput.setAttribute('readonly', true);
         }
 
-          // Cargar datos de clasificación
-          const searchClasificacionInput = currentGroup.querySelector('#search-clasificacion');
+        // Cargar datos de clasificación
+        const searchClasificacionInput = currentGroup.querySelector('#search-clasificacion');
         const selectedClasificacionInput = currentGroup.querySelector('.selected-clasi');
         const clasificacion = clasificacionesMap.find(c => c.id.toString() === data.clasificacion);
         if (clasificacion) {
             searchClasificacionInput.value = clasificacion.NombreClasificacion;
             selectedClasificacionInput.value = clasificacion.id;
         }
-        
+
         // Cargar datos del tema
         const searchTemasInput = currentGroup.querySelector('.search-temas');
         const selectedTemasIdInput = currentGroup.querySelector('.selected-temas-id');
@@ -1002,26 +1100,31 @@ function loadInitialData(programasTemasData) {
             currentGroup.querySelector('#selected-temas-codigo').value = tema.CodigoMegatime;
             currentGroup.querySelector('#selected-id-medio').value = tema.id_medio;
             currentGroup.querySelector('#selected-segundos').value = tema.Duracion;
-            const searchTema = currentGroup.querySelector("#search-temas");
-            searchTema.setAttribute('readonly', true);
-
+            searchTemasInput.setAttribute('readonly', true);
         }
 
-       
-        
         // Cargar valores monetarios
         currentGroup.querySelector('.selected-valorneto').value = data.valor_neto || '';
         currentGroup.querySelector('.selected-valorbruto').value = data.valor_bruto || '';
         currentGroup.querySelector('.selected-descuentov').value = data.descuento || '0';
         currentGroup.querySelector('.selected-valortotal').value = data.valor_total || '';
-        
-        // Cargar datos del calendario de manera asíncrona
-        setTimeout(() => {
+
+        console.log("Cargando calendario:", data.calendario);
+
+        // Remover cualquier botón de limpiar existente antes de cargar el calendario
+        const cleanButton = currentGroup.querySelector('.clean-button-container');
+        if (cleanButton) {
+            cleanButton.remove();
+        }
+
+        // Cargar datos del calendario de manera segura
+        requestAnimationFrame(() => {
             loadCalendarData(currentGroup, data.calendario);
-        }, index * 200); // Agregamos un delay incremental para cada grupo
+        });
     });
-     // Llamar a updateTotalesGlobales después de cargar todos los grupos
-     updateTotalesGlobales();
+
+    // Llamar a updateTotalesGlobales después de cargar todos los grupos
+    updateTotalesGlobales();
 }
 
 // Inicialización de los datos
@@ -1370,6 +1473,8 @@ function selectContract(contrato) {
     document.getElementById("selected-contrato-id").value = contrato.id;
     document.getElementById("selected-proveedor-id").value = contrato.idProveedor;
     document.getElementById("selected-num-contrato").value = contrato.num_contrato;
+    document.getElementById("FechaTermino").value = contrato.FechaTermino;
+    document.getElementById("FechaInicio").value = contrato.FechaInicio;
     document.getElementById("selected-anio").value = contrato.id_Anio;
     document.getElementById("selected-mes").value = contrato.id_Mes;
 
@@ -2111,49 +2216,51 @@ function clearSearchCampania() {
                 document.querySelector(".clear-btn").style.display = 'none';
             }
 
-            function initializeCalendar(group) {
+            function initializeCalendar(group, fechaInicio = null, fechaTermino = null) {
+    // Si no se proporcionan fechas, intentar obtenerlas de los campos globales
+    if (!fechaInicio || !fechaTermino) {
+        fechaInicio = document.getElementById('FechaInicio').value;
+        fechaTermino = document.getElementById('FechaTermino').value;
+    }
+
     const mesSelector = group.querySelector('.mesSelector');
     const diasContainer = group.querySelector('.diasContainer');
     const fillAllCheckbox = group.querySelector('.fillAllCheckbox');
     const fillAllInput = group.querySelector('.fillAllInput');
 
-    // Función para actualizar todas las casillas
-    function fillAllDays() {
-        const value = fillAllInput.value;
-        if (value !== '') {
-            diasContainer.querySelectorAll('.dia-input').forEach(input => {
-                input.value = value;
-            });
-        }
+    console.log('Inicializando calendario con fechas:', fechaInicio, fechaTermino);
+
+    // Limpiar listeners anteriores para evitar duplicados
+    mesSelector.removeEventListener('change', mostrarCalendarioMes);
+
+    const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
+    const inicioDate = new Date(fechaInicio);
+    const terminoDate = new Date(fechaTermino);
+    const anio = inicioDate.getFullYear();
+
+    let iniciaMes = inicioDate.getMonth() + 1;
+    let terminaMes = terminoDate.getMonth() + 1;
+
+    // Manejar el caso de rango de meses que cruza el año
+    if (iniciaMes > terminaMes) {
+        terminaMes += 12;
     }
 
-    // Habilitar/deshabilitar la casilla de valor global
-    fillAllCheckbox.addEventListener('change', (e) => {
-        fillAllInput.disabled = !e.target.checked;
-        if (!e.target.checked) {
-            fillAllInput.value = '';
-        }
-    });
+    // Limpiar selector de meses
+    mesSelector.innerHTML = '';
+    for (let m = iniciaMes; m <= terminaMes; m++) {
+        const mesReal = m > 12 ? m - 12 : m;
+        const option = document.createElement('option');
+        option.value = mesReal;
+        option.text = mesesMap[mesReal]['Nombre'];
+        mesSelector.appendChild(option);
+    }
 
-    // Escuchar cambios en la casilla global y rellenar todas las casillas
-    fillAllInput.addEventListener('input', fillAllDays);
-
-    // Función para inicializar el calendario
-    function updateCalendar() {
-        const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
-
-        // Obtener el año y mes seleccionados
-        const anioId = parseInt(document.getElementById('selected-anio').value);
+    function mostrarCalendarioMes() {
         const mesId = parseInt(mesSelector.value);
-
-        if (!mesId || !anioId) {
-            console.warn("No hay valores de mes o año disponibles");
-            return;
-        }
+        if (!mesId) return;
 
         const mes = parseInt(mesesMap[mesId]['Id']);
-        const anio = parseInt(aniosMap[anioId]['years']);
-
         const diasEnMes = new Date(anio, mes, 0).getDate();
         diasContainer.innerHTML = '';
 
@@ -2163,80 +2270,123 @@ function clearSearchCampania() {
 
             const diaElement = document.createElement('div');
             diaElement.className = 'dia';
+            
+            const inputElement = document.createElement('input');
+            inputElement.type = 'number';
+            inputElement.className = 'dia-input';
+            inputElement.dataset.dia = dia;
+            inputElement.dataset.mes = mesId;
+            inputElement.dataset.anio = anio;
+
+            // Verificar si la fecha está dentro del rango de inicio y término
+            if (fecha >= inicioDate && fecha <= terminoDate) {
+                inputElement.disabled = false;
+            } else {
+                inputElement.disabled = true;
+                diaElement.classList.add('dia-disabled');
+            }
+
             diaElement.innerHTML = `
                 <div class="dia-nombre">${nombreDia}</div>
                 <div class="dia-numero">${dia}</div>
-                <input type="number" class="dia-input" data-dia="${dia}" data-mes="${mesId}" data-anio="${anioId}" />
             `;
+            diaElement.appendChild(inputElement);
             diasContainer.appendChild(diaElement);
         }
 
-        // Si el checkbox está activo, rellenar todas las casillas con el valor actual
-        if (fillAllCheckbox.checked && fillAllInput.value !== '') {
-            fillAllDays();
-        }
+        // Limpiar valor global
+        fillAllInput.value = '';
     }
 
-    mesSelector.addEventListener('change', () => {
-        fillAllInput.value = '';
-        updateCalendar();
-    });
+    // Establecer el primer mes del rango como seleccionado
+    mesSelector.value = iniciaMes > 12 ? iniciaMes - 12 : iniciaMes;
 
-    updateCalendar();
+    // Añadir listener para cambios en el selector de mes
+    mesSelector.addEventListener('change', mostrarCalendarioMes);
+
+    // Mostrar el calendario del primer mes
+    mostrarCalendarioMes();
 }
 
 // Función para actualizar todos los calendarios cuando se selecciona un contrato
 function actualizarCalendarioDesdeContrato() {
     const calendarios = document.querySelectorAll('.calendario');
     calendarios.forEach(calendario => {
-        // Añadir event listener al mesSelector de cada calendario
-        const mesSelector = calendario.querySelector('.mesSelector');
-        mesSelector.addEventListener('change', () => {
-            initializeCalendar(calendario);
-        });
-        
-        // Inicializar el calendario con el año del contrato
+        // Inicializar el calendario con el rango de meses del contrato
         initializeCalendar(calendario);
     });
 }
-// Modificar la función addProgramasTemasGroup para inicializar la búsqueda de temas
+
 function addProgramasTemasGroup() {
     const container = document.getElementById('programasTemasContainer');
-    const newGroup = container.querySelector('.programas-temas-group').cloneNode(true);
+    
+    // Guardar una referencia del grupo original
+    const originalGroup = container.querySelector('.programas-temas-group');
+    
+    // Remover el botón de limpiar antes de clonar
+    const cleanButton = originalGroup.querySelector('.clean-button-container');
+    if (cleanButton) {
+        cleanButton.remove();
+    }
+    
+    // Ahora clonar el grupo sin el botón
+    const newGroup = originalGroup.cloneNode(true);
     const groupCount = container.querySelectorAll('.programas-temas-group').length;
 
-    // Asignar un ID único al grupo
+    // Asignar ID único al grupo
     newGroup.dataset.groupId = `group-${groupCount + 1}`;
 
-    // Limpiar los valores en los inputs del nuevo grupo
+    // Limpiar los valores y los event listeners en el nuevo grupo
     newGroup.querySelectorAll('input').forEach(input => {
         input.value = '';
+        const newInput = input.cloneNode(true);
+        input.parentNode.replaceChild(newInput, input);
     });
 
-    // Mostrar el botón de eliminar solo en el nuevo grupo
+    // Limpiar calendario y selector
+    const diasContainer = newGroup.querySelector('.diasContainer');
+    if (diasContainer) {
+        diasContainer.innerHTML = '';
+    }
+
+    // Reiniciar el selector de mes
+    const mesSelector = newGroup.querySelector('.mesSelector');
+    if (mesSelector) {
+        const newMesSelector = mesSelector.cloneNode(false);
+        mesSelector.parentNode.replaceChild(newMesSelector, mesSelector);
+    }
+
+    // Reiniciar checkbox y input de rellenar todas las casillas
+    const fillAllCheckbox = newGroup.querySelector('.fillAllCheckbox');
+    const fillAllInput = newGroup.querySelector('.fillAllInput');
+    if (fillAllCheckbox) fillAllCheckbox.checked = false;
+    if (fillAllInput) {
+        fillAllInput.value = '';
+        fillAllInput.disabled = true;
+    }
+
+    // Mostrar el botón de eliminar
     const removeButton = newGroup.querySelector('.remove-group-btn');
     if (removeButton) {
         removeButton.style.display = 'inline-block';
     }
 
-    // Ocultar el botón de eliminar en el primer grupo
-    const firstGroup = container.querySelector('.programas-temas-group');
-    const firstGroupRemoveButton = firstGroup.querySelector('.remove-group-btn');
-    if (firstGroupRemoveButton) {
-        firstGroupRemoveButton.style.display = 'none';
-    }
+    // Agregar el nuevo grupo al contenedor
+    container.appendChild(newGroup);
 
-       // Initialize classification search for the new group
-       initializeClasificacionSearch(newGroup);
-// Inicializar todas las funcionalidades en el nuevo grupo
+    // Inicializar todas las funcionalidades en el nuevo grupo
+    initializeClasificacionSearch(newGroup);
     initializeSearch(newGroup);
     initializeTemasSearch(newGroup);
-    initializeCalendar(newGroup);
-    // Inicializar todas las funcionalidades en el nuevo grupo
     initializeValoresCalculator(newGroup);
 
-    // Insertar el nuevo grupo en el contenedor
-    container.appendChild(newGroup);
+    // Inicializar el calendario con datos vacíos
+    loadCalendarData(newGroup, []);
+
+    // Restaurar el botón en el grupo original
+    if (cleanButton) {
+        originalGroup.querySelector('.selectores').appendChild(cleanButton);
+    }
 
     // Actualizar totales globales
     updateTotalesGlobales();
@@ -2244,11 +2394,7 @@ function addProgramasTemasGroup() {
 
 // Inicializar el calculador en el grupo inicial cuando se carga la página
 document.addEventListener('DOMContentLoaded', () => {
-    const initialGroup = document.querySelector('.programas-temas-group');
-    if (initialGroup) {
-        initializeValoresCalculator(initialGroup);
-        updateTotalesGlobales();
-    }
+    
 });
 
 function removeProgramasTemasGroup(button) {
